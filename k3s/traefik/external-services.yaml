@@ -1,0 +1,165 @@
+# External services - equivalent of traefik/config/dynamic/services.yml
+# Routes to services outside the k3s cluster (Proxmox, TrueNAS, etc.)
+#
+# NOTE: ExternalName doesn't work with raw IPs (CNAME-to-IP is invalid DNS).
+# Instead we use headless Services + manual Endpoints to point at IPs.
+---
+# ServersTransports for backends with self-signed certs
+apiVersion: traefik.io/v1alpha1
+kind: ServersTransport
+metadata:
+  name: ignorecert
+  namespace: traefik
+spec:
+  serverName: "proxmox"
+  insecureSkipVerify: true
+
+---
+apiVersion: traefik.io/v1alpha1
+kind: ServersTransport
+metadata:
+  name: nasignore
+  namespace: traefik
+spec:
+  serverName: "truenas"
+  insecureSkipVerify: true
+
+---
+# Proxmox - 10.0.10.2:8006
+apiVersion: v1
+kind: Service
+metadata:
+  name: proxmox-external
+  namespace: traefik
+spec:
+  clusterIP: None
+  ports:
+    - port: 8006
+      protocol: TCP
+
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: proxmox-external
+  namespace: traefik
+subsets:
+  - addresses:
+      - ip: "10.0.10.2"
+    ports:
+      - port: 8006
+        protocol: TCP
+
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: proxmox
+  namespace: traefik
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`proxmox.d-kline.org`)
+      kind: Rule
+      middlewares:
+        - name: local-only
+      services:
+        - name: proxmox-external
+          port: 8006
+          serversTransport: ignorecert
+  tls:
+    secretName: d-kline-org-tls
+
+---
+# TrueNAS - 10.0.10.150:443
+apiVersion: v1
+kind: Service
+metadata:
+  name: truenas-external
+  namespace: traefik
+spec:
+  clusterIP: None
+  ports:
+    - port: 443
+      protocol: TCP
+
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: truenas-external
+  namespace: traefik
+subsets:
+  - addresses:
+      - ip: "10.0.10.150"
+    ports:
+      - port: 443
+        protocol: TCP
+
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: truenas
+  namespace: traefik
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`nas.d-kline.org`)
+      kind: Rule
+      middlewares:
+        - name: local-only
+      services:
+        - name: truenas-external
+          port: 443
+          serversTransport: nasignore
+  tls:
+    secretName: d-kline-org-tls
+
+---
+# OPNsense - 10.0.10.1:80
+apiVersion: v1
+kind: Service
+metadata:
+  name: opnsense-external
+  namespace: traefik
+spec:
+  clusterIP: None
+  ports:
+    - port: 80
+      protocol: TCP
+
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: opnsense-external
+  namespace: traefik
+subsets:
+  - addresses:
+      - ip: "10.0.10.1"
+    ports:
+      - port: 80
+        protocol: TCP
+
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: opnsense
+  namespace: traefik
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`opnsense.d-kline.org`)
+      kind: Rule
+      middlewares:
+        - name: local-only
+      services:
+        - name: opnsense-external
+          port: 80
+  tls:
+    secretName: d-kline-org-tls

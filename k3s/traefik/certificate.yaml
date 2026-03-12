@@ -1,0 +1,14 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: d-kline-org-wildcard
+  namespace: traefik
+spec:
+  secretName: d-kline-org-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  commonName: "*.d-kline.org"
+  dnsNames:
+    - "d-kline.org"
+    - "*.d-kline.org"

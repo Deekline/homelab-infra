@@ -1,0 +1,23 @@
+# Traefik Dashboard IngressRoute
+# Equivalent of the Docker labels on the traefik container
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: traefik-dashboard
+  namespace: traefik
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`traefik.d-kline.org`)
+      kind: Rule
+      middlewares:
+        - name: local-only
+        - name: traefik-auth
+        - name: security-headers
+      services:
+        - name: api@internal
+          kind: TraefikService
+  tls:
+    secretName: d-kline-org-tls

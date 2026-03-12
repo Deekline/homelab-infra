@@ -1,0 +1,39 @@
+# cert-manager resources for TLS certificate provisioning
+# Requires cert-manager to be installed:
+#   helm repo add jetstack https://charts.jetstack.io
+#   helm repo update
+#   helm install cert-manager jetstack/cert-manager -n cert-manager --create-namespace --set crds.enabled=true
+---
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: cloudflare-letsencrypt
+spec:
+  acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: nicholas.yemets@gmail.com
+    privateKeySecretRef:
+      name: cloudflare-letsencrypt-key
+    solvers:
+      - dns01:
+          cloudflare:
+            apiTokenSecretRef:
+              name: cloudflare-credentials
+              key: api-token
+
+---
+# Wildcard certificate for *.d-kline.org
+# This creates the 'd-kline-org-tls' secret referenced in all IngressRoutes
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: d-kline-org-tls
+  namespace: traefik
+spec:
+  secretName: d-kline-org-tls
+  issuerRef:
+    name: cloudflare-letsencrypt
+    kind: ClusterIssuer
+  dnsNames:
+    - "d-kline.org"
+    - "*.d-kline.org"
