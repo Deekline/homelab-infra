@@ -1,0 +1,18 @@
+configs:
+  params:
+    server.insecure: true
+
+server:
+  ingress:
+    enabled: false  # We use Traefik IngressRoute instead
+
+redis:
+  enabled: true
+
+repoServer:
+  env:
+    - name: SOPS_AGE_KEY_FILE
+      value: /sops/age/keys.txt
+
+crds:
+  install: true
