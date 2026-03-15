@@ -8,11 +8,8 @@ data:
     log:
       level: info
     runner:
+      file: /data/.runner
       capacity: 3
-      # Maps workflow 'runs-on' labels to Docker images
-      labels:
-        - "ubuntu-latest:docker://ubuntu:22.04"
-        - "ubuntu-22.04:docker://ubuntu:22.04"
       timeout: 1h
       fetch_timeout: 5s
       fetch_interval: 2s

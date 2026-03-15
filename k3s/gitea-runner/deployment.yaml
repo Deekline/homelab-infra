@@ -1,8 +1,15 @@
 ---
 apiVersion: v1
-kind: Namespace
+kind: PersistentVolumeClaim
 metadata:
-  name: gitea-runner
+  name: gitea-runner-data
+  namespace: gitea-runner
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -23,12 +30,19 @@ spec:
       containers:
         - name: runner
           image: gitea/act_runner:latest
-          # Wait for DinD to be ready before starting the runner
           command:
             - sh
             - -c
             - |
               while ! nc -z localhost 2375; do sleep 1; done
+              # Register only if not already registered (persisted in PVC)
+              if [ ! -f /data/.runner ]; then
+                act_runner register --no-interactive \
+                  --instance "$GITEA_INSTANCE_URL" \
+                  --token "$GITEA_RUNNER_REGISTRATION_TOKEN" \
+                  --name "$GITEA_RUNNER_NAME" \
+                  --labels "ubuntu-latest:docker://ubuntu:22.04,ubuntu-22.04:docker://ubuntu:22.04"
+              fi
               act_runner daemon --config /config/config.yaml
           env:
             - name: GITEA_INSTANCE_URL
@@ -47,11 +61,11 @@ spec:
           volumeMounts:
             - name: config
               mountPath: /config
+            - name: data
+              mountPath: /data
             - name: cache
               mountPath: /cache
 
-        # Docker-in-Docker daemon — required for container: jobs in workflows
-        # Privileged is needed for DinD; acceptable in a homelab context
         - name: dind
           image: docker:27-dind
           env:
@@ -67,6 +81,9 @@ spec:
         - name: config
           configMap:
             name: gitea-runner-config
+        - name: data
+          persistentVolumeClaim:
+            claimName: gitea-runner-data
         - name: docker-storage
           emptyDir: {}
         - name: cache
