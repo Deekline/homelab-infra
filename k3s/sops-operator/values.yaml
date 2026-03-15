@@ -3,15 +3,8 @@
 # ArgoCD applies the encrypted SopsSecret CRDs — no decryption plugin needed.
 
 extraEnv:
-  - name: SOPS_AGE_KEY_FILE
-    value: /etc/sops-age/keys.txt
-
-extraVolumes:
-  - name: sops-age
-    secret:
-      secretName: sops-age-key
-
-extraVolumeMounts:
-  - name: sops-age
-    mountPath: /etc/sops-age
-    readOnly: true
+  - name: SOPS_AGE_KEY
+    valueFrom:
+      secretKeyRef:
+        name: sops-age-key
+        key: keys.txt
