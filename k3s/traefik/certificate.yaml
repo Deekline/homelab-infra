@@ -6,9 +6,8 @@ metadata:
 spec:
   secretName: d-kline-org-tls
   issuerRef:
-    name: letsencrypt-prod
+    name: cloudflare-letsencrypt
     kind: ClusterIssuer
-  commonName: "*.d-kline.org"
   dnsNames:
     - "d-kline.org"
     - "*.d-kline.org"

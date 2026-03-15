@@ -21,19 +21,3 @@ spec:
               name: cloudflare-credentials
               key: api-token
 
----
-# Wildcard certificate for *.d-kline.org
-# This creates the 'd-kline-org-tls' secret referenced in all IngressRoutes
-apiVersion: cert-manager.io/v1
-kind: Certificate
-metadata:
-  name: d-kline-org-tls
-  namespace: traefik
-spec:
-  secretName: d-kline-org-tls
-  issuerRef:
-    name: cloudflare-letsencrypt
-    kind: ClusterIssuer
-  dnsNames:
-    - "d-kline.org"
-    - "*.d-kline.org"
