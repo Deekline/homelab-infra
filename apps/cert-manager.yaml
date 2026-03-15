@@ -9,6 +9,8 @@ spec:
     repoURL: ssh://git@10.0.10.150:30009/deekline/homelab-infra.git
     targetRevision: HEAD
     path: k3s/cert-manager
+    directory:
+      exclude: '*secrets.yaml'
   destination:
     server: https://kubernetes.default.svc
     namespace: cert-manager
