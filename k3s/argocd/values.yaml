@@ -7,23 +7,13 @@ configs:
 
 server:
   ingress:
-    enabled: false  # We use Traefik IngressRoute instead
+    enabled: false
 
 redis:
   enabled: true
 
 repoServer:
-  env:
-    - name: SOPS_AGE_KEY_FILE
-      value: /sops/age/keys.txt
-  volumes:
-    - name: sops-age
-      secret:
-        secretName: sops-age-key
-  volumeMounts:
-    - name: sops-age
-      mountPath: /sops/age
-      readOnly: true
+  env: []
 
 crds:
   install: true

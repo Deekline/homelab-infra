@@ -9,8 +9,6 @@ spec:
     repoURL: ssh://git@10.0.10.150:30009/deekline/homelab-infra.git
     targetRevision: HEAD
     path: k3s/traefik
-    directory:
-      exclude: '*secrets.yaml'
   destination:
     server: https://kubernetes.default.svc
     namespace: traefik
@@ -20,7 +18,6 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
-      - RespectIgnoreDifferences=true
   ignoreDifferences:
     - group: ""
       kind: Endpoints
