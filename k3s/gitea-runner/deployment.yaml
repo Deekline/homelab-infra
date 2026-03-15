@@ -28,7 +28,7 @@ spec:
             - sh
             - -c
             - |
-              while ! nc -z localhost 2376; do sleep 1; done
+              while ! nc -z localhost 2375; do sleep 1; done
               act_runner daemon --config /config/config.yaml
           env:
             - name: GITEA_INSTANCE_URL
@@ -41,7 +41,7 @@ spec:
             - name: GITEA_RUNNER_NAME
               value: "k3s-runner"
             - name: DOCKER_HOST
-              value: tcp://localhost:2376
+              value: tcp://localhost:2375
             - name: DOCKER_TLS_CERTDIR
               value: ""
           volumeMounts:
