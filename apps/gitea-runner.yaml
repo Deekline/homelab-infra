@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: gitea-runner
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: ssh://git@10.0.10.150:30009/deekline/homelab-infra.git
+    targetRevision: HEAD
+    path: k3s/gitea-runner
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: gitea-runner
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

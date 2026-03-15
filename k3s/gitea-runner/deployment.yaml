@@ -1,0 +1,73 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: gitea-runner
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gitea-runner
+  namespace: gitea-runner
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gitea-runner
+  template:
+    metadata:
+      labels:
+        app: gitea-runner
+    spec:
+      restartPolicy: Always
+      containers:
+        - name: runner
+          image: gitea/act_runner:latest
+          # Wait for DinD to be ready before starting the runner
+          command:
+            - sh
+            - -c
+            - |
+              while ! nc -z localhost 2376; do sleep 1; done
+              act_runner daemon --config /config/config.yaml
+          env:
+            - name: GITEA_INSTANCE_URL
+              value: "http://10.0.10.150:30008"
+            - name: GITEA_RUNNER_REGISTRATION_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: gitea-runner-token
+                  key: token
+            - name: GITEA_RUNNER_NAME
+              value: "k3s-runner"
+            - name: DOCKER_HOST
+              value: tcp://localhost:2376
+            - name: DOCKER_TLS_CERTDIR
+              value: ""
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            - name: cache
+              mountPath: /cache
+
+        # Docker-in-Docker daemon — required for container: jobs in workflows
+        # Privileged is needed for DinD; acceptable in a homelab context
+        - name: dind
+          image: docker:27-dind
+          env:
+            - name: DOCKER_TLS_CERTDIR
+              value: ""
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - name: docker-storage
+              mountPath: /var/lib/docker
+
+      volumes:
+        - name: config
+          configMap:
+            name: gitea-runner-config
+        - name: docker-storage
+          emptyDir: {}
+        - name: cache
+          emptyDir: {}

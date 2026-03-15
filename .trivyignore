@@ -1,0 +1,5 @@
+# Accepted findings — reviewed and intentional
+
+# gitea-runner DinD sidecar requires privileged mode to run a Docker daemon.
+# Scoped to the gitea-runner namespace only. No other workloads are privileged.
+AVD-KSV-0017
