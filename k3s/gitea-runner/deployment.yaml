@@ -38,6 +38,7 @@ spec:
               # Register only if not already registered (persisted in PVC)
               if [ ! -f /data/.runner ]; then
                 act_runner register --no-interactive \
+                  --config /config/config.yaml \
                   --instance "$GITEA_INSTANCE_URL" \
                   --token "$GITEA_RUNNER_REGISTRATION_TOKEN" \
                   --name "$GITEA_RUNNER_NAME" \
