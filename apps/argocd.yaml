@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: http://10.0.10.150:30008/deekline/homelab-infra.git
+    repoURL: ssh://git@10.0.10.150:30009/deekline/homelab-infra.git
     targetRevision: HEAD
     path: k3s/argocd
   destination:
