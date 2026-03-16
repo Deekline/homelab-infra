@@ -1,0 +1,12 @@
+nfs:
+  server: 10.0.10.150
+  path: /mnt/SSD_SMALL/db
+
+storageClass:
+  name: nfs-db
+  defaultClass: false
+  reclaimPolicy: Retain
+  volumeBindingMode: Immediate
+  archiveOnDelete: false
+
+replicaCount: 1

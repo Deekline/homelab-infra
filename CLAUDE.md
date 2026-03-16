@@ -73,7 +73,8 @@ Deploy in this exact order (each depends on the previous):
 
 1. ✅ **Traefik** + cert-manager — ingress + TLS
 2. ✅ **ArgoCD** + sops-secrets-operator — GitOps controller + cluster-side SOPS decryption
-3. ✅ **Secrets** — SopsSecret CRDs encrypted in Git, operator decrypting on cluster
+3. ✅ **Root App of Apps** — `kubectl apply -f apps/root.yaml` (one-time; after this all `apps/*.yaml` changes are Git-driven)
+4. ✅ **Secrets** — SopsSecret CRDs encrypted in Git, operator decrypting on cluster
 5. **NFS StorageClass** — points to TrueNAS `tank_fast` SSD pool
 6. **CloudNativePG operator** — one isolated Postgres cluster per app
 7. **Dragonfly** — shared Redis-compatible cache
@@ -81,7 +82,7 @@ Deploy in this exact order (each depends on the previous):
 9. **Zot** — private OCI registry
 10. **Gitea Actions runner** + Trivy — CI pipeline
 11. App services (Immich, Paperless, Nextcloud, arr stack, etc.)
-12. **Monitoring VM** (Prometheus/Grafana/Loki) — provisioned via Terraform+Ansible after M910Q cluster
+12. **Observability** (Prometheus/Grafana/Loki) — in-cluster via kube-prometheus-stack + Loki
 
 ## DevSecOps Pipeline Flow
 
@@ -177,6 +178,4 @@ CloudNativePG operator manages all Postgres. Each app gets its own isolated clus
 
 ## Observability
 
-Monitoring runs on a **dedicated Proxmox HA VM** (`10.0.10.20`), not as k3s workloads — this gives observer independence when the k3s cluster has problems. Managed via Terraform + Ansible (Docker Compose inside VM). Prometheus TSDB and Loki chunks stored on TrueNAS `tank_fast/monitoring`.
-
-Promtail runs as a DaemonSet in k3s and ships pod logs to Loki on the monitoring VM.
+Observability runs **inside k3s** via `kube-prometheus-stack` (Prometheus + Grafana + Alertmanager) + Loki + Promtail DaemonSet. Prometheus TSDB and Loki chunks stored on TrueNAS `tank_fast` via NFS StorageClass.
