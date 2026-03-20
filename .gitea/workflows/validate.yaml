@@ -7,12 +7,9 @@ on:
 
 jobs:
   # ── 1. SOPS encryption check ─────────────────────────────────────────────
-  # Catch plaintext secrets before they ever reach the cluster.
   sops-check:
     name: Secrets encrypted
     runs-on: ubuntu-latest
-    container:
-      image: alpine:3.20
     steps:
       - uses: actions/checkout@v4
 
@@ -28,16 +25,16 @@ jobs:
           exit $fail
 
   # ── 2. Kubernetes manifest validation ────────────────────────────────────
-  # Validates all k8s manifests against their API schemas.
-  # Unknown CRDs (SopsSecret, IngressRoute, etc.) are looked up from the
-  # community CRD catalog; remaining unknowns are skipped, not failed.
   kubeconform:
     name: Validate manifests
     runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/yannh/kubeconform:latest-alpine
     steps:
       - uses: actions/checkout@v4
+
+      - name: Install kubeconform
+        run: |
+          curl -sSL https://github.com/yannh/kubeconform/releases/latest/download/kubeconform-linux-amd64.tar.gz \
+            | tar -xz -C /usr/local/bin kubeconform
 
       - name: Run kubeconform
         run: |
@@ -50,15 +47,15 @@ jobs:
             infra/k3s/
 
   # ── 3. Trivy misconfiguration scan ───────────────────────────────────────
-  # Scans all k8s manifests for security misconfigurations.
-  # Fails on HIGH or CRITICAL severity findings.
   trivy:
     name: Trivy config scan
     runs-on: ubuntu-latest
-    container:
-      image: aquasec/trivy:latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Install Trivy
+        run: |
+          curl -sSL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
 
       - name: Scan manifests for misconfigurations
         run: |
