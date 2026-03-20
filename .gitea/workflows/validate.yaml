@@ -6,7 +6,6 @@ on:
   pull_request:
 
 jobs:
-  # ── 1. SOPS encryption check ─────────────────────────────────────────────
   sops-check:
     name: Secrets encrypted
     runs-on: ubuntu-latest
@@ -18,13 +17,24 @@ jobs:
           fail=0
           for f in $(find k3s -name '*secrets.yaml'); do
             if grep -q 'stringData:' "$f" && ! grep -q 'ENC\[' "$f"; then
-              echo "PLAINTEXT SECRET: $f — encrypt with: sops --encrypt --in-place $f"
+              echo "PLAINTEXT SECRET: $f"
               fail=1
             fi
           done
           exit $fail
 
-  # ── 2. Kubernetes manifest validation ────────────────────────────────────
+  yaml-lint:
+    name: YAML lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install yamllint
+        run: pip install yamllint
+
+      - name: Lint all YAML files
+        run: yamllint -d relaxed .
+
   kubeconform:
     name: Validate manifests
     runs-on: ubuntu-latest
@@ -36,17 +46,17 @@ jobs:
           curl -sSL https://github.com/yannh/kubeconform/releases/latest/download/kubeconform-linux-amd64.tar.gz \
             | tar -xz -C /usr/local/bin kubeconform
 
-      - name: Run kubeconform
+      - name: Validate k8s manifests
         run: |
-          kubeconform \
+          # Only validate files that are actual k8s manifests (have apiVersion + kind)
+          # Helm values files (values*.yaml) do not have these and are skipped
+          grep -rl '^kind:' k3s/ | grep '\.yaml$' | grep -v 'values' | xargs kubeconform \
             -strict \
             -ignore-missing-schemas \
             -schema-location default \
             -schema-location 'https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/{{.Group}}/{{.ResourceKind}}_{{.ResourceAPIVersion}}.json' \
-            -summary \
-            k3s/
+            -summary
 
-  # ── 3. Trivy misconfiguration scan ───────────────────────────────────────
   trivy:
     name: Trivy config scan
     runs-on: ubuntu-latest
@@ -57,7 +67,7 @@ jobs:
         run: |
           curl -sSL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
 
-      - name: Scan manifests for misconfigurations
+      - name: Scan for misconfigurations
         run: |
           trivy config \
             --severity HIGH,CRITICAL \
