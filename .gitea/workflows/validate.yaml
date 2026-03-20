@@ -16,7 +16,7 @@ jobs:
       - name: Fail if any secrets.yaml is unencrypted
         run: |
           fail=0
-          for f in $(find infra -name '*secrets.yaml'); do
+          for f in $(find k3s -name '*secrets.yaml'); do
             if grep -q 'stringData:' "$f" && ! grep -q 'ENC\[' "$f"; then
               echo "PLAINTEXT SECRET: $f — encrypt with: sops --encrypt --in-place $f"
               fail=1
@@ -44,7 +44,7 @@ jobs:
             -schema-location default \
             -schema-location 'https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/{{.Group}}/{{.ResourceKind}}_{{.ResourceAPIVersion}}.json' \
             -summary \
-            infra/k3s/
+            k3s/
 
   # ── 3. Trivy misconfiguration scan ───────────────────────────────────────
   trivy:
@@ -62,5 +62,5 @@ jobs:
           trivy config \
             --severity HIGH,CRITICAL \
             --exit-code 1 \
-            --ignorefile infra/.trivyignore \
-            infra/k3s/
+            --ignorefile .trivyignore \
+            k3s/
