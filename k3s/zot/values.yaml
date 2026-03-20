@@ -45,6 +45,14 @@ configFiles:
       },
       "log": {
         "level": "info"
+      },
+      "extensions": {
+        "ui": {
+          "enable": true
+        },
+        "search": {
+          "enable": true
+        }
       }
     }
 
