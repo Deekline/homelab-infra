@@ -42,7 +42,7 @@ spec:
                   --instance "$GITEA_INSTANCE_URL" \
                   --token "$GITEA_RUNNER_REGISTRATION_TOKEN" \
                   --name "$GITEA_RUNNER_NAME" \
-                  --labels "ubuntu-latest:docker://ubuntu:22.04,ubuntu-22.04:docker://ubuntu:22.04"
+                  --labels "ubuntu-latest:docker://gitea/runner-images:ubuntu-latest,ubuntu-22.04:docker://gitea/runner-images:ubuntu-22.04"
               fi
               act_runner daemon --config /config/config.yaml
           env:
