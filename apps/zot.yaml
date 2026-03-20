@@ -15,6 +15,11 @@ spec:
     - repoURL: ssh://git@10.0.10.150:30009/deekline/homelab-infra.git
       targetRevision: HEAD
       ref: values
+    - repoURL: ssh://git@10.0.10.150:30009/deekline/homelab-infra.git
+      targetRevision: HEAD
+      path: k3s/zot
+      directory:
+        exclude: 'values.yaml'
   destination:
     server: https://kubernetes.default.svc
     namespace: zot
