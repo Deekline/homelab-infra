@@ -3,3 +3,11 @@
 # gitea-runner DinD sidecar requires privileged mode to run a Docker daemon.
 # Scoped to the gitea-runner namespace only. No other workloads are privileged.
 AVD-KSV-0017
+
+# gitea-runner containers cannot use readOnlyRootFilesystem:
+# - runner writes .runner file and temp files during job execution
+# - dind writes Docker daemon state to /var/lib/docker
+AVD-KSV-0014
+
+# gitea-runner runs as root — required by act_runner and DinD
+AVD-KSV-0118
