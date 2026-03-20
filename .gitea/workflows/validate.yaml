@@ -1,0 +1,69 @@
+name: Validate
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  # ── 1. SOPS encryption check ─────────────────────────────────────────────
+  # Catch plaintext secrets before they ever reach the cluster.
+  sops-check:
+    name: Secrets encrypted
+    runs-on: ubuntu-latest
+    container:
+      image: alpine:3.20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fail if any secrets.yaml is unencrypted
+        run: |
+          fail=0
+          for f in $(find infra -name '*secrets.yaml'); do
+            if grep -q 'stringData:' "$f" && ! grep -q 'ENC\[' "$f"; then
+              echo "PLAINTEXT SECRET: $f — encrypt with: sops --encrypt --in-place $f"
+              fail=1
+            fi
+          done
+          exit $fail
+
+  # ── 2. Kubernetes manifest validation ────────────────────────────────────
+  # Validates all k8s manifests against their API schemas.
+  # Unknown CRDs (SopsSecret, IngressRoute, etc.) are looked up from the
+  # community CRD catalog; remaining unknowns are skipped, not failed.
+  kubeconform:
+    name: Validate manifests
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/yannh/kubeconform:latest-alpine
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run kubeconform
+        run: |
+          kubeconform \
+            -strict \
+            -ignore-missing-schemas \
+            -schema-location default \
+            -schema-location 'https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/{{.Group}}/{{.ResourceKind}}_{{.ResourceAPIVersion}}.json' \
+            -summary \
+            infra/k3s/
+
+  # ── 3. Trivy misconfiguration scan ───────────────────────────────────────
+  # Scans all k8s manifests for security misconfigurations.
+  # Fails on HIGH or CRITICAL severity findings.
+  trivy:
+    name: Trivy config scan
+    runs-on: ubuntu-latest
+    container:
+      image: aquasec/trivy:latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Scan manifests for misconfigurations
+        run: |
+          trivy config \
+            --severity HIGH,CRITICAL \
+            --exit-code 1 \
+            --ignorefile infra/.trivyignore \
+            infra/k3s/

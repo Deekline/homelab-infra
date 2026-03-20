@@ -75,7 +75,7 @@ Deploy in this exact order (each depends on the previous):
 2. ✅ **ArgoCD** + sops-secrets-operator — GitOps controller + cluster-side SOPS decryption
 3. ✅ **Root App of Apps** — `kubectl apply -f apps/root.yaml` (one-time; after this all `apps/*.yaml` changes are Git-driven)
 4. ✅ **Secrets** — SopsSecret CRDs encrypted in Git, operator decrypting on cluster
-5. **NFS StorageClass** — points to TrueNAS `tank_fast` SSD pool
+5. ✅ **NFS StorageClass** — `nfs-db` + `nfs-monitoring`, provisioner in `nfs-provisioner` namespace. Requires `nfs-utils` (Arch) / `nfs-common` (Ubuntu) on every node.
 6. **CloudNativePG operator** — one isolated Postgres cluster per app
 7. **Dragonfly** — shared Redis-compatible cache
 8. **Authentik** — SSO before any user-facing services
