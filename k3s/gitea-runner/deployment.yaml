@@ -34,7 +34,7 @@ spec:
             - sh
             - -c
             - |
-              while [ ! -S /docker-sock/docker.sock ]; do sleep 1; done
+              while ! nc -z localhost 2375; do sleep 1; done
               # Register only if not already registered (persisted in PVC)
               if [ ! -f /data/.runner ]; then
                 act_runner register --no-interactive \
@@ -66,13 +66,9 @@ spec:
               mountPath: /data
             - name: cache
               mountPath: /cache
-            - name: docker-sock
-              mountPath: /docker-sock
 
         - name: dind
           image: docker:27-dind
-          args:
-            - --host=unix:///docker-sock/docker.sock
           env:
             - name: DOCKER_TLS_CERTDIR
               value: ""
@@ -81,8 +77,6 @@ spec:
           volumeMounts:
             - name: docker-storage
               mountPath: /var/lib/docker
-            - name: docker-sock
-              mountPath: /docker-sock
 
       volumes:
         - name: config
@@ -94,6 +88,4 @@ spec:
         - name: docker-storage
           emptyDir: {}
         - name: cache
-          emptyDir: {}
-        - name: docker-sock
           emptyDir: {}
