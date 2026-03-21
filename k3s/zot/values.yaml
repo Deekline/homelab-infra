@@ -18,7 +18,7 @@ pvc:
   accessModes:
     - ReadWriteOnce
   storage: 20Gi
-  storageClassName: nfs-db
+  storageClassName: nfs-artifactory
 
 mountSecret: false
 externalSecrets:
