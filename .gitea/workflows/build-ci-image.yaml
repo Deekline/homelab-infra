@@ -14,22 +14,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Build and push with kaniko
+      - name: Build and push with buildah
         env:
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
           REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
         run: |
-          mkdir -p /kaniko/.docker
-          printf '{"auths":{"registry.d-kline.org":{"auth":"%s"}}}' \
-            "$(printf '%s:%s' "$REGISTRY_USER" "$REGISTRY_PASSWORD" | base64 -w0)" \
-            > /kaniko/.docker/config.json
+          apt-get update -qq && apt-get install -y -qq buildah
 
-          curl -sSL \
-            https://github.com/GoogleContainerTools/kaniko/releases/download/v1.23.2/executor \
-            -o /usr/local/bin/executor
-          chmod +x /usr/local/bin/executor
+          buildah build -t registry.d-kline.org/ci-tools:latest ci-tools/
 
-          executor \
-            --context=dir://$(pwd)/ci-tools \
-            --dockerfile=ci-tools/Dockerfile \
-            --destination=registry.d-kline.org/ci-tools:latest
+          buildah push \
+            --creds "$REGISTRY_USER:$REGISTRY_PASSWORD" \
+            registry.d-kline.org/ci-tools:latest
