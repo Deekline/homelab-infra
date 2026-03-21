@@ -34,7 +34,7 @@ spec:
             - sh
             - -c
             - |
-              while ! nc -z localhost 2375; do sleep 1; done
+              while [ ! -S /docker-sock/docker.sock ]; do sleep 1; done
               # Register only if not already registered (persisted in PVC)
               if [ ! -f /data/.runner ]; then
                 act_runner register --no-interactive \
