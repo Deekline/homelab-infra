@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: authentik
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: ssh://git@10.0.10.150:30009/deekline/homelab-infra.git
+    targetRevision: HEAD
+    path: k3s/authentik
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: authentik
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

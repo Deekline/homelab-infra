@@ -1,0 +1,158 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: authentik-server
+  namespace: authentik
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: authentik-server
+  template:
+    metadata:
+      labels:
+        app: authentik-server
+    spec:
+      containers:
+        - name: authentik
+          image: ghcr.io/goauthentik/server:2025.8.1
+          command: ["server"]
+          ports:
+            - containerPort: 9000
+            - containerPort: 9443
+          env:
+            - name: AUTHENTIK_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: authentik-secret-key
+                  key: secret-key
+            - name: AUTHENTIK_REDIS__HOST
+              value: dragonfly.dragonfly.svc.cluster.local
+            - name: AUTHENTIK_REDIS__PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: dragonfly-secret
+                  key: password
+            - name: AUTHENTIK_POSTGRESQL__HOST
+              value: authentik-db-rw
+            - name: AUTHENTIK_POSTGRESQL__NAME
+              value: authentik
+            - name: AUTHENTIK_POSTGRESQL__USER
+              valueFrom:
+                secretKeyRef:
+                  name: authentik-db-credentials
+                  key: username
+            - name: AUTHENTIK_POSTGRESQL__PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: authentik-db-credentials
+                  key: password
+          resources:
+            requests:
+              cpu: 100m
+              memory: 512Mi
+            limits:
+              cpu: 500m
+              memory: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: authentik-worker
+  namespace: authentik
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: authentik-worker
+  template:
+    metadata:
+      labels:
+        app: authentik-worker
+    spec:
+      containers:
+        - name: authentik
+          image: ghcr.io/goauthentik/server:2025.8.1
+          command: ["worker"]
+          env:
+            - name: AUTHENTIK_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: authentik-secret-key
+                  key: secret-key
+            - name: AUTHENTIK_REDIS__HOST
+              value: dragonfly.dragonfly.svc.cluster.local
+            - name: AUTHENTIK_REDIS__PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: dragonfly-secret
+                  key: password
+            - name: AUTHENTIK_POSTGRESQL__HOST
+              value: authentik-db-rw
+            - name: AUTHENTIK_POSTGRESQL__NAME
+              value: authentik
+            - name: AUTHENTIK_POSTGRESQL__USER
+              valueFrom:
+                secretKeyRef:
+                  name: authentik-db-credentials
+                  key: username
+            - name: AUTHENTIK_POSTGRESQL__PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: authentik-db-credentials
+                  key: password
+            - name: AUTHENTIK_EMAIL__HOST
+              valueFrom:
+                secretKeyRef:
+                  name: authentik-smtp
+                  key: host
+            - name: AUTHENTIK_EMAIL__PORT
+              valueFrom:
+                secretKeyRef:
+                  name: authentik-smtp
+                  key: port
+            - name: AUTHENTIK_EMAIL__USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: authentik-smtp
+                  key: username
+            - name: AUTHENTIK_EMAIL__PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: authentik-smtp
+                  key: password
+            - name: AUTHENTIK_EMAIL__USE_TLS
+              valueFrom:
+                secretKeyRef:
+                  name: authentik-smtp
+                  key: use-tls
+            - name: AUTHENTIK_EMAIL__USE_SSL
+              valueFrom:
+                secretKeyRef:
+                  name: authentik-smtp
+                  key: use-ssl
+            - name: AUTHENTIK_EMAIL__FROM
+              valueFrom:
+                secretKeyRef:
+                  name: authentik-smtp
+                  key: from
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: authentik
+  namespace: authentik
+spec:
+  selector:
+    app: authentik-server
+  ports:
+    - name: http
+      port: 9000
+      targetPort: 9000
