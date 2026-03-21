@@ -1,0 +1,23 @@
+name: Build CI tools image
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ci-tools/Dockerfile
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build and push
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to registry
+        run: echo "${{ secrets.REGISTRY_PASSWORD }}" | docker login registry.d-kline.org -u "${{ secrets.REGISTRY_USER }}" --password-stdin
+
+      - name: Build and push
+        run: |
+          docker build -t registry.d-kline.org/ci-tools:latest ci-tools/
+          docker push registry.d-kline.org/ci-tools:latest

@@ -9,6 +9,11 @@ jobs:
   sops-check:
     name: Secrets encrypted
     runs-on: ubuntu-latest
+    container:
+      image: registry.d-kline.org/ci-tools:latest
+      credentials:
+        username: ${{ secrets.REGISTRY_USER }}
+        password: ${{ secrets.REGISTRY_PASSWORD }}
     steps:
       - uses: actions/checkout@v4
 
@@ -26,11 +31,13 @@ jobs:
   yaml-lint:
     name: YAML lint
     runs-on: ubuntu-latest
+    container:
+      image: registry.d-kline.org/ci-tools:latest
+      credentials:
+        username: ${{ secrets.REGISTRY_USER }}
+        password: ${{ secrets.REGISTRY_PASSWORD }}
     steps:
       - uses: actions/checkout@v4
-
-      - name: Install yamllint
-        run: apt-get update && apt-get install -y yamllint
 
       - name: Lint all YAML files
         run: yamllint -d relaxed .
@@ -38,18 +45,16 @@ jobs:
   kubeconform:
     name: Validate manifests
     runs-on: ubuntu-latest
+    container:
+      image: registry.d-kline.org/ci-tools:latest
+      credentials:
+        username: ${{ secrets.REGISTRY_USER }}
+        password: ${{ secrets.REGISTRY_PASSWORD }}
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install kubeconform
-        run: |
-          curl -sSL https://github.com/yannh/kubeconform/releases/latest/download/kubeconform-linux-amd64.tar.gz \
-            | tar -xz -C /usr/local/bin kubeconform
-
       - name: Validate k8s manifests
         run: |
-          # Only validate files that are actual k8s manifests (have apiVersion + kind)
-          # Helm values files (values*.yaml) do not have these and are skipped
           grep -rl '^kind:' k3s/ | grep '\.yaml$' | grep -v 'values' | xargs kubeconform \
             -strict \
             -ignore-missing-schemas \
@@ -60,12 +65,13 @@ jobs:
   trivy:
     name: Trivy config scan
     runs-on: ubuntu-latest
+    container:
+      image: registry.d-kline.org/ci-tools:latest
+      credentials:
+        username: ${{ secrets.REGISTRY_USER }}
+        password: ${{ secrets.REGISTRY_PASSWORD }}
     steps:
       - uses: actions/checkout@v4
-
-      - name: Install Trivy
-        run: |
-          curl -sSL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
 
       - name: Scan for misconfigurations
         run: |
