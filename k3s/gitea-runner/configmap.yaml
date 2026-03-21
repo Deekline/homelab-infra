@@ -17,4 +17,4 @@ data:
       enabled: true
       dir: /cache
     container:
-      options: -e DOCKER_HOST=unix:///var/run/docker.sock
+      options: -v /docker-sock/docker.sock:/var/run/docker.sock -e DOCKER_HOST=unix:///var/run/docker.sock

@@ -56,7 +56,7 @@ spec:
             - name: GITEA_RUNNER_NAME
               value: "k3s-runner"
             - name: DOCKER_HOST
-              value: unix:///docker-sock/docker.sock
+              value: tcp://localhost:2375
             - name: DOCKER_TLS_CERTDIR
               value: ""
           volumeMounts:
