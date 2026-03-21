@@ -56,7 +56,7 @@ spec:
             - name: GITEA_RUNNER_NAME
               value: "k3s-runner"
             - name: DOCKER_HOST
-              value: tcp://localhost:2375
+              value: unix:///docker-sock/docker.sock
             - name: DOCKER_TLS_CERTDIR
               value: ""
           volumeMounts:
@@ -66,9 +66,13 @@ spec:
               mountPath: /data
             - name: cache
               mountPath: /cache
+            - name: docker-sock
+              mountPath: /docker-sock
 
         - name: dind
           image: docker:27-dind
+          args:
+            - --host=unix:///docker-sock/docker.sock
           env:
             - name: DOCKER_TLS_CERTDIR
               value: ""
@@ -77,6 +81,8 @@ spec:
           volumeMounts:
             - name: docker-storage
               mountPath: /var/lib/docker
+            - name: docker-sock
+              mountPath: /docker-sock
 
       volumes:
         - name: config
@@ -88,4 +94,6 @@ spec:
         - name: docker-storage
           emptyDir: {}
         - name: cache
+          emptyDir: {}
+        - name: docker-sock
           emptyDir: {}

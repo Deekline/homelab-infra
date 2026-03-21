@@ -16,3 +16,5 @@ data:
     cache:
       enabled: true
       dir: /cache
+    container:
+      options: -v /docker-sock/docker.sock:/var/run/docker.sock

@@ -11,8 +11,6 @@ jobs:
   build:
     name: Build and push
     runs-on: ubuntu-latest
-    env:
-      DOCKER_HOST: tcp://localhost:2375
     steps:
       - uses: actions/checkout@v4
 
