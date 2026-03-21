@@ -17,4 +17,3 @@ spec:
           namespace: traefik
   tls:
     secretName: d-kline-org-tls
-    namespace: traefik
