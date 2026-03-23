@@ -26,7 +26,6 @@ singleBinary:
     storageClass: nfs-monitoring
     size: 20Gi
 
-# Disable microservices components
 backend:
   replicas: 0
 read:
@@ -34,11 +33,9 @@ read:
 write:
   replicas: 0
 
-# Disable gateway — internal cluster use only
 gateway:
   enabled: false
 
-# Reduce resource overhead
 monitoring:
   selfMonitoring:
     enabled: false

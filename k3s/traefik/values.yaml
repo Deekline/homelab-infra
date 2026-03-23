@@ -1,11 +1,6 @@
-# Traefik Helm Chart Values
-# Chart: traefik/traefik
-# Mirrors existing Docker Compose configuration from traefik/
-
 image:
   tag: "v3.6"
 
-# -- Replicate: security_opt: no-new-privileges
 securityContext:
   capabilities:
     drop: [ALL]
@@ -17,20 +12,17 @@ podSecurityContext:
   runAsUser: 65532
   runAsGroup: 65532
 
-# -- CrowdSec plugin (loaded but bouncer not active yet)
 experimental:
   plugins:
     crowdsec:
       moduleName: "github.com/maxlerebourg/crowdsec-bouncer-traefik-plugin"
       version: "v1.4.5"
 
-# -- Entrypoints (mirrors traefik.yml entryPoints)
 ports:
   web:
     port: 8000
     exposedPort: 80
     protocol: TCP
-    # HTTP -> HTTPS redirect
     http:
       redirections:
         entryPoint:
@@ -41,20 +33,17 @@ ports:
     port: 8443
     exposedPort: 443
     protocol: TCP
-    # Match existing zero-timeout transport config
     transport:
       respondingTimeouts:
         readTimeout: 0s
         writeTimeout: 0s
         idleTimeout: 0s
 
-# -- Service type: LoadBalancer for bare-metal k3s (uses ServiceLB / klipper)
 service:
   type: LoadBalancer
   spec:
     externalTrafficPolicy: Local
 
-# -- Kubernetes providers (replaces Docker provider)
 providers:
   kubernetesCRD:
     enabled: true
@@ -64,23 +53,20 @@ providers:
     publishedService:
       enabled: true
 
-# -- API & Dashboard (mirrors api section)
 ingressRoute:
   dashboard:
-    enabled: false  # We'll create our own IngressRoute with middlewares
+    enabled: false
 
 api:
   dashboard: true
-  insecure: false  # Secure it via IngressRoute + middlewares instead
+  insecure: false
 
-# -- Prometheus metrics (mirrors metrics section)
 metrics:
   prometheus:
     addEntryPointsLabels: true
     addRoutersLabels: true
     addServicesLabels: true
 
-# -- Logging (mirrors log section)
 logs:
   general:
     level: INFO
@@ -95,12 +81,9 @@ logs:
       headers:
         defaultmode: keep
 
-# -- TLS is handled by cert-manager, not Traefik ACME
-# Cloudflare credentials are in the cert-manager ClusterIssuer secret instead
 persistence:
   enabled: false
 
-# -- Resource requests
 resources:
   requests:
     cpu: 100m

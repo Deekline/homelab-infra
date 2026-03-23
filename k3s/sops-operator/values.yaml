@@ -1,7 +1,3 @@
-# sops-secrets-operator Helm values
-# Operator decrypts SopsSecret CRDs on the cluster using the age private key.
-# ArgoCD applies the encrypted SopsSecret CRDs — no decryption plugin needed.
-
 secretsAsEnvVars:
   - name: SOPS_AGE_KEY
     secretName: sops-age-key

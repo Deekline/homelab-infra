@@ -1,8 +1,3 @@
-# cert-manager resources for TLS certificate provisioning
-# Requires cert-manager to be installed:
-#   helm repo add jetstack https://charts.jetstack.io
-#   helm repo update
-#   helm install cert-manager jetstack/cert-manager -n cert-manager --create-namespace --set crds.enabled=true
 ---
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
@@ -20,4 +15,3 @@ spec:
             apiTokenSecretRef:
               name: cloudflare-credentials
               key: api-token
-
