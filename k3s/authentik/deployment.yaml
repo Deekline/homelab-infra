@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: authentik
-          image: ghcr.io/goauthentik/server:2025.8.1
+          image: ghcr.io/goauthentik/server:2026.2.1
           args: ["server"]
           ports:
             - containerPort: 9000
@@ -26,13 +26,6 @@ spec:
                 secretKeyRef:
                   name: authentik-secret-key
                   key: secret-key
-            - name: AUTHENTIK_REDIS__HOST
-              value: dragonfly.dragonfly.svc.cluster.local
-            - name: AUTHENTIK_REDIS__PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: dragonfly-secret
-                  key: password
             - name: AUTHENTIK_POSTGRESQL__HOST
               value: authentik-db-rw
             - name: AUTHENTIK_POSTGRESQL__NAME
@@ -72,7 +65,7 @@ spec:
     spec:
       containers:
         - name: authentik
-          image: ghcr.io/goauthentik/server:2025.8.1
+          image: ghcr.io/goauthentik/server:2026.2.1
           args: ["worker"]
           env:
             - name: AUTHENTIK_SECRET_KEY
@@ -80,13 +73,6 @@ spec:
                 secretKeyRef:
                   name: authentik-secret-key
                   key: secret-key
-            - name: AUTHENTIK_REDIS__HOST
-              value: dragonfly.dragonfly.svc.cluster.local
-            - name: AUTHENTIK_REDIS__PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: dragonfly-secret
-                  key: password
             - name: AUTHENTIK_POSTGRESQL__HOST
               value: authentik-db-rw
             - name: AUTHENTIK_POSTGRESQL__NAME
