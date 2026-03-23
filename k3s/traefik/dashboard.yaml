@@ -15,6 +15,7 @@ spec:
       middlewares:
         - name: local-only
         - name: authentik
+          namespace: traefik
         - name: security-headers
       services:
         - name: api@internal
