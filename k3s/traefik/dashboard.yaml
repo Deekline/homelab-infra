@@ -14,7 +14,7 @@ spec:
       kind: Rule
       middlewares:
         - name: local-only
-        - name: traefik-auth
+        - name: authentik
         - name: security-headers
       services:
         - name: api@internal
