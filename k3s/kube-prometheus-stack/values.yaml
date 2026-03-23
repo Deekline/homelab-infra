@@ -1,4 +1,7 @@
 grafana:
+  initChownData:
+    enabled: false
+
   admin:
     existingSecret: grafana-admin-credentials
     userKey: admin-user
