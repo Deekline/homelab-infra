@@ -1,0 +1,40 @@
+container_runtime: containerd
+
+lapi:
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      memory: 256Mi
+  persistentVolume:
+    config:
+      enabled: true
+      storageClassName: local-path
+      size: 100Mi
+    data:
+      enabled: true
+      storageClassName: local-path
+      size: 1Gi
+  env:
+    - name: ENROLL_KEY
+      valueFrom:
+        secretKeyRef:
+          name: crowdsec-secrets
+          key: enrollKey
+          optional: true
+
+agent:
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      memory: 128Mi
+  env:
+    - name: COLLECTIONS
+      value: "crowdsecurity/traefik crowdsecurity/linux"
+  acquisition:
+    - namespace: traefik
+      podName: traefik-*
+      program: traefik

@@ -43,6 +43,23 @@ spec:
 apiVersion: traefik.io/v1alpha1
 kind: Middleware
 metadata:
+  name: crowdsec-bouncer
+  namespace: traefik
+spec:
+  plugin:
+    crowdsec:
+      crowdsecLapiScheme: http
+      crowdsecLapiHost: crowdsec-service.crowdsec.svc.cluster.local:8080
+      crowdsecLapiKeyFile: /etc/crowdsec/key
+      crowdsecMode: stream
+      updateIntervalSeconds: 15
+      defaultDecisionSeconds: 60
+      httpTimeoutSeconds: 10
+
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
   name: authentik
   namespace: traefik
 spec:

@@ -81,6 +81,16 @@ logs:
       headers:
         defaultmode: keep
 
+volumes:
+  - name: crowdsec-bouncer-key
+    secret:
+      secretName: crowdsec-bouncer-key
+
+additionalVolumeMounts:
+  - name: crowdsec-bouncer-key
+    mountPath: /etc/crowdsec
+    readOnly: true
+
 persistence:
   enabled: false
 
