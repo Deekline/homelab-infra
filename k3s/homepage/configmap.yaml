@@ -6,7 +6,7 @@ metadata:
 data:
   settings.yaml: |
     providers:
-      openweathermap: {{HOMEPAGE_VAR_OPENWEATHERMAP_KEY}}
+      openweathermap: "{{HOMEPAGE_VAR_OPENWEATHERMAP_KEY}}"
 
     layout:
       Calendar:
@@ -94,8 +94,8 @@ data:
             widget:
               type: proxmox
               url: https://10.0.10.2:8006
-              username: {{HOMEPAGE_VAR_PROXMOX_USER}}
-              password: {{HOMEPAGE_VAR_PROXMOX_PASS}}
+              username: "{{HOMEPAGE_VAR_PROXMOX_USER}}"
+              password: "{{HOMEPAGE_VAR_PROXMOX_PASS}}"
         - OPNsense:
             icon: opnsense.png
             href: https://10.0.10.1
@@ -103,8 +103,8 @@ data:
             widget:
               type: opnsense
               url: https://10.0.10.1
-              username: {{HOMEPAGE_VAR_OPNSENSE_USER}}
-              password: {{HOMEPAGE_VAR_OPNSENSE_PASS}}
+              username: "{{HOMEPAGE_VAR_OPNSENSE_USER}}"
+              password: "{{HOMEPAGE_VAR_OPNSENSE_PASS}}"
         - Traefik:
             icon: traefik.png
             description: Reverse Proxy
@@ -121,7 +121,7 @@ data:
             widget:
               type: authentik
               url: http://authentik.authentik.svc.cluster.local:9000
-              key: {{HOMEPAGE_VAR_AUTHENTIK_KEY}}
+              key: "{{HOMEPAGE_VAR_AUTHENTIK_KEY}}"
               version: 2
         - Grafana:
             icon: grafana.png
@@ -131,5 +131,5 @@ data:
               type: grafana
               version: 2
               url: http://grafana.monitoring.svc.cluster.local:3000
-              username: {{HOMEPAGE_VAR_GRAFANA_USER}}
-              password: {{HOMEPAGE_VAR_GRAFANA_PASS}}
+              username: "{{HOMEPAGE_VAR_GRAFANA_USER}}"
+              password: "{{HOMEPAGE_VAR_GRAFANA_PASS}}"
