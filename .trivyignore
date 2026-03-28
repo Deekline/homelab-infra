@@ -11,3 +11,7 @@ AVD-KSV-0014
 
 # gitea-runner runs as root — required by act_runner and DinD
 AVD-KSV-0118
+
+# homepage configmap contains {{HOMEPAGE_VAR_*}} template placeholders, not real secrets.
+# Actual secrets are in a SopsSecret and injected at runtime via envFrom.
+AVD-KSV-0109
