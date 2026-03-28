@@ -129,5 +129,7 @@ data:
             description: Grafana Dashboard
             widget:
               type: grafana
+              version: 2
               url: http://monitoring-grafana.monitoring.svc.cluster.local:80
-              apikey: "{{HOMEPAGE_VAR_GRAFANA_TOKEN}}"
+              username: "{{HOMEPAGE_VAR_GRAFANA_USER}}"
+              password: "{{HOMEPAGE_VAR_GRAFANA_PASS}}"
