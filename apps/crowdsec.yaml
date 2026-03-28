@@ -24,3 +24,11 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
+  ignoreDifferences:
+    - group: ""
+      kind: Secret
+      name: crowdsec-lapi-secrets
+      namespace: crowdsec
+      jsonPointers:
+        - /data/csLapiSecret
+        - /data/registrationToken
