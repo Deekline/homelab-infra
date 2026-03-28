@@ -1,0 +1,127 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: homepage-config
+  namespace: homepage
+data:
+  settings.yaml: |
+    providers:
+      openweathermap: {{HOMEPAGE_VAR_OPENWEATHERMAP_KEY}}
+
+    layout:
+      Calendar:
+        columns: 2
+      Virtualization & Network:
+        columns: 2
+      Services:
+        style: row
+        columns: 4
+      Arr Stack:
+        style: row
+        columns: 4
+
+  widgets.yaml: |
+    - resources:
+        cpu: true
+        memory: true
+        disk: /
+
+    - search:
+        provider: google
+        target: _blank
+
+    - datetime:
+        text_size: xl
+        format:
+          dateStyle: long
+          timeStyle: short
+          hourCycle: h23
+
+    - openweathermap:
+        label: Wroclaw
+        units: metric
+        provider: openweathermap
+        cache: 5
+        format:
+          maximumFractionDigits: 1
+
+  bookmarks.yaml: |
+    - Developer:
+        - Github:
+            - abbr: GH
+              href: https://github.com/
+
+    - Social:
+        - Reddit:
+            - abbr: RE
+              href: https://reddit.com/
+            - abbr: HB
+              href: https://www.reddit.com/r/homelab/
+            - abbr: HS
+              href: https://www.reddit.com/r/HomeServer/
+
+    - Entertainment:
+        - YouTube:
+            - abbr: YT
+              href: https://youtube.com/
+
+  kubernetes.yaml: |
+    mode: cluster
+
+  services.yaml: |
+    - Calendar:
+        - Calendar:
+            widget:
+              type: calendar
+              view: monthly
+              maxEvents: 10
+              showTime: true
+              timezone: Europe/Warsaw
+
+    - Virtualization & Network:
+        - Proxmox:
+            icon: proxmox.png
+            description: Proxmox Virtual Environment
+            href: https://10.0.10.2:8006
+            widget:
+              type: proxmox
+              url: https://10.0.10.2:8006
+              username: {{HOMEPAGE_VAR_PROXMOX_USER}}
+              password: {{HOMEPAGE_VAR_PROXMOX_PASS}}
+        - OPNsense:
+            icon: opnsense.png
+            href: https://10.0.10.1
+            description: Firewall & Router
+            widget:
+              type: opnsense
+              url: https://10.0.10.1
+              username: {{HOMEPAGE_VAR_OPNSENSE_USER}}
+              password: {{HOMEPAGE_VAR_OPNSENSE_PASS}}
+        - Traefik:
+            icon: traefik.png
+            description: Reverse Proxy
+            href: https://traefik.d-kline.org
+            widget:
+              type: traefik
+              url: http://traefik.traefik.svc.cluster.local:9000
+
+    - Services:
+        - Authentik:
+            icon: authentik.png
+            href: https://auth.d-kline.org
+            description: SSO
+            widget:
+              type: authentik
+              url: http://authentik.authentik.svc.cluster.local:9000
+              key: {{HOMEPAGE_VAR_AUTHENTIK_KEY}}
+              version: 2
+        - Grafana:
+            icon: grafana.png
+            href: https://grafana.d-kline.org
+            description: Grafana Dashboard
+            widget:
+              type: grafana
+              version: 2
+              url: http://grafana.monitoring.svc.cluster.local:3000
+              username: {{HOMEPAGE_VAR_GRAFANA_USER}}
+              password: {{HOMEPAGE_VAR_GRAFANA_PASS}}
