@@ -4,24 +4,28 @@ kind: ServiceAccount
 metadata:
   name: homepage
   namespace: homepage
+  labels:
+    app.kubernetes.io/name: homepage
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   name: homepage
+  labels:
+    app.kubernetes.io/name: homepage
 rules:
   - apiGroups: [""]
-    resources: ["namespaces", "pods", "nodes", "services", "endpoints"]
+    resources: ["namespaces", "pods", "nodes"]
     verbs: ["get", "list"]
-  - apiGroups: ["apps"]
-    resources: ["deployments", "replicasets", "statefulsets", "daemonsets"]
-    verbs: ["get", "list"]
-  - apiGroups: ["networking.k8s.io"]
+  - apiGroups: ["extensions", "networking.k8s.io"]
     resources: ["ingresses"]
     verbs: ["get", "list"]
   - apiGroups: ["traefik.io"]
     resources: ["ingressroutes"]
+    verbs: ["get", "list"]
+  - apiGroups: ["gateway.networking.k8s.io"]
+    resources: ["httproutes", "gateways"]
     verbs: ["get", "list"]
   - apiGroups: ["metrics.k8s.io"]
     resources: ["nodes", "pods"]
@@ -32,6 +36,8 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   name: homepage
+  labels:
+    app.kubernetes.io/name: homepage
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
@@ -47,64 +53,85 @@ kind: Deployment
 metadata:
   name: homepage
   namespace: homepage
+  labels:
+    app.kubernetes.io/name: homepage
 spec:
+  revisionHistoryLimit: 3
   replicas: 1
+  strategy:
+    type: RollingUpdate
   selector:
     matchLabels:
-      app: homepage
+      app.kubernetes.io/name: homepage
   template:
     metadata:
       labels:
-        app: homepage
+        app.kubernetes.io/name: homepage
     spec:
       serviceAccountName: homepage
-      securityContext:
-        runAsNonRoot: true
-        runAsUser: 1000
-        runAsGroup: 1000
+      automountServiceAccountToken: true
+      dnsPolicy: ClusterFirst
+      enableServiceLinks: true
       containers:
         - name: homepage
-          image: ghcr.io/gethomepage/homepage:v1.3.2
+          image: ghcr.io/gethomepage/homepage:latest
+          imagePullPolicy: Always
           ports:
-            - containerPort: 3000
+            - name: http
+              containerPort: 3000
+              protocol: TCP
           env:
+            - name: MY_POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
             - name: HOMEPAGE_ALLOWED_HOSTS
-              value: "homepage.d-kline.org"
+              value: "$(MY_POD_IP):3000,homepage.d-kline.org"
           envFrom:
             - secretRef:
                 name: homepage-secrets
-          volumeMounts:
-            - name: config
-              mountPath: /app/config/settings.yaml
-              subPath: settings.yaml
-            - name: config
-              mountPath: /app/config/widgets.yaml
-              subPath: widgets.yaml
-            - name: config
-              mountPath: /app/config/services.yaml
-              subPath: services.yaml
-            - name: config
-              mountPath: /app/config/bookmarks.yaml
-              subPath: bookmarks.yaml
-            - name: config
-              mountPath: /app/config/kubernetes.yaml
-              subPath: kubernetes.yaml
-            - name: config
-              mountPath: /app/config/custom.css
-              subPath: custom.css
-            - name: config
-              mountPath: /app/config/custom.js
-              subPath: custom.js
-            - name: config
-              mountPath: /app/config/docker.yaml
-              subPath: docker.yaml
-            - name: logs
-              mountPath: /app/config/logs
+          livenessProbe:
+            httpGet:
+              path: /api/healthcheck
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 15
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
               drop: [ALL]
-            readOnlyRootFilesystem: false
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+            seccompProfile:
+              type: RuntimeDefault
+          volumeMounts:
+            - name: homepage-config
+              mountPath: /app/config/custom.js
+              subPath: custom.js
+            - name: homepage-config
+              mountPath: /app/config/custom.css
+              subPath: custom.css
+            - name: homepage-config
+              mountPath: /app/config/bookmarks.yaml
+              subPath: bookmarks.yaml
+            - name: homepage-config
+              mountPath: /app/config/docker.yaml
+              subPath: docker.yaml
+            - name: homepage-config
+              mountPath: /app/config/kubernetes.yaml
+              subPath: kubernetes.yaml
+            - name: homepage-config
+              mountPath: /app/config/services.yaml
+              subPath: services.yaml
+            - name: homepage-config
+              mountPath: /app/config/settings.yaml
+              subPath: settings.yaml
+            - name: homepage-config
+              mountPath: /app/config/widgets.yaml
+              subPath: widgets.yaml
+            - name: logs
+              mountPath: /app/config/logs
           resources:
             requests:
               cpu: 50m
@@ -112,7 +139,7 @@ spec:
             limits:
               memory: 256Mi
       volumes:
-        - name: config
+        - name: homepage-config
           configMap:
             name: homepage-config
         - name: logs
@@ -124,9 +151,12 @@ kind: Service
 metadata:
   name: homepage
   namespace: homepage
+  labels:
+    app.kubernetes.io/name: homepage
 spec:
   selector:
-    app: homepage
+    app.kubernetes.io/name: homepage
   ports:
-    - port: 3000
-      targetPort: 3000
+    - name: http
+      port: 3000
+      targetPort: http
