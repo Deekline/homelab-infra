@@ -72,6 +72,8 @@ data:
 
   custom.js: ""
 
+  docker.yaml: ""
+
   services.yaml: |
     - Calendar:
         - Calendar:

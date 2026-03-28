@@ -95,6 +95,9 @@ spec:
             - name: config
               mountPath: /app/config/custom.js
               subPath: custom.js
+            - name: config
+              mountPath: /app/config/docker.yaml
+              subPath: docker.yaml
             - name: logs
               mountPath: /app/config/logs
           securityContext:
