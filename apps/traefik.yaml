@@ -5,10 +5,19 @@ metadata:
   namespace: argocd
 spec:
   project: default
-  source:
-    repoURL: ssh://git@10.0.10.150:30009/deekline/homelab-infra.git
-    targetRevision: HEAD
-    path: k3s/traefik
+  sources:
+    - repoURL: https://helm.traefik.io/traefik
+      chart: traefik
+      targetRevision: "v3.6"
+      helm:
+        valueFiles:
+          - $values/k3s/traefik/values.yaml
+    - repoURL: ssh://git@10.0.10.150:30009/deekline/homelab-infra.git
+      targetRevision: HEAD
+      ref: values
+    - repoURL: ssh://git@10.0.10.150:30009/deekline/homelab-infra.git
+      targetRevision: HEAD
+      path: k3s/traefik/config
   destination:
     server: https://kubernetes.default.svc
     namespace: traefik
