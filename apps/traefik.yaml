@@ -8,7 +8,7 @@ spec:
   sources:
     - repoURL: https://helm.traefik.io/traefik
       chart: traefik
-      targetRevision: "v3.6"
+      targetRevision: "39.0.5"
       helm:
         valueFiles:
           - $values/k3s/traefik/values.yaml
