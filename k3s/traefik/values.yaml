@@ -59,7 +59,7 @@ ingressRoute:
 
 api:
   dashboard: true
-  insecure: false
+  insecure: true
 
 metrics:
   prometheus:
