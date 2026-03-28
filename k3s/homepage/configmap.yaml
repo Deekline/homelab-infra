@@ -74,6 +74,8 @@ data:
 
   docker.yaml: ""
 
+  proxmox.yaml: ""
+
   services.yaml: |
     - Calendar:
         - Calendar:
