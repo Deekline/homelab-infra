@@ -68,6 +68,10 @@ data:
   kubernetes.yaml: |
     mode: cluster
 
+  custom.css: ""
+
+  custom.js: ""
+
   services.yaml: |
     - Calendar:
         - Calendar:
