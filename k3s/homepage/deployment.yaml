@@ -67,6 +67,8 @@ spec:
     metadata:
       labels:
         app.kubernetes.io/name: homepage
+      annotations:
+        reloader.stakater.com/auto: "true"
     spec:
       serviceAccountName: homepage
       automountServiceAccountToken: true
