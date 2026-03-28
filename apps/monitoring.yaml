@@ -14,7 +14,7 @@ spec:
         valueFiles:
           - $values/k3s/kube-prometheus-stack/values.yaml
     - repoURL: ssh://git@10.0.10.150:30009/deekline/homelab-infra.git
-      targetRevision: HEAD
+      targetRevision: deploy
       ref: values
   destination:
     server: https://kubernetes.default.svc

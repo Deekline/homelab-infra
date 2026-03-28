@@ -7,7 +7,7 @@ spec:
   project: default
   source:
     repoURL: ssh://git@10.0.10.150:30009/deekline/homelab-infra.git
-    targetRevision: HEAD
+    targetRevision: deploy
     path: apps
     directory:
       exclude: 'root.yaml'

@@ -60,3 +60,18 @@ jobs:
             --exit-code 1 \
             --ignorefile .trivyignore \
             k3s/
+
+  promote:
+    name: Promote to deploy
+    runs-on: ubuntu-latest
+    needs: [sops-check, kubeconform, trivy]
+    if: github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITEA_TOKEN }}
+
+      - name: Push to deploy branch
+        run: |
+          git push origin HEAD:deploy
