@@ -1,0 +1,45 @@
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+    name: gotify
+    namespace: gotify
+spec:
+    entryPoints:
+        - websecure
+    routes:
+        - kind: Rule
+          match: Host(`gotify.d-kline.org`)
+          middlewares:
+              - name: local-only
+                namespace: traefik
+              - name: security-headers
+                namespace: traefik
+          services:
+              - name: gotify
+                port: 80
+    tls:
+        secretName: d-kline-org-tls
+
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+    name: igotify
+    namespace: gotify
+spec:
+    entryPoints:
+        - websecure
+    routes:
+        - kind: Rule
+          match: Host(`igotify.d-kline.org`)
+          middlewares:
+              - name: local-only
+                namespace: traefik
+              - name: security-headers
+                namespace: traefik
+          services:
+              - name: igotify
+                port: 8080
+    tls:
+        secretName: d-kline-org-tls
