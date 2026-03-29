@@ -59,9 +59,13 @@ alertmanager:
       group_wait: 30s
       group_interval: 5m
       repeat_interval: 12h
-      receiver: "null"
+      receiver: gotify
     receivers:
       - name: "null"
+      - name: gotify
+        webhook_configs:
+          - url: http://alertmanager-gotify-bridge.monitoring.svc.cluster.local:8080/gotify_webhook
+            send_resolved: true
 
 nodeExporter:
   enabled: true
