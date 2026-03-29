@@ -44,6 +44,8 @@ spec:
             labels:
                 app.kubernetes.io/name: gotify
         spec:
+            securityContext:
+                fsGroup: 1000
             containers:
                 - name: gotify
                   image: gotify/server:latest
