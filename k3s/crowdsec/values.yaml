@@ -23,6 +23,29 @@ lapi:
           name: crowdsec-secrets
           key: enrollKey
           optional: true
+  extraVolumes:
+    - name: gotify-notifier
+      secret:
+        secretName: crowdsec-secrets
+        items:
+          - key: gotify-http.yaml
+            path: gotify-http.yaml
+  extraVolumeMounts:
+    - name: gotify-notifier
+      mountPath: /etc/crowdsec/notifications/gotify-http.yaml
+      subPath: gotify-http.yaml
+
+config:
+  profiles.yaml: |
+    name: default_ip_remediation
+    filters:
+      - Alert.Remediation == true && Alert.GetScope() == "Ip"
+    decisions:
+      - type: ban
+        duration: 4h
+    notifications:
+      - http_gotify
+    on_success: break
 
 agent:
   resources:
