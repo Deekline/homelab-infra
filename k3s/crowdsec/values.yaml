@@ -34,6 +34,9 @@ lapi:
     - name: gotify-notifier
       mountPath: /etc/crowdsec/notifications/gotify-http.yaml
       subPath: gotify-http.yaml
+    - name: crowdsec-profiles-volume
+      mountPath: /etc/crowdsec/profiles.yaml
+      subPath: profiles.yaml
 
 config:
   profiles.yaml: |
