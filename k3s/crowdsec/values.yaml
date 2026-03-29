@@ -10,11 +10,11 @@ lapi:
   persistentVolume:
     config:
       enabled: true
-      storageClassName: nfs-db
+      storageClassName: local-path
       size: 100Mi
     data:
       enabled: true
-      storageClassName: nfs-db
+      storageClassName: local-path
       size: 1Gi
   env:
     - name: ENROLL_KEY
