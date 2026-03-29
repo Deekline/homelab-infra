@@ -10,11 +10,11 @@ lapi:
   persistentVolume:
     config:
       enabled: true
-      storageClassName: local-path
+      storageClassName: longhorn
       size: 100Mi
     data:
       enabled: true
-      storageClassName: local-path
+      storageClassName: longhorn
       size: 1Gi
   env:
     - name: ENROLL_KEY

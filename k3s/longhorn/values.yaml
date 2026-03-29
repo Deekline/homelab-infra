@@ -1,0 +1,15 @@
+defaultSettings:
+  defaultDataPath: /var/lib/longhorn
+  defaultReplicaCount: 2
+  orphanAutoDeletion: true
+  recurringJobSelector: []
+
+longhornUI:
+  replicas: 1
+
+ingress:
+  enabled: false
+
+persistence:
+  defaultClass: false
+  defaultClassReplicaCount: 2
