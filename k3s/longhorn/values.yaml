@@ -3,7 +3,7 @@ preUpgradeChecker:
 
 defaultSettings:
   defaultDataPath: /var/lib/longhorn
-  defaultReplicaCount: 2
+  defaultReplicaCount: 1
   orphanAutoDeletion: true
   recurringJobSelector: []
 
@@ -15,4 +15,4 @@ ingress:
 
 persistence:
   defaultClass: false
-  defaultClassReplicaCount: 2
+  defaultClassReplicaCount: 1
