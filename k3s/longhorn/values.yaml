@@ -1,3 +1,6 @@
+preUpgradeChecker:
+  jobEnabled: false
+
 defaultSettings:
   defaultDataPath: /var/lib/longhorn
   defaultReplicaCount: 2
