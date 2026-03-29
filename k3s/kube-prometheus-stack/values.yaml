@@ -15,38 +15,12 @@ grafana:
   ingress:
     enabled: false
 
-  extraEnvFrom:
-    - secretRef:
-        name: grafana-gotify-token
-
   additionalDataSources:
     - name: Loki
       type: loki
       url: http://loki.monitoring.svc.cluster.local:3100
       access: proxy
       isDefault: false
-
-  alerting:
-    notificationTemplates.yaml:
-      apiVersion: 1
-      templates:
-        - name: gotify.payload
-          template: |-
-            {{ define "gotify.payload" -}}
-            {"title":"Grafana [{{ .Status }}]","message":"{{ range .Alerts }}[{{ .Status }}] {{ .Labels.alertname }} {{ end }}","priority":5}
-            {{- end }}
-    contactpoints.yaml:
-      apiVersion: 1
-      contactPoints:
-        - orgId: 1
-          name: Gotify
-          receivers:
-            - uid: gotify
-              type: webhook
-              settings:
-                url: https://gotify.d-kline.org/message?token=${GF_GOTIFY_TOKEN}
-                httpMethod: POST
-                message: '{{ template "gotify.payload" . }}'
 
 prometheus:
   prometheusSpec:
