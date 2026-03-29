@@ -61,6 +61,23 @@ jobs:
             --ignorefile .trivyignore \
             k3s/
 
+  notify-failure:
+    name: Notify failure
+    runs-on: ubuntu-latest
+    needs: [sops-check, kubeconform, trivy]
+    if: failure()
+    steps:
+      - name: Send Gotify notification
+        run: |
+          curl -s -X POST "${{ secrets.GOTIFY_URL }}/message" \
+            -H "X-Gotify-Key: ${{ secrets.GOTIFY_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"title\": \"CI failed — homelab-infra\",
+              \"message\": \"Pipeline failed on branch ${{ github.ref_name }} (${{ github.sha }})\nTrigger: ${{ github.event_name }}\",
+              \"priority\": 7
+            }"
+
   promote:
     name: Promote to deploy
     runs-on: ubuntu-latest
