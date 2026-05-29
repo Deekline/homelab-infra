@@ -1,0 +1,23 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: immich-db
+  namespace: immich
+spec:
+  instances: 1
+  imageName: ghcr.io/immich-app/postgres:16-vectorchord0.4.3-pgvectors0.2.0
+
+  postgresql:
+    parameters:
+      shared_preload_libraries: "vectors.so"
+
+  bootstrap:
+    initdb:
+      database: immich
+      owner: immich
+      secret:
+        name: immich-db-credentials
+
+  storage:
+    size: 10Gi
+    storageClass: nfs-db
