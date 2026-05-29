@@ -91,4 +91,4 @@ jobs:
 
       - name: Push to deploy branch
         run: |
-          git push origin HEAD:deploy
+          git push --force origin HEAD:deploy
