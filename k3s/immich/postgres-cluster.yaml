@@ -7,6 +7,10 @@ spec:
   instances: 1
   imageName: ghcr.io/gabe565/cloudnativepg-vecto-rs:16-vectors0.2.0
 
+  postgresql:
+    shared_preload_libraries:
+      - vectors.so
+
   bootstrap:
     initdb:
       database: immich
