@@ -13,6 +13,10 @@ spec:
       labels:
         app: immich-server
     spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 3004
+        fsGroup: 3004
       containers:
         - name: immich-server
           image: ghcr.io/immich-app/immich-server:release
@@ -86,6 +90,10 @@ spec:
       labels:
         app: immich-machine-learning
     spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 3004
+        fsGroup: 3004
       containers:
         - name: immich-machine-learning
           image: ghcr.io/immich-app/immich-machine-learning:release
