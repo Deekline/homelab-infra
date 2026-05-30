@@ -66,8 +66,6 @@ spec:
             requests:
               cpu: 100m
               memory: 512Mi
-            limits:
-              memory: 8Gi
           securityContext:
             allowPrivilegeEscalation: false
       volumes:
@@ -116,8 +114,6 @@ spec:
             requests:
               cpu: 100m
               memory: 512Mi
-            limits:
-              memory: 4Gi
           securityContext:
             allowPrivilegeEscalation: false
       volumes:
