@@ -58,7 +58,7 @@ spec:
             - name: PAPERLESS_TIKA_ENDPOINT
               value: http://tika:9998
             - name: PAPERLESS_OCR_LANGUAGE
-              value: eng
+              value: eng+pol+ukr
             - name: PAPERLESS_CSRF_TRUSTED_ORIGINS
               value: https://paperless.d-kline.org
             - name: PAPERLESS_TIME_ZONE
