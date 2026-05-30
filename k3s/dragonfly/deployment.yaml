@@ -15,12 +15,12 @@ spec:
     spec:
       containers:
         - name: dragonfly
-          image: docker.dragonflydb.io/dragonflydb/dragonfly:v1.25.0
+          image: docker.dragonflydb.io/dragonflydb/dragonfly:v1.38.1
           ports:
             - containerPort: 6379
           args:
             - --requirepass=$(DRAGONFLY_PASSWORD)
-            - --default_lua_flags=allow-undeclared-keys
+            - --default_lua_flags=allow-undeclared-keys disable-atomicity
           env:
             - name: DRAGONFLY_PASSWORD
               valueFrom:
