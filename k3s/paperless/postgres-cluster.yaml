@@ -16,4 +16,4 @@ spec:
 
   storage:
     size: 5Gi
-    storageClassName: longhorn
+    storageClass: longhorn
