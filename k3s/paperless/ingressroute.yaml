@@ -10,7 +10,7 @@ spec:
     - match: Host(`paperless.d-kline.org`)
       kind: Rule
       services:
-        - name: paperless
+        - name: paperless-web
           port: 8000
       middlewares:
         - name: local-only
