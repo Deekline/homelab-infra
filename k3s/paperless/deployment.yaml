@@ -61,6 +61,8 @@ spec:
               value: eng+pol+ukr
             - name: PAPERLESS_OCR_LANGUAGES
               value: pol ukr
+            - name: PAPERLESS_CONSUMER_POLLING
+              value: "10"
             - name: PAPERLESS_CSRF_TRUSTED_ORIGINS
               value: https://paperless.d-kline.org
             - name: PAPERLESS_TIME_ZONE
