@@ -1,0 +1,21 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: paperless
+  namespace: paperless
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`paperless.d-kline.org`)
+      kind: Rule
+      services:
+        - name: paperless
+          port: 8000
+      middlewares:
+        - name: local-only
+          namespace: traefik
+        - name: security-headers
+          namespace: traefik
+  tls:
+    secretName: d-kline-org-tls
