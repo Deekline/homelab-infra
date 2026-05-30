@@ -21,7 +21,7 @@ spec:
         fsGroup: 3006
       containers:
         - name: paperless
-          image: ghcr.io/paperless-ngx/paperless-ngx:2
+          image: ghcr.io/paperless-ngx/paperless-ngx:latest
           ports:
             - containerPort: 8000
           env:
