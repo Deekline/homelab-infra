@@ -18,6 +18,9 @@ spec:
       secret:
         name: immich-db-credentials
       postInitApplicationSQL:
+        - GRANT USAGE ON SCHEMA vectors TO immich;
+        - GRANT SELECT ON ALL TABLES IN SCHEMA vectors TO immich;
+        - ALTER ROLE immich IN DATABASE immich SET search_path TO "$user", public, vectors;
         - CREATE EXTENSION IF NOT EXISTS vectors CASCADE;
         - CREATE EXTENSION IF NOT EXISTS cube CASCADE;
         - CREATE EXTENSION IF NOT EXISTS earthdistance CASCADE;
