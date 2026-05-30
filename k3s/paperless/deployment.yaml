@@ -16,8 +16,6 @@ spec:
         app: paperless
     spec:
       securityContext:
-        runAsUser: 1001
-        runAsGroup: 3006
         fsGroup: 3006
       containers:
         - name: paperless
@@ -123,7 +121,7 @@ spec:
     spec:
       containers:
         - name: gotenberg
-          image: docker.io/gotenberg/gotenberg:8
+          image: docker.io/gotenberg/gotenberg:8.25
           args:
             - gotenberg
             - --chromium-disable-javascript=true
