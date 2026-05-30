@@ -20,6 +20,7 @@ spec:
             - containerPort: 6379
           args:
             - --requirepass=$(DRAGONFLY_PASSWORD)
+            - --allow-undeclared-keys
           env:
             - name: DRAGONFLY_PASSWORD
               valueFrom:
