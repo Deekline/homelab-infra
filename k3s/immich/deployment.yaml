@@ -92,6 +92,15 @@ spec:
         runAsUser: 1000
         runAsGroup: 3004
         fsGroup: 3004
+      initContainers:
+        - name: fix-cache-permissions
+          image: busybox:latest
+          command: ["sh", "-c", "chown -R 1000:3004 /cache && chmod 775 /cache"]
+          volumeMounts:
+            - name: model-cache
+              mountPath: /cache
+          securityContext:
+            runAsUser: 0
       containers:
         - name: immich-machine-learning
           image: ghcr.io/immich-app/immich-machine-learning:release
