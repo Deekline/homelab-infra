@@ -13,13 +13,14 @@ spec:
       labels:
         app: authelia
     spec:
+      enableServiceLinks: false
       containers:
         - name: authelia
           image: ghcr.io/authelia/authelia:latest
           ports:
             - containerPort: 9091
           env:
-            - name: AUTHELIA_JWT_SECRET
+            - name: AUTHELIA_IDENTITY_VALIDATION_RESET_PASSWORD_JWT_SECRET
               valueFrom:
                 secretKeyRef:
                   name: authelia-secrets
@@ -67,11 +68,10 @@ spec:
             periodSeconds: 30
           resources:
             requests:
-              cpu: 50m
-              memory: 128Mi
+              cpu: 100m
+              memory: 1Gi
           securityContext:
             allowPrivilegeEscalation: false
-            readOnlyRootFilesystem: false
       volumes:
         - name: config
           configMap:
