@@ -1,0 +1,96 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: immich-power-tools-data
+  namespace: immich
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: longhorn
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: immich-power-tools
+  namespace: immich
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: immich-power-tools
+  template:
+    metadata:
+      labels:
+        app: immich-power-tools
+    spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      containers:
+        - name: immich-power-tools
+          image: ghcr.io/immich-power-tools/immich-power-tools:latest
+          ports:
+            - containerPort: 3000
+          env:
+            - name: IMMICH_URL
+              value: http://immich-server.immich.svc.cluster.local:2283
+            - name: EXTERNAL_IMMICH_URL
+              value: https://immich.d-kline.org
+            - name: IMMICH_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: immich-power-tools-secrets
+                  key: api_key
+            - name: DB_HOST
+              value: immich-db-rw
+            - name: DB_PORT
+              value: "5432"
+            - name: DB_DATABASE_NAME
+              value: immich
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: immich-db-credentials
+                  key: username
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: immich-db-credentials
+                  key: password
+          volumeMounts:
+            - name: data
+              mountPath: /app/data
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 3000
+            initialDelaySeconds: 40
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: immich-power-tools-data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: immich-power-tools
+  namespace: immich
+spec:
+  selector:
+    app: immich-power-tools
+  ports:
+    - port: 3000
+      targetPort: 3000
