@@ -116,6 +116,8 @@ spec:
                 secretKeyRef:
                   name: dragonfly-secret
                   key: password
+            - name: HF_HUB_DISABLE_XET
+              value: "1"
           volumeMounts:
             - name: model-cache
               mountPath: /cache
