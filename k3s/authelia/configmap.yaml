@@ -4,7 +4,7 @@ metadata:
   name: authelia-config
   namespace: authelia
 data:
-  configuration.yaml: |
+  configuration.yml: |
     server:
       address: tcp://0.0.0.0:9091
 

@@ -50,8 +50,8 @@ spec:
                   key: password
           volumeMounts:
             - name: config
-              mountPath: /config/configuration.yaml
-              subPath: configuration.yaml
+              mountPath: /config/configuration.yml
+              subPath: configuration.yml
               readOnly: true
             - name: users
               mountPath: /config/users.yaml
