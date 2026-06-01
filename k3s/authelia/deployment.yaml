@@ -13,10 +13,6 @@ spec:
       labels:
         app: authelia
     spec:
-      securityContext:
-        runAsUser: 1000
-        runAsGroup: 1000
-        fsGroup: 1000
       containers:
         - name: authelia
           image: ghcr.io/authelia/authelia:latest
