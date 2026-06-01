@@ -12,6 +12,8 @@ spec:
       kind: Rule
       middlewares:
         - name: local-only
+        - name: authelia
+          namespace: traefik
         - name: security-headers
       services:
         - name: api@internal

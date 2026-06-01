@@ -1,0 +1,74 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: authelia-config
+  namespace: authelia
+data:
+  configuration.yaml: |
+    server:
+      address: tcp://0.0.0.0:9091
+
+    log:
+      level: info
+
+    totp:
+      issuer: d-kline.org
+      period: 30
+      skew: 1
+
+    authentication_backend:
+      file:
+        path: /config/users.yaml
+        watch: true
+        password:
+          algorithm: argon2id
+          iterations: 3
+          memory: 65536
+          parallelism: 4
+
+    access_control:
+      default_policy: deny
+      networks:
+        - name: internal
+          networks:
+            - 10.0.0.0/8
+            - 172.16.0.0/12
+      rules:
+        # Authelia portal itself — no auth loop
+        - domain: auth.d-kline.org
+          policy: bypass
+        # All other services require 2FA from LAN
+        - domain: "*.d-kline.org"
+          networks:
+            - internal
+          policy: two_factor
+
+    session:
+      expiration: 12h
+      inactivity: 2h
+      remember_me: 30d
+      cookies:
+        - name: authelia_session
+          domain: d-kline.org
+          authelia_url: https://auth.d-kline.org
+          default_redirection_url: https://homepage.d-kline.org
+      redis:
+        host: dragonfly.dragonfly.svc.cluster.local
+        port: 6379
+
+    storage:
+      postgres:
+        address: tcp://authelia-db-rw:5432
+        database: authelia
+        username: authelia
+
+    regulation:
+      max_retries: 3
+      find_time: 2m
+      ban_time: 10m
+
+    # Email notifications go to a file — upgrade to SMTP later if needed
+    notifier:
+      disable_startup_check: false
+      filesystem:
+        filename: /tmp/notification.txt

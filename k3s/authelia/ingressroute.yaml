@@ -1,23 +1,19 @@
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
-  name: grafana
-  namespace: monitoring
+  name: authelia
+  namespace: authelia
 spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`grafana.d-kline.org`)
+    - match: Host(`auth.d-kline.org`)
       kind: Rule
       middlewares:
-        - name: local-only
-          namespace: traefik
-        - name: authelia
-          namespace: traefik
         - name: security-headers
           namespace: traefik
       services:
-        - name: monitoring-grafana
-          port: 80
+        - name: authelia
+          port: 9091
   tls:
     secretName: d-kline-org-tls
