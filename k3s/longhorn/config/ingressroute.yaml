@@ -13,8 +13,6 @@ spec:
       middlewares:
         - name: local-only
           namespace: traefik
-        - name: authentik
-          namespace: traefik
         - name: security-headers
           namespace: traefik
       services:

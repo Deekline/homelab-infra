@@ -114,15 +114,16 @@ data:
               url: http://traefik-api.traefik.svc.cluster.local:9000
 
     - Services:
-        - Authentik:
-            icon: authentik.png
-            href: https://auth.d-kline.org
-            description: SSO
-            widget:
-              type: authentik
-              url: http://authentik.authentik.svc.cluster.local:9000
-              key: "{{HOMEPAGE_VAR_AUTHENTIK_KEY}}"
-              version: 2
+        # DECOMMISSIONED — Authentik removed, Authelia pending
+        #- Authentik:
+        #    icon: authentik.png
+        #    href: https://auth.d-kline.org
+        #    description: SSO
+        #    widget:
+        #      type: authentik
+        #      url: http://authentik.authentik.svc.cluster.local:9000
+        #      key: "{{HOMEPAGE_VAR_AUTHENTIK_KEY}}"
+        #      version: 2
         - Grafana:
             icon: grafana.png
             href: https://grafana.d-kline.org

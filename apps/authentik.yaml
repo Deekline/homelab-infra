@@ -12,9 +12,8 @@ spec:
   destination:
     server: https://kubernetes.default.svc
     namespace: authentik
+  # DECOMMISSIONED — automated sync disabled, migrating to Authelia
+  # To re-enable: restore automated block and set replicas back to 1 in k3s/authentik/deployment.yaml
   syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
     syncOptions:
       - CreateNamespace=true
