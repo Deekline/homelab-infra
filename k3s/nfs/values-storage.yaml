@@ -1,0 +1,16 @@
+nfs:
+  server: 10.0.10.150
+  path: /mnt/SSD_SMALL/apps
+
+storageClass:
+  name: nfs-storage
+  defaultClass: false
+  reclaimPolicy: Retain
+  volumeBindingMode: Immediate
+  archiveOnDelete: false
+
+replicaCount: 1
+
+podSecurityContext:
+  runAsUser: 3004
+  runAsGroup: 3008

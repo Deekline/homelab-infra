@@ -28,6 +28,33 @@ spec:
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
+  name: nfs-provisioner-storage
+  namespace: argocd
+spec:
+  project: default
+  sources:
+    - repoURL: https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner
+      chart: nfs-subdir-external-provisioner
+      targetRevision: 4.0.18
+      helm:
+        valueFiles:
+          - $values/k3s/nfs/values-storage.yaml
+    - repoURL: ssh://git@10.0.10.150:30009/deekline/homelab-infra.git
+      targetRevision: deploy
+      ref: values
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: nfs-provisioner
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
   name: nfs-provisioner-monitoring
   namespace: argocd
 spec:
