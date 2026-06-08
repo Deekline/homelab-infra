@@ -29,12 +29,12 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: paperless-data
+  name: paperless-data-nfs
   namespace: paperless
 spec:
   accessModes:
     - ReadWriteOnce
-  storageClassName: longhorn
+  storageClassName: nfs-storage
   resources:
     requests:
       storage: 10Gi

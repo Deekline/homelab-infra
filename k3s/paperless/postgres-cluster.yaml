@@ -16,4 +16,4 @@ spec:
 
   storage:
     size: 5Gi
-    storageClass: longhorn
+    storageClass: nfs-db
