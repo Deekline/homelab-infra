@@ -10,12 +10,10 @@ lapi:
   persistentVolume:
     config:
       enabled: true
-      storageClassName: longhorn
-      size: 100Mi
+      existingClaim: crowdsec-config-nfs
     data:
       enabled: true
-      storageClassName: longhorn
-      size: 1Gi
+      existingClaim: crowdsec-db-nfs
   env:
     - name: ENROLL_KEY
       valueFrom:
