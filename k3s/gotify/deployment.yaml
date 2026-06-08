@@ -2,34 +2,6 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-    name: gotify-data
-    namespace: gotify
-spec:
-    accessModes:
-        - ReadWriteOnce
-    storageClassName: longhorn
-    resources:
-        requests:
-            storage: 1Gi
-
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-    name: igotify-data
-    namespace: gotify
-spec:
-    accessModes:
-        - ReadWriteOnce
-    storageClassName: longhorn
-    resources:
-        requests:
-            storage: 256Mi
-
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
     name: gotify-data-nfs
     namespace: gotify
 spec:
@@ -106,7 +78,7 @@ spec:
             volumes:
                 - name: data
                   persistentVolumeClaim:
-                      claimName: gotify-data
+                      claimName: gotify-data-nfs
 
 ---
 apiVersion: apps/v1
@@ -156,7 +128,7 @@ spec:
             volumes:
                 - name: data
                   persistentVolumeClaim:
-                      claimName: igotify-data
+                      claimName: igotify-data-nfs
 
 ---
 apiVersion: v1
