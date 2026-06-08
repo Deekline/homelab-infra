@@ -27,6 +27,34 @@ spec:
             storage: 256Mi
 
 ---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+    name: gotify-data-nfs
+    namespace: gotify
+spec:
+    accessModes:
+        - ReadWriteOnce
+    storageClassName: nfs-storage
+    resources:
+        requests:
+            storage: 1Gi
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+    name: igotify-data-nfs
+    namespace: gotify
+spec:
+    accessModes:
+        - ReadWriteOnce
+    storageClassName: nfs-storage
+    resources:
+        requests:
+            storage: 256Mi
+
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
