@@ -1,0 +1,26 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: bentopdf
+  namespace: bentopdf
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`bentopdf.d-kline.org`)
+      kind: Rule
+      middlewares:
+        - name: local-only
+          namespace: traefik
+        - name: authelia
+          namespace: traefik
+        - name: secure-headers
+          namespace: traefik
+        - name: wasm-headers
+          namespace: traefik
+      services:
+        - name: bentopdf
+          port: 80
+  tls:
+    secretName: d-kline-org-tls
+
