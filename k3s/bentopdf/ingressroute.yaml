@@ -14,7 +14,7 @@ spec:
           namespace: traefik
         - name: authelia
           namespace: traefik
-        - name: secure-headers
+        - name: security-headers
           namespace: traefik
         - name: wasm-headers
           namespace: traefik
