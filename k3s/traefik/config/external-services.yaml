@@ -164,7 +164,7 @@ metadata:
 spec:
   clusterIP: None
   ports:
-    - port: 443
+    - port: 80
       protocol: TCP
 
 ---
@@ -175,10 +175,30 @@ metadata:
   namespace: traefik
 subsets:
   - addresses:
-      - ip: "10.0.10.10/admin"
+      - ip: "10.0.10.10"
     ports:
-      - port: 443
+      - port: 80
         protocol: TCP
+
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: pihole
+  namespace: traefik
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`pihole.d-kline.org`)
+      kind: Rule
+      middlewares:
+        - name: local-only
+      services:
+        - name: pihole
+          port: 80
+  tls:
+    secretName: d-kline-org-tls
 
 ---
 apiVersion: v1
@@ -189,7 +209,7 @@ metadata:
 spec:
   clusterIP: None
   ports:
-    - port: 443
+    - port: 8123
       protocol: TCP
 
 ---
@@ -200,7 +220,27 @@ metadata:
   namespace: traefik
 subsets:
   - addresses:
-    - ip: "10.0.10.101:8123"
+      - ip: "10.0.10.101"
     ports:
-      - port: 443
+      - port: 8123
         protocol: TCP
+
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: ha
+  namespace: traefik
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`ha.d-kline.org`)
+      kind: Rule
+      middlewares:
+        - name: local-only
+      services:
+        - name: ha
+          port: 8123
+  tls:
+    secretName: d-kline-org-tls
