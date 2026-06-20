@@ -16,11 +16,12 @@ spec:
       containers:
         - name: bentopdf
           image: ghcr.io/alam00000/bentopdf-simple:latest
-          port:
+          ports:
             - containerPort: 8080
           securityContext:
             allowPrivilegeEscalation: false
 
+---
 apiVersion: v1
 kind: Service
 metadata:
