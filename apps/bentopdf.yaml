@@ -8,7 +8,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL:
+    repoURL: ssh://git@10.0.10.150:30009/deekline/homelab-infra.git
     targetRevision: deploy
     path: k3s/bentopdf
   destination:
