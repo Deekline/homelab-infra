@@ -1,6 +1,8 @@
 container_runtime: containerd
 
 lapi:
+  secrets:
+    existingSecret: crowdsec-secrets
   resources:
     requests:
       cpu: 50m
