@@ -179,3 +179,28 @@ subsets:
     ports:
       - port: 443
         protocol: TCP
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: home-assistant
+  namespace: traefik
+spec:
+  clusterIP: None
+  ports:
+    - port: 443
+      protocol: TCP
+
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: home-assistant
+  namespace: traefik
+subsets:
+  - addresses:
+    - ip: "10.0.10.101:8123"
+    ports:
+      - port: 443
+        protocol: TCP
