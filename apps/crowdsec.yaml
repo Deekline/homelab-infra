@@ -38,3 +38,9 @@ spec:
       jsonPointers:
         - /data/csLapiSecret
         - /data/registrationToken
+    - group: apps
+      kind: Deployment
+      name: crowdsec-lapi
+      namespace: crowdsec
+      jsonPointers:
+        - /spec/template/metadata/annotations/checksum~1lapi-secret
