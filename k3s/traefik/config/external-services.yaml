@@ -154,3 +154,28 @@ spec:
           port: 80
   tls:
     secretName: d-kline-org-tls
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pihole
+  namespace: traefik
+spec:
+  clusterIP: None
+  ports:
+    - port: 443
+      protocol: TCP
+
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: pihole
+  namespace: traefik
+subsets:
+  - addresses:
+      - ip: "10.0.10.10/admin"
+    ports:
+      - port: 443
+        protocol: TCP
