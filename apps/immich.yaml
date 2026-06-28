@@ -3,10 +3,10 @@ kind: Application
 metadata:
   finalizers:
     - resources-finalizer.argocd.argoproj.io
-    name: immich
-    namespace: argocd
-    annotations:
-        argocd.argoproj.io/sync-wave: "5"
+  name: immich
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "5"
 spec:
     project: default
     source:
