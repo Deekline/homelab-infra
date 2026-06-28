@@ -41,8 +41,10 @@ ports:
 
 service:
   type: LoadBalancer
+  annotations:
+    kube-vip.io/loadbalancerIPs: "10.0.10.9"
   spec:
-    externalTrafficPolicy: Local
+    externalTrafficPolicy: Cluster
     loadBalancerIP: "10.0.10.9"
 
 providers:
