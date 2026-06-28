@@ -65,6 +65,10 @@ agent:
         secretKeyRef:
           name: crowdsec-secrets
           key: agentUsername
+    - name: CUSTOM_HOSTNAME
+      valueFrom:
+        fieldRef:
+          fieldPath: spec.nodeName
   acquisition:
     - namespace: traefik
       podName: traefik-*
