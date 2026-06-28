@@ -43,6 +43,7 @@ service:
   type: LoadBalancer
   spec:
     externalTrafficPolicy: Local
+    loadBalancerIP: "10.0.10.9"
 
 providers:
   kubernetesCRD:
