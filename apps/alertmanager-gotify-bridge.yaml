@@ -3,10 +3,10 @@ kind: Application
 metadata:
   finalizers:
     - resources-finalizer.argocd.argoproj.io
-    name: alertmanager-gotify-bridge
-    namespace: argocd
-    annotations:
-        argocd.argoproj.io/sync-wave: "10"
+  name: alertmanager-gotify-bridge
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "10"
 spec:
     project: default
     source:
