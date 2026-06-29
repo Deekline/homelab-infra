@@ -25,6 +25,18 @@ singleBinary:
     enabled: true
     storageClass: nfs-monitoring
     size: 20Gi
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+                - key: app.kubernetes.io/name
+                  operator: In
+                  values:
+                    - prometheus
+            topologyKey: kubernetes.io/hostname
 
 backend:
   replicas: 0

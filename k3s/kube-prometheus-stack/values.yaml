@@ -19,6 +19,19 @@ grafana:
   ingress:
     enabled: false
 
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 50
+          podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+                - key: app.kubernetes.io/name
+                  operator: In
+                  values:
+                    - prometheus
+            topologyKey: kubernetes.io/hostname
+
   additionalDataSources:
     - name: Loki
       type: loki
@@ -37,6 +50,18 @@ prometheus:
           resources:
             requests:
               storage: 20Gi
+    affinity:
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                  - key: app.kubernetes.io/name
+                    operator: In
+                    values:
+                      - loki
+              topologyKey: kubernetes.io/hostname
 
   ingress:
     enabled: false
@@ -51,6 +76,18 @@ alertmanager:
           resources:
             requests:
               storage: 2Gi
+    affinity:
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 50
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                  - key: app.kubernetes.io/name
+                    operator: In
+                    values:
+                      - prometheus
+              topologyKey: kubernetes.io/hostname
 
   ingress:
     enabled: false
