@@ -67,8 +67,12 @@ data:
       find_time: 2m
       ban_time: 10m
 
-    # Email notifications go to a file — upgrade to SMTP later if needed
     notifier:
       disable_startup_check: false
-      filesystem:
-        filename: /tmp/notification.txt
+      smtp:
+        address: smtp://smtp.gmail.com:587
+        timeout: 5s
+        username: nicholas.homelab@gmail.com
+        sender: "Authelia <nicholas.homelab@gmail.com>"
+        tls:
+          skip_verify: false

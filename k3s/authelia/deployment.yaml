@@ -45,6 +45,11 @@ spec:
                 secretKeyRef:
                   name: dragonfly-secret
                   key: password
+            - name: AUTHELIA_NOTIFIER_SMTP_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: authelia-smtp-secret
+                  key: SMTP_PASSWORD
           volumeMounts:
             - name: config
               mountPath: /config/configuration.yml
