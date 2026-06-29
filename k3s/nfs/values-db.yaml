@@ -8,6 +8,12 @@ storageClass:
   reclaimPolicy: Retain
   volumeBindingMode: Immediate
   archiveOnDelete: false
+  mountOptions:
+    - hard
+    - nfsvers=4.1
+    - noatime
+    - nodiratime
+    - nconnect=8
 
 replicaCount: 1
 
