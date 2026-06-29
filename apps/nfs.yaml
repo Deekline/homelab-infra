@@ -3,25 +3,25 @@ kind: Application
 metadata:
   finalizers:
     - resources-finalizer.argocd.argoproj.io
-  name: nfs-provisioner-db
+  name: nfs-csi-driver
   namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: "-5"
 spec:
   project: default
   sources:
-    - repoURL: https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner
-      chart: nfs-subdir-external-provisioner
-      targetRevision: 4.0.18
+    - repoURL: https://raw.githubusercontent.com/kubernetes-csi/csi-driver-nfs/master/charts
+      chart: csi-driver-nfs
+      targetRevision: 4.13.3
       helm:
         valueFiles:
-          - $values/k3s/nfs/values-db.yaml
+          - $values/k3s/nfs/values-csi-driver.yaml
     - repoURL: ssh://git@10.0.10.150:30009/deekline/homelab-infra.git
       targetRevision: deploy
       ref: values
   destination:
     server: https://kubernetes.default.svc
-    namespace: nfs-provisioner
+    namespace: kube-system
   syncPolicy:
     automated:
       prune: true
@@ -34,59 +34,21 @@ kind: Application
 metadata:
   finalizers:
     - resources-finalizer.argocd.argoproj.io
-  name: nfs-provisioner-storage
+  name: nfs-storageclasses
   namespace: argocd
   annotations:
-    argocd.argoproj.io/sync-wave: "-5"
+    argocd.argoproj.io/sync-wave: "-4"
 spec:
   project: default
   sources:
-    - repoURL: https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner
-      chart: nfs-subdir-external-provisioner
-      targetRevision: 4.0.18
-      helm:
-        valueFiles:
-          - $values/k3s/nfs/values-storage.yaml
     - repoURL: ssh://git@10.0.10.150:30009/deekline/homelab-infra.git
       targetRevision: deploy
-      ref: values
+      path: k3s/nfs
+      include: storageclasses.yaml
   destination:
     server: https://kubernetes.default.svc
-    namespace: nfs-provisioner
+    namespace: kube-system
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
----
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  finalizers:
-    - resources-finalizer.argocd.argoproj.io
-  name: nfs-provisioner-monitoring
-  namespace: argocd
-  annotations:
-    argocd.argoproj.io/sync-wave: "-5"
-spec:
-  project: default
-  sources:
-    - repoURL: https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner
-      chart: nfs-subdir-external-provisioner
-      targetRevision: 4.0.18
-      helm:
-        valueFiles:
-          - $values/k3s/nfs/values-monitoring.yaml
-    - repoURL: ssh://git@10.0.10.150:30009/deekline/homelab-infra.git
-      targetRevision: deploy
-      ref: values
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: nfs-provisioner
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    syncOptions:
-      - CreateNamespace=true

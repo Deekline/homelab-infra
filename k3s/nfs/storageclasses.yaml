@@ -1,0 +1,53 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: nfs-db
+provisioner: nfs.csi.k8s.io
+parameters:
+  server: 10.0.10.150
+  share: /mnt/SSD_SMALL/db
+mountOptions:
+  - hard
+  - nfsvers=4.1
+  - noatime
+  - nodiratime
+  - nconnect=8
+reclaimPolicy: Retain
+volumeBindingMode: Immediate
+allowVolumeExpansion: true
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: nfs-storage
+provisioner: nfs.csi.k8s.io
+parameters:
+  server: 10.0.10.150
+  share: /mnt/SSD_SMALL/apps
+mountOptions:
+  - hard
+  - nfsvers=4.1
+  - noatime
+  - nodiratime
+  - nconnect=8
+reclaimPolicy: Retain
+volumeBindingMode: Immediate
+allowVolumeExpansion: true
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: nfs-monitoring
+provisioner: nfs.csi.k8s.io
+parameters:
+  server: 10.0.10.150
+  share: /mnt/SSD_SMALL/monitoring
+mountOptions:
+  - hard
+  - nfsvers=4.1
+  - noatime
+  - nodiratime
+  - nconnect=8
+reclaimPolicy: Retain
+volumeBindingMode: Immediate
+allowVolumeExpansion: true
