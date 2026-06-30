@@ -46,3 +46,8 @@ operator:
       enabled: true
       labels:
         release: monitoring
+
+dashboards:
+  enabled: true
+  label: grafana_dashboard
+  labelValue: "1"
