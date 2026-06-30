@@ -7,6 +7,15 @@ loki:
   storage:
     type: filesystem
 
+  limits_config:
+    retention_period: 7d
+
+  compactor:
+    retention_enabled: true
+    working_directory: /var/loki/compactor
+    compaction_interval: 10m
+    delete_request_store: filesystem
+
   schemaConfig:
     configs:
       - from: "2024-01-01"
@@ -21,6 +30,11 @@ deploymentMode: SingleBinary
 
 singleBinary:
   replicas: 1
+  resources:
+    requests:
+      memory: 256Mi
+    limits:
+      memory: 512Mi
   persistence:
     enabled: true
     storageClass: nfs-monitoring
