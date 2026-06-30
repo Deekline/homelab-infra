@@ -23,11 +23,6 @@ lapi:
           name: crowdsec-secrets
           key: enrollKey
           optional: true
-    - name: REGISTRATION_TOKEN
-      valueFrom:
-        secretKeyRef:
-          name: crowdsec-secrets
-          key: registrationToken
   extraVolumes:
     - name: gotify-notifier
       secret:
@@ -42,6 +37,9 @@ lapi:
     - name: crowdsec-profiles-volume
       mountPath: /etc/crowdsec/profiles.yaml
       subPath: profiles.yaml
+    - name: crowdsec-config-local-volume
+      mountPath: /etc/crowdsec/config.yaml.local
+      subPath: config.yaml.local
 
 config:
   config.yaml.local: |
@@ -51,7 +49,6 @@ config:
       server:
         auto_registration:
           enabled: true
-          token: "${REGISTRATION_TOKEN}"
           allowed_ranges:
             - "127.0.0.1/32"
             - "10.0.0.0/8"
@@ -86,11 +83,6 @@ agent:
         secretKeyRef:
           name: crowdsec-secrets
           key: agentUsername
-    - name: REGISTRATION_TOKEN
-      valueFrom:
-        secretKeyRef:
-          name: crowdsec-secrets
-          key: registrationToken
     - name: CUSTOM_HOSTNAME
       valueFrom:
         fieldRef:
