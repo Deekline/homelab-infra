@@ -44,11 +44,10 @@ lapi:
 config:
   config.yaml.local: |
     api:
-      client:
-        unregister_on_exit: true
       server:
         auto_registration:
           enabled: true
+          token: "${REGISTRATION_TOKEN}"
           allowed_ranges:
             - "127.0.0.1/32"
             - "10.0.0.0/8"
@@ -83,6 +82,11 @@ agent:
         secretKeyRef:
           name: crowdsec-secrets
           key: agentUsername
+    - name: REGISTRATION_TOKEN
+      valueFrom:
+        secretKeyRef:
+          name: crowdsec-secrets
+          key: registrationToken
     - name: CUSTOM_HOSTNAME
       valueFrom:
         fieldRef:
