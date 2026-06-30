@@ -27,6 +27,47 @@ metadata:
 data:
   external-services.yml: |
     http:
+      routers:
+        proxmox:
+          rule: "Host(`proxmox.d-kline.org`)"
+          entryPoints:
+            - websecure
+          middlewares:
+            - local-only@kubernetescrd
+          service: proxmox
+          tls: {}
+        truenas:
+          rule: "Host(`nas.d-kline.org`)"
+          entryPoints:
+            - websecure
+          middlewares:
+            - local-only@kubernetescrd
+          service: truenas
+          tls: {}
+        opnsense:
+          rule: "Host(`opnsense.d-kline.org`)"
+          entryPoints:
+            - websecure
+          middlewares:
+            - local-only@kubernetescrd
+          service: opnsense
+          tls: {}
+        pihole:
+          rule: "Host(`pihole.d-kline.org`)"
+          entryPoints:
+            - websecure
+          middlewares:
+            - local-only@kubernetescrd
+          service: pihole
+          tls: {}
+        ha:
+          rule: "Host(`ha.d-kline.org`)"
+          entryPoints:
+            - websecure
+          middlewares:
+            - local-only@kubernetescrd
+          service: ha
+          tls: {}
       services:
         proxmox:
           loadBalancer:
@@ -55,98 +96,3 @@ data:
             passHostHeader: true
             servers:
               - url: "http://10.0.10.101:8123"
-
-# ── Proxmox ────────────────────────────────────────────────────────────────────
----
-apiVersion: traefik.io/v1alpha1
-kind: IngressRoute
-metadata:
-  name: proxmox
-  namespace: traefik
-spec:
-  entryPoints:
-    - websecure
-  routes:
-    - match: Host(`proxmox.d-kline.org`)
-      kind: Rule
-      middlewares:
-        - name: local-only
-      services:
-        - name: proxmox@file
-  tls: {}
-
-# ── TrueNAS ────────────────────────────────────────────────────────────────────
----
-apiVersion: traefik.io/v1alpha1
-kind: IngressRoute
-metadata:
-  name: truenas
-  namespace: traefik
-spec:
-  entryPoints:
-    - websecure
-  routes:
-    - match: Host(`nas.d-kline.org`)
-      kind: Rule
-      middlewares:
-        - name: local-only
-      services:
-        - name: truenas@file
-  tls: {}
-
-# ── OPNsense ───────────────────────────────────────────────────────────────────
----
-apiVersion: traefik.io/v1alpha1
-kind: IngressRoute
-metadata:
-  name: opnsense
-  namespace: traefik
-spec:
-  entryPoints:
-    - websecure
-  routes:
-    - match: Host(`opnsense.d-kline.org`)
-      kind: Rule
-      middlewares:
-        - name: local-only
-      services:
-        - name: opnsense@file
-  tls: {}
-
-# ── Pi-hole ────────────────────────────────────────────────────────────────────
----
-apiVersion: traefik.io/v1alpha1
-kind: IngressRoute
-metadata:
-  name: pihole
-  namespace: traefik
-spec:
-  entryPoints:
-    - websecure
-  routes:
-    - match: Host(`pihole.d-kline.org`)
-      kind: Rule
-      middlewares:
-        - name: local-only
-      services:
-        - name: pihole@file
-  tls: {}
-
-# ── Home Assistant ─────────────────────────────────────────────────────────────
----
-apiVersion: traefik.io/v1alpha1
-kind: IngressRoute
-metadata:
-  name: ha
-  namespace: traefik
-spec:
-  entryPoints:
-    - websecure
-  routes:
-    - match: Host(`ha.d-kline.org`)
-      kind: Rule
-      middlewares:
-        - name: local-only
-      services:
-        - name: ha@file
-  tls: {}
