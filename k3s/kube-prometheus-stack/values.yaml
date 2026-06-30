@@ -146,10 +146,11 @@ alertmanager:
         equal: ["alertname", "namespace", "pod"]
 
 defaultRules:
-  disabled:
-    KubeProxyDown: true
-    KubeControllerManagerDown: true
-    KubeSchedulerDown: true
+  rules:
+    kubeProxy: false
+    kubeControllerManager: false
+    kubeSchedulerAlerting: false
+    kubeSchedulerRecording: false
 
 nodeExporter:
   enabled: true

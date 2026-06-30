@@ -18,6 +18,7 @@ spec:
   serverName: "truenas"
   insecureSkipVerify: true
 
+# ── Proxmox ────────────────────────────────────────────────────────────────────
 ---
 apiVersion: v1
 kind: Service
@@ -31,17 +32,20 @@ spec:
       protocol: TCP
 
 ---
-apiVersion: v1
-kind: Endpoints
+apiVersion: discovery.k8s.io/v1
+kind: EndpointSlice
 metadata:
   name: proxmox-external
   namespace: traefik
-subsets:
+  labels:
+    kubernetes.io/service-name: proxmox-external
+addressType: IPv4
+endpoints:
   - addresses:
-      - ip: "10.0.10.2"
-    ports:
-      - port: 8006
-        protocol: TCP
+      - "10.0.10.2"
+ports:
+  - port: 8006
+    protocol: TCP
 
 ---
 apiVersion: traefik.io/v1alpha1
@@ -64,6 +68,7 @@ spec:
   tls:
     secretName: d-kline-org-tls
 
+# ── TrueNAS ────────────────────────────────────────────────────────────────────
 ---
 apiVersion: v1
 kind: Service
@@ -77,17 +82,20 @@ spec:
       protocol: TCP
 
 ---
-apiVersion: v1
-kind: Endpoints
+apiVersion: discovery.k8s.io/v1
+kind: EndpointSlice
 metadata:
   name: truenas-external
   namespace: traefik
-subsets:
+  labels:
+    kubernetes.io/service-name: truenas-external
+addressType: IPv4
+endpoints:
   - addresses:
-      - ip: "10.0.10.150"
-    ports:
-      - port: 443
-        protocol: TCP
+      - "10.0.10.150"
+ports:
+  - port: 443
+    protocol: TCP
 
 ---
 apiVersion: traefik.io/v1alpha1
@@ -110,6 +118,7 @@ spec:
   tls:
     secretName: d-kline-org-tls
 
+# ── OPNsense ───────────────────────────────────────────────────────────────────
 ---
 apiVersion: v1
 kind: Service
@@ -123,17 +132,20 @@ spec:
       protocol: TCP
 
 ---
-apiVersion: v1
-kind: Endpoints
+apiVersion: discovery.k8s.io/v1
+kind: EndpointSlice
 metadata:
   name: opnsense-external
   namespace: traefik
-subsets:
+  labels:
+    kubernetes.io/service-name: opnsense-external
+addressType: IPv4
+endpoints:
   - addresses:
-      - ip: "10.0.10.1"
-    ports:
-      - port: 80
-        protocol: TCP
+      - "10.0.10.1"
+ports:
+  - port: 80
+    protocol: TCP
 
 ---
 apiVersion: traefik.io/v1alpha1
@@ -155,6 +167,7 @@ spec:
   tls:
     secretName: d-kline-org-tls
 
+# ── Pi-hole ────────────────────────────────────────────────────────────────────
 ---
 apiVersion: v1
 kind: Service
@@ -168,17 +181,20 @@ spec:
       protocol: TCP
 
 ---
-apiVersion: v1
-kind: Endpoints
+apiVersion: discovery.k8s.io/v1
+kind: EndpointSlice
 metadata:
   name: pihole
   namespace: traefik
-subsets:
+  labels:
+    kubernetes.io/service-name: pihole
+addressType: IPv4
+endpoints:
   - addresses:
-      - ip: "10.0.10.10"
-    ports:
-      - port: 80
-        protocol: TCP
+      - "10.0.10.10"
+ports:
+  - port: 80
+    protocol: TCP
 
 ---
 apiVersion: traefik.io/v1alpha1
@@ -200,6 +216,7 @@ spec:
   tls:
     secretName: d-kline-org-tls
 
+# ── Home Assistant ─────────────────────────────────────────────────────────────
 ---
 apiVersion: v1
 kind: Service
@@ -213,17 +230,20 @@ spec:
       protocol: TCP
 
 ---
-apiVersion: v1
-kind: Endpoints
+apiVersion: discovery.k8s.io/v1
+kind: EndpointSlice
 metadata:
   name: ha
   namespace: traefik
-subsets:
+  labels:
+    kubernetes.io/service-name: ha
+addressType: IPv4
+endpoints:
   - addresses:
-      - ip: "10.0.10.101"
-    ports:
-      - port: 8123
-        protocol: TCP
+      - "10.0.10.101"
+ports:
+  - port: 8123
+    protocol: TCP
 
 ---
 apiVersion: traefik.io/v1alpha1
