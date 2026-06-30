@@ -99,3 +99,4 @@ agent:
     - namespace: traefik
       podName: traefik-*
       program: traefik
+      poll_without_inotify: true
