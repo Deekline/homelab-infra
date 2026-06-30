@@ -11,3 +11,14 @@ spec:
   dnsNames:
     - "d-kline.org"
     - "*.d-kline.org"
+
+---
+apiVersion: traefik.io/v1alpha1
+kind: TLSStore
+metadata:
+  name: default
+  namespace: traefik
+spec:
+  defaultCertificate:
+    secretRef:
+      name: d-kline-org-tls

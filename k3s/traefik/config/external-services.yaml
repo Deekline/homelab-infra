@@ -65,8 +65,7 @@ spec:
         - name: proxmox-external
           port: 8006
           serversTransport: ignorecert
-  tls:
-    secretName: d-kline-org-tls
+  tls: {}
 
 # ── TrueNAS ────────────────────────────────────────────────────────────────────
 ---
@@ -115,8 +114,7 @@ spec:
         - name: truenas-external
           port: 443
           serversTransport: nasignore
-  tls:
-    secretName: d-kline-org-tls
+  tls: {}
 
 # ── OPNsense ───────────────────────────────────────────────────────────────────
 ---
@@ -164,8 +162,7 @@ spec:
       services:
         - name: opnsense-external
           port: 80
-  tls:
-    secretName: d-kline-org-tls
+  tls: {}
 
 # ── Pi-hole ────────────────────────────────────────────────────────────────────
 ---
@@ -213,8 +210,7 @@ spec:
       services:
         - name: pihole
           port: 80
-  tls:
-    secretName: d-kline-org-tls
+  tls: {}
 
 # ── Home Assistant ─────────────────────────────────────────────────────────────
 ---
@@ -262,5 +258,4 @@ spec:
       services:
         - name: ha
           port: 8123
-  tls:
-    secretName: d-kline-org-tls
+  tls: {}

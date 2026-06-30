@@ -19,5 +19,4 @@ spec:
       services:
         - name: hubble-ui
           port: 80
-  tls:
-    secretName: d-kline-org-tls
+  tls: {}

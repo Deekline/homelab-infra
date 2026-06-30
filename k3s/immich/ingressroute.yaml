@@ -17,5 +17,4 @@ spec:
           namespace: traefik
         - name: security-headers
           namespace: traefik
-  tls:
-    secretName: d-kline-org-tls
+  tls: {}

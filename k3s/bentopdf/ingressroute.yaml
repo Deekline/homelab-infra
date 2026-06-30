@@ -21,6 +21,5 @@ spec:
       services:
         - name: bentopdf
           port: 80
-  tls:
-    secretName: d-kline-org-tls
+  tls: {}
 
