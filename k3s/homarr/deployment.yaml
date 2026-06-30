@@ -1,0 +1,109 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: homarr
+  namespace: homarr
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: homarr
+rules:
+  - apiGroups: [""]
+    resources: ["nodes", "pods", "services", "namespaces"]
+    verbs: ["get", "list"]
+  - apiGroups: ["networking.k8s.io"]
+    resources: ["ingresses"]
+    verbs: ["get", "list"]
+  - apiGroups: ["traefik.io"]
+    resources: ["ingressroutes"]
+    verbs: ["get", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: homarr
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: homarr
+subjects:
+  - kind: ServiceAccount
+    name: homarr
+    namespace: homarr
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: homarr-data
+  namespace: homarr
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: nfs-storage
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: homarr
+  namespace: homarr
+  labels:
+    app.kubernetes.io/name: homarr
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: homarr
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: homarr
+    spec:
+      serviceAccountName: homarr
+      containers:
+        - name: homarr
+          image: ghcr.io/homarr-labs/homarr:latest
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 7575
+              protocol: TCP
+          env:
+            - name: TZ
+              value: Europe/Warsaw
+          envFrom:
+            - secretRef:
+                name: homarr-secrets
+          volumeMounts:
+            - name: data
+              mountPath: /appdata
+          securityContext:
+            allowPrivilegeEscalation: false
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              memory: 512Mi
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: homarr-data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: homarr
+  namespace: homarr
+  labels:
+    app.kubernetes.io/name: homarr
+spec:
+  selector:
+    app.kubernetes.io/name: homarr
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
