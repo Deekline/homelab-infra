@@ -58,7 +58,6 @@ providers:
   file:
     enabled: true
     watch: true
-    directory: /config/dynamic
 
 ingressRoute:
   dashboard:
@@ -95,6 +94,9 @@ volumes:
   - name: traefik-dynamic-config
     mountPath: /config/dynamic
     type: configMap
+
+additionalArguments:
+  - "--providers.file.directory=/config/dynamic"
 
 persistence:
   enabled: false
