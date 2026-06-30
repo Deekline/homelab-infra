@@ -6,7 +6,7 @@ grafana:
     requests:
       memory: 128Mi
     limits:
-      memory: 600Mi
+      memory: 800Mi
 
   admin:
     existingSecret: grafana-admin-credentials
