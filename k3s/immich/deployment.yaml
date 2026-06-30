@@ -13,6 +13,8 @@ spec:
       labels:
         app: immich-server
     spec:
+      nodeSelector:
+        kubernetes.io/hostname: k3s-worker-2
       securityContext:
         runAsUser: 1000
         runAsGroup: 3004

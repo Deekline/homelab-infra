@@ -108,6 +108,12 @@ alertmanager:
         - receiver: "null"
           matchers:
             - alertname = "InfoInhibitor"
+        - receiver: "null"
+          matchers:
+            - alertname = "AlertmanagerFailedToSendAlerts"
+        - receiver: "null"
+          matchers:
+            - alertname = "AlertmanagerClusterFailedToSendAlerts"
     receivers:
       - name: "null"
       - name: gotify
@@ -120,6 +126,12 @@ alertmanager:
         target_matchers:
           - severity = "warning"
         equal: ["alertname", "namespace", "pod"]
+
+defaultRules:
+  disabled:
+    KubeProxyDown: true
+    KubeControllerManagerDown: true
+    KubeSchedulerDown: true
 
 nodeExporter:
   enabled: true
