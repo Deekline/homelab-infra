@@ -55,6 +55,10 @@ providers:
     enabled: true
     publishedService:
       enabled: true
+  file:
+    enabled: true
+    watch: true
+    directory: /config/dynamic
 
 ingressRoute:
   dashboard:
@@ -88,6 +92,9 @@ volumes:
   - name: crowdsec-bouncer-key
     mountPath: /etc/crowdsec
     type: secret
+  - name: traefik-dynamic-config
+    mountPath: /config/dynamic
+    type: configMap
 
 persistence:
   enabled: false

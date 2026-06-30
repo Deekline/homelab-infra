@@ -18,35 +18,45 @@ spec:
   serverName: "truenas"
   insecureSkipVerify: true
 
-# ── Proxmox ────────────────────────────────────────────────────────────────────
 ---
 apiVersion: v1
-kind: Service
+kind: ConfigMap
 metadata:
-  name: proxmox-external
+  name: traefik-dynamic-config
   namespace: traefik
-spec:
-  clusterIP: None
-  ports:
-    - port: 8006
-      protocol: TCP
+data:
+  external-services.yml: |
+    http:
+      services:
+        proxmox:
+          loadBalancer:
+            passHostHeader: true
+            serversTransport: "ignorecert@kubernetescrd"
+            servers:
+              - url: "https://10.0.10.2:8006"
+        truenas:
+          loadBalancer:
+            passHostHeader: true
+            serversTransport: "nasignore@kubernetescrd"
+            servers:
+              - url: "https://10.0.10.150:443"
+        opnsense:
+          loadBalancer:
+            passHostHeader: true
+            servers:
+              - url: "http://10.0.10.1:80"
+        pihole:
+          loadBalancer:
+            passHostHeader: true
+            servers:
+              - url: "http://10.0.10.10:80"
+        ha:
+          loadBalancer:
+            passHostHeader: true
+            servers:
+              - url: "http://10.0.10.101:8123"
 
----
-apiVersion: discovery.k8s.io/v1
-kind: EndpointSlice
-metadata:
-  name: proxmox-external
-  namespace: traefik
-  labels:
-    kubernetes.io/service-name: proxmox-external
-addressType: IPv4
-endpoints:
-  - addresses:
-      - "10.0.10.2"
-ports:
-  - port: 8006
-    protocol: TCP
-
+# ── Proxmox ────────────────────────────────────────────────────────────────────
 ---
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
@@ -62,40 +72,10 @@ spec:
       middlewares:
         - name: local-only
       services:
-        - name: proxmox-external
-          port: 8006
-          serversTransport: ignorecert
+        - name: proxmox@file
   tls: {}
 
 # ── TrueNAS ────────────────────────────────────────────────────────────────────
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: truenas-external
-  namespace: traefik
-spec:
-  clusterIP: None
-  ports:
-    - port: 443
-      protocol: TCP
-
----
-apiVersion: discovery.k8s.io/v1
-kind: EndpointSlice
-metadata:
-  name: truenas-external
-  namespace: traefik
-  labels:
-    kubernetes.io/service-name: truenas-external
-addressType: IPv4
-endpoints:
-  - addresses:
-      - "10.0.10.150"
-ports:
-  - port: 443
-    protocol: TCP
-
 ---
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
@@ -111,40 +91,10 @@ spec:
       middlewares:
         - name: local-only
       services:
-        - name: truenas-external
-          port: 443
-          serversTransport: nasignore
+        - name: truenas@file
   tls: {}
 
 # ── OPNsense ───────────────────────────────────────────────────────────────────
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: opnsense-external
-  namespace: traefik
-spec:
-  clusterIP: None
-  ports:
-    - port: 80
-      protocol: TCP
-
----
-apiVersion: discovery.k8s.io/v1
-kind: EndpointSlice
-metadata:
-  name: opnsense-external
-  namespace: traefik
-  labels:
-    kubernetes.io/service-name: opnsense-external
-addressType: IPv4
-endpoints:
-  - addresses:
-      - "10.0.10.1"
-ports:
-  - port: 80
-    protocol: TCP
-
 ---
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
@@ -160,39 +110,10 @@ spec:
       middlewares:
         - name: local-only
       services:
-        - name: opnsense-external
-          port: 80
+        - name: opnsense@file
   tls: {}
 
 # ── Pi-hole ────────────────────────────────────────────────────────────────────
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: pihole
-  namespace: traefik
-spec:
-  clusterIP: None
-  ports:
-    - port: 80
-      protocol: TCP
-
----
-apiVersion: discovery.k8s.io/v1
-kind: EndpointSlice
-metadata:
-  name: pihole
-  namespace: traefik
-  labels:
-    kubernetes.io/service-name: pihole
-addressType: IPv4
-endpoints:
-  - addresses:
-      - "10.0.10.10"
-ports:
-  - port: 80
-    protocol: TCP
-
 ---
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
@@ -208,39 +129,10 @@ spec:
       middlewares:
         - name: local-only
       services:
-        - name: pihole
-          port: 80
+        - name: pihole@file
   tls: {}
 
 # ── Home Assistant ─────────────────────────────────────────────────────────────
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: ha
-  namespace: traefik
-spec:
-  clusterIP: None
-  ports:
-    - port: 8123
-      protocol: TCP
-
----
-apiVersion: discovery.k8s.io/v1
-kind: EndpointSlice
-metadata:
-  name: ha
-  namespace: traefik
-  labels:
-    kubernetes.io/service-name: ha
-addressType: IPv4
-endpoints:
-  - addresses:
-      - "10.0.10.101"
-ports:
-  - port: 8123
-    protocol: TCP
-
 ---
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
@@ -256,6 +148,5 @@ spec:
       middlewares:
         - name: local-only
       services:
-        - name: ha
-          port: 8123
+        - name: ha@file
   tls: {}
