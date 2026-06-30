@@ -1,0 +1,241 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: homelab-overview-dashboard
+  namespace: monitoring
+  labels:
+    grafana_dashboard: "1"
+data:
+  homelab-overview.json: |
+    {
+      "uid": "homelab-overview",
+      "title": "Homelab Overview",
+      "tags": ["homelab"],
+      "timezone": "browser",
+      "refresh": "30s",
+      "time": { "from": "now-1h", "to": "now" },
+      "panels": [
+        {
+          "id": 1,
+          "title": "Cluster CPU Utilization",
+          "type": "timeseries",
+          "gridPos": { "x": 0, "y": 0, "w": 8, "h": 8 },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "percentunit",
+              "min": 0,
+              "max": 1,
+              "color": { "mode": "palette-classic" },
+              "custom": { "lineWidth": 2, "fillOpacity": 10 }
+            }
+          },
+          "targets": [
+            {
+              "datasource": { "type": "prometheus" },
+              "expr": "1 - avg(rate(node_cpu_seconds_total{mode=\"idle\"}[5m]))",
+              "legendFormat": "CPU"
+            }
+          ]
+        },
+        {
+          "id": 2,
+          "title": "Cluster Memory Utilization",
+          "type": "timeseries",
+          "gridPos": { "x": 8, "y": 0, "w": 8, "h": 8 },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "percentunit",
+              "min": 0,
+              "max": 1,
+              "color": { "mode": "palette-classic" },
+              "custom": { "lineWidth": 2, "fillOpacity": 10 }
+            }
+          },
+          "targets": [
+            {
+              "datasource": { "type": "prometheus" },
+              "expr": "1 - sum(node_memory_MemAvailable_bytes) / sum(node_memory_MemTotal_bytes)",
+              "legendFormat": "Memory"
+            }
+          ]
+        },
+        {
+          "id": 3,
+          "title": "Cluster Network IO",
+          "type": "timeseries",
+          "gridPos": { "x": 16, "y": 0, "w": 8, "h": 8 },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "Bps",
+              "color": { "mode": "palette-classic" },
+              "custom": { "lineWidth": 2, "fillOpacity": 10 }
+            }
+          },
+          "targets": [
+            {
+              "datasource": { "type": "prometheus" },
+              "expr": "sum(rate(node_network_receive_bytes_total{device!~\"lo|veth.*|cni.*|flannel.*|cilium.*\"}[5m]))",
+              "legendFormat": "Receive"
+            },
+            {
+              "datasource": { "type": "prometheus" },
+              "expr": "sum(rate(node_network_transmit_bytes_total{device!~\"lo|veth.*|cni.*|flannel.*|cilium.*\"}[5m]))",
+              "legendFormat": "Transmit"
+            }
+          ]
+        },
+        {
+          "id": 4,
+          "title": "Pod Status by Namespace",
+          "type": "bargauge",
+          "gridPos": { "x": 0, "y": 8, "w": 8, "h": 10 },
+          "options": {
+            "orientation": "horizontal",
+            "reduceOptions": { "calcs": ["lastNotNull"] },
+            "displayMode": "gradient"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "short",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  { "color": "green", "value": null },
+                  { "color": "yellow", "value": 1 }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "targets": [
+            {
+              "datasource": { "type": "prometheus" },
+              "expr": "sum by (namespace) (kube_pod_status_phase{phase=\"Running\"})",
+              "legendFormat": "{{namespace}} Running"
+            }
+          ]
+        },
+        {
+          "id": 5,
+          "title": "Pending / Failed Pods",
+          "type": "table",
+          "gridPos": { "x": 8, "y": 8, "w": 8, "h": 10 },
+          "options": { "sortBy": [{ "displayName": "Pending", "desc": true }] },
+          "fieldConfig": {
+            "defaults": { "unit": "short" },
+            "overrides": [
+              {
+                "matcher": { "id": "byName", "options": "Pending" },
+                "properties": [{ "id": "custom.width", "value": 80 },
+                  { "id": "thresholds", "value": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 1 }] } },
+                  { "id": "custom.displayMode", "value": "color-background" }]
+              },
+              {
+                "matcher": { "id": "byName", "options": "Failed" },
+                "properties": [{ "id": "custom.width", "value": 80 },
+                  { "id": "thresholds", "value": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "red", "value": 1 }] } },
+                  { "id": "custom.displayMode", "value": "color-background" }]
+              }
+            ]
+          },
+          "transformations": [
+            { "id": "merge", "options": {} },
+            { "id": "organize", "options": { "renameByName": { "namespace": "Namespace", "Value #A": "Pending", "Value #B": "Failed" } } }
+          ],
+          "targets": [
+            {
+              "datasource": { "type": "prometheus" },
+              "expr": "sum by (namespace) (kube_pod_status_phase{phase=\"Pending\"})",
+              "legendFormat": "{{namespace}}",
+              "refId": "A"
+            },
+            {
+              "datasource": { "type": "prometheus" },
+              "expr": "sum by (namespace) (kube_pod_status_phase{phase=\"Failed\"})",
+              "legendFormat": "{{namespace}}",
+              "refId": "B"
+            }
+          ]
+        },
+        {
+          "id": 6,
+          "title": "CPU by Namespace",
+          "type": "timeseries",
+          "gridPos": { "x": 16, "y": 8, "w": 8, "h": 10 },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "cores",
+              "color": { "mode": "palette-classic" },
+              "custom": { "lineWidth": 2, "fillOpacity": 10 }
+            }
+          },
+          "targets": [
+            {
+              "datasource": { "type": "prometheus" },
+              "expr": "sum by (namespace) (rate(container_cpu_usage_seconds_total{container!=\"\", container!=\"POD\"}[5m]))",
+              "legendFormat": "{{namespace}}"
+            }
+          ]
+        },
+        {
+          "id": 7,
+          "title": "Memory by Namespace",
+          "type": "timeseries",
+          "gridPos": { "x": 0, "y": 18, "w": 12, "h": 8 },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "bytes",
+              "color": { "mode": "palette-classic" },
+              "custom": { "lineWidth": 2, "fillOpacity": 10 }
+            }
+          },
+          "targets": [
+            {
+              "datasource": { "type": "prometheus" },
+              "expr": "sum by (namespace) (container_memory_working_set_bytes{container!=\"\", container!=\"POD\"})",
+              "legendFormat": "{{namespace}}"
+            }
+          ]
+        },
+        {
+          "id": 8,
+          "title": "Node CPU / Memory Summary",
+          "type": "stat",
+          "gridPos": { "x": 12, "y": 18, "w": 12, "h": 8 },
+          "options": {
+            "reduceOptions": { "calcs": ["lastNotNull"] },
+            "orientation": "auto",
+            "colorMode": "background",
+            "graphMode": "area"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "percentunit",
+              "min": 0,
+              "max": 1,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  { "color": "green", "value": null },
+                  { "color": "yellow", "value": 0.7 },
+                  { "color": "red", "value": 0.9 }
+                ]
+              }
+            }
+          },
+          "targets": [
+            {
+              "datasource": { "type": "prometheus" },
+              "expr": "1 - avg by (instance) (rate(node_cpu_seconds_total{mode=\"idle\"}[5m]))",
+              "legendFormat": "CPU {{instance}}"
+            },
+            {
+              "datasource": { "type": "prometheus" },
+              "expr": "1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)",
+              "legendFormat": "RAM {{instance}}"
+            }
+          ]
+        }
+      ],
+      "schemaVersion": 38
+    }
