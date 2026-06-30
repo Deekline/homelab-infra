@@ -33,7 +33,7 @@ data:
           entryPoints:
             - websecure
           middlewares:
-            - local-only@kubernetescrd
+            - traefik-local-only@kubernetescrd
           service: proxmox
           tls: {}
         truenas:
@@ -41,7 +41,7 @@ data:
           entryPoints:
             - websecure
           middlewares:
-            - local-only@kubernetescrd
+            - traefik-local-only@kubernetescrd
           service: truenas
           tls: {}
         opnsense:
@@ -49,7 +49,7 @@ data:
           entryPoints:
             - websecure
           middlewares:
-            - local-only@kubernetescrd
+            - traefik-local-only@kubernetescrd
           service: opnsense
           tls: {}
         pihole:
@@ -57,7 +57,7 @@ data:
           entryPoints:
             - websecure
           middlewares:
-            - local-only@kubernetescrd
+            - traefik-local-only@kubernetescrd
           service: pihole
           tls: {}
         ha:
@@ -65,20 +65,20 @@ data:
           entryPoints:
             - websecure
           middlewares:
-            - local-only@kubernetescrd
+            - traefik-local-only@kubernetescrd
           service: ha
           tls: {}
       services:
         proxmox:
           loadBalancer:
             passHostHeader: true
-            serversTransport: "ignorecert@kubernetescrd"
+            serversTransport: "traefik-ignorecert@kubernetescrd"
             servers:
               - url: "https://10.0.10.2:8006"
         truenas:
           loadBalancer:
             passHostHeader: true
-            serversTransport: "nasignore@kubernetescrd"
+            serversTransport: "traefik-nasignore@kubernetescrd"
             servers:
               - url: "https://10.0.10.150:443"
         opnsense:
