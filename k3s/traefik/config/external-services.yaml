@@ -19,6 +19,16 @@ spec:
   insecureSkipVerify: true
 
 ---
+apiVersion: traefik.io/v1alpha1
+kind: ServersTransport
+metadata:
+  name: opnsenseignore
+  namespace: traefik
+spec:
+  serverName: "opnsense"
+  insecureSkipVerify: true
+
+---
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -84,8 +94,9 @@ data:
         opnsense:
           loadBalancer:
             passHostHeader: true
+            serversTransport: "traefik-opnsenseignore@kubernetescrd"
             servers:
-              - url: "http://10.0.10.1:80"
+              - url: "https://10.0.10.1:443"
         pihole:
           loadBalancer:
             passHostHeader: true
@@ -93,6 +104,6 @@ data:
               - url: "http://10.0.10.10:80"
         ha:
           loadBalancer:
-            passHostHeader: true
+            passHostHeader: false
             servers:
               - url: "http://10.0.10.101:8123"
