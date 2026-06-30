@@ -38,6 +38,11 @@ grafana:
                     - prometheus
             topologyKey: kubernetes.io/hostname
 
+  sidecar:
+    datasources:
+      defaultDatasourceEnabled: true
+      defaultDatasourceScrapeInterval: 60s
+
   additionalDataSources:
     - name: Loki
       type: loki
@@ -48,6 +53,8 @@ grafana:
 prometheus:
   prometheusSpec:
     retention: 30d
+    scrapeInterval: 60s
+    evaluationInterval: 60s
     resources:
       requests:
         memory: 512Mi
