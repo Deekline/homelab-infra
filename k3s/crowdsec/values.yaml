@@ -23,6 +23,11 @@ lapi:
           name: crowdsec-secrets
           key: enrollKey
           optional: true
+    - name: REGISTRATION_TOKEN
+      valueFrom:
+        secretKeyRef:
+          name: crowdsec-secrets
+          key: registrationToken
   extraVolumes:
     - name: gotify-notifier
       secret:
@@ -39,6 +44,22 @@ lapi:
       subPath: profiles.yaml
 
 config:
+  config.yaml.local: |
+    api:
+      client:
+        unregister_on_exit: true
+      server:
+        auto_registration:
+          enabled: true
+          token: "${REGISTRATION_TOKEN}"
+          allowed_ranges:
+            - "127.0.0.1/32"
+            - "10.0.0.0/8"
+    db_config:
+      flush:
+        agents_autodelete:
+          login_password: 6h
+
   profiles.yaml: |
     name: default_ip_remediation
     filters:
@@ -65,6 +86,11 @@ agent:
         secretKeyRef:
           name: crowdsec-secrets
           key: agentUsername
+    - name: REGISTRATION_TOKEN
+      valueFrom:
+        secretKeyRef:
+          name: crowdsec-secrets
+          key: registrationToken
     - name: CUSTOM_HOSTNAME
       valueFrom:
         fieldRef:
