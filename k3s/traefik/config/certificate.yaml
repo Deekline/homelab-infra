@@ -20,5 +20,4 @@ metadata:
   namespace: traefik
 spec:
   defaultCertificate:
-    secretRef:
-      name: d-kline-org-tls
+    secretName: d-kline-org-tls
