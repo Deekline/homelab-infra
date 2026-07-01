@@ -52,6 +52,12 @@ singleBinary:
                     - prometheus
             topologyKey: kubernetes.io/hostname
 
+chunksCache:
+  enabled: false
+
+resultsCache:
+  enabled: false
+
 backend:
   replicas: 0
 read:
