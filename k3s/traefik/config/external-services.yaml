@@ -78,6 +78,22 @@ data:
             - traefik-local-only@kubernetescrd
           service: ha
           tls: {}
+        pve1:
+          rule: "Host(`pve1.d-kline.org`)"
+          entryPoints:
+            - websecure
+          middlewares:
+            - traefik-local-only@kubernetescrd
+          service: pve1
+          tls: {}
+        pve2:
+          rule: "Host(`pve2.d-kline.org`)"
+          entryPoints:
+            - websecure
+          middlewares:
+            - traefik-local-only@kubernetescrd
+          service: pve2
+          tls: {}
       services:
         proxmox:
           loadBalancer:
@@ -107,3 +123,15 @@ data:
             passHostHeader: false
             servers:
               - url: "http://10.0.10.101:8123"
+        pve1:
+          loadBalancer:
+            passHostHeader: true
+            serversTransport: "traefik-ignorecert@kubernetescrd"
+            servers:
+              - url: "https://10.0.10.30:8006"
+        pve2:
+          loadBalancer:
+            passHostHeader: true
+            serversTransport: "traefik-ignorecert@kubernetescrd"
+            servers:
+              - url: "https://10.0.10.40:8006"
