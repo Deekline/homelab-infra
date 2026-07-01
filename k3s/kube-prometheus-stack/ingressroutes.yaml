@@ -12,6 +12,8 @@ spec:
       middlewares:
         - name: local-only
           namespace: traefik
+        - name: authelia
+          namespace: traefik
         - name: security-headers
           namespace: traefik
       services:

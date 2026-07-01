@@ -37,6 +37,14 @@ data:
         # Authelia portal itself — no auth loop
         - domain: auth.d-kline.org
           policy: bypass
+        # Grafana solo panels (d-solo) are embedded via iframe and can't do an
+        # interactive 2FA login — bypass auth for just that path
+        - domain: grafana.d-kline.org
+          resources:
+            - "^/d-solo/.*$"
+          networks:
+            - internal
+          policy: bypass
         # All other services require 2FA from LAN
         - domain: "*.d-kline.org"
           networks:
