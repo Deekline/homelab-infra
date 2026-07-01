@@ -16,6 +16,12 @@ grafana:
   grafana.ini:
     security:
       allow_embedding: true
+    auth.anonymous:
+      enabled: true
+      org_name: Main Org.
+      org_role: Viewer
+    explore:
+      enabled: false
 
   persistence:
     enabled: true
@@ -42,6 +48,8 @@ grafana:
     datasources:
       defaultDatasourceEnabled: true
       defaultDatasourceScrapeInterval: 60s
+    dashboards:
+      defaultFolderName: "Internal"
 
   additionalDataSources:
     - name: Loki
