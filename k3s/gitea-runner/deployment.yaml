@@ -66,6 +66,12 @@ spec:
               mountPath: /data
             - name: cache
               mountPath: /cache
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              memory: 512Mi
 
         - name: dind
           image: docker:27-dind

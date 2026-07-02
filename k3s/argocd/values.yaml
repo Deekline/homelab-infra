@@ -12,8 +12,16 @@ server:
 redis:
   enabled: true
 
+controller:
+  resources:
+    limits:
+      memory: 1Gi
+
 repoServer:
   env: []
+  resources:
+    limits:
+      memory: 256Mi
 
 crds:
   install: true
