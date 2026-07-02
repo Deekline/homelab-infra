@@ -158,6 +158,9 @@ kubeScheduler:
 kubeProxy:
   enabled: false
 
+kubeEtcd:
+  enabled: false
+
 prometheus-node-exporter:
   enabled: true
 
