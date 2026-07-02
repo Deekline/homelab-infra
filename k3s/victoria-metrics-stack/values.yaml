@@ -1,4 +1,9 @@
+# Required when using helm releaseName in ArgoCD so VMServiceScrapes resolve correctly
+argocdReleaseOverride: monitoring
+
 grafana:
+  enabled: true
+
   initChownData:
     enabled: false
 
@@ -41,7 +46,7 @@ grafana:
                 - key: app.kubernetes.io/name
                   operator: In
                   values:
-                    - prometheus
+                    - vmsingle
             topologyKey: kubernetes.io/hostname
 
   sidecar:
@@ -58,24 +63,22 @@ grafana:
       access: proxy
       isDefault: false
 
-prometheus:
-  prometheusSpec:
-    retention: 30d
-    scrapeInterval: 60s
-    evaluationInterval: 60s
+vmsingle:
+  enabled: true
+  spec:
+    retentionPeriod: "30d"
     resources:
       requests:
-        memory: 512Mi
+        memory: 256Mi
       limits:
-        memory: 1500Mi
-    storageSpec:
-      volumeClaimTemplate:
-        spec:
-          storageClassName: nfs-monitoring
-          accessModes: ["ReadWriteOnce"]
-          resources:
-            requests:
-              storage: 20Gi
+        memory: 512Mi
+    storage:
+      storageClassName: nfs-monitoring
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: 20Gi
     affinity:
       podAntiAffinity:
         preferredDuringSchedulingIgnoredDuringExecution:
@@ -89,35 +92,28 @@ prometheus:
                       - loki
               topologyKey: kubernetes.io/hostname
 
-  ingress:
-    enabled: false
+vmagent:
+  enabled: true
+  spec:
+    scrapeInterval: 60s
+    resources:
+      requests:
+        memory: 64Mi
+      limits:
+        memory: 256Mi
+
+vmalert:
+  enabled: true
+  spec:
+    evaluationInterval: 60s
+    resources:
+      requests:
+        memory: 32Mi
+      limits:
+        memory: 128Mi
 
 alertmanager:
-  alertmanagerSpec:
-    storage:
-      volumeClaimTemplate:
-        spec:
-          storageClassName: nfs-monitoring
-          accessModes: ["ReadWriteOnce"]
-          resources:
-            requests:
-              storage: 2Gi
-    affinity:
-      podAntiAffinity:
-        preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 50
-            podAffinityTerm:
-              labelSelector:
-                matchExpressions:
-                  - key: app.kubernetes.io/name
-                    operator: In
-                    values:
-                      - prometheus
-              topologyKey: kubernetes.io/hostname
-
-  ingress:
-    enabled: false
-
+  enabled: true
   config:
     global:
       resolve_timeout: 5m
@@ -157,11 +153,10 @@ defaultRules:
   rules:
     kubeProxy: false
     kubeControllerManager: false
-    kubeSchedulerAlerting: false
-    kubeSchedulerRecording: false
+    kubeScheduler: false
 
-nodeExporter:
+prometheus-node-exporter:
   enabled: true
 
-kubeStateMetrics:
+kube-state-metrics:
   enabled: true

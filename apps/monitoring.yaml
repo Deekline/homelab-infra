@@ -3,20 +3,20 @@ kind: Application
 metadata:
   finalizers:
     - resources-finalizer.argocd.argoproj.io
-  name: kube-prometheus-stack
+  name: victoria-metrics-stack
   namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: "10"
 spec:
   project: default
   sources:
-    - repoURL: https://prometheus-community.github.io/helm-charts
-      chart: kube-prometheus-stack
-      targetRevision: 82.13.5
+    - repoURL: https://victoriametrics.github.io/helm-charts/
+      chart: victoria-metrics-k8s-stack
+      targetRevision: 0.85.9
       helm:
         releaseName: monitoring
         valueFiles:
-          - $values/k3s/kube-prometheus-stack/values.yaml
+          - $values/k3s/victoria-metrics-stack/values.yaml
     - repoURL: ssh://git@10.0.10.150:30009/deekline/homelab-infra.git
       targetRevision: deploy
       ref: values

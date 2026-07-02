@@ -1,10 +1,8 @@
-apiVersion: monitoring.coreos.com/v1
-kind: PrometheusRule
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMRule
 metadata:
   name: homelab-alerts
   namespace: monitoring
-  labels:
-    release: monitoring
 spec:
   groups:
     - name: homelab.pod
