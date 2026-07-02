@@ -7,6 +7,11 @@ loki:
   storage:
     type: filesystem
 
+  ingester:
+    chunk_idle_period: 2h
+    max_chunk_age: 4h
+    chunk_retain_period: 1m
+
   limits_config:
     retention_period: 7d
 
