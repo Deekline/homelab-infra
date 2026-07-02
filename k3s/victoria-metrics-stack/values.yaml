@@ -161,6 +161,26 @@ kubeProxy:
 kubeEtcd:
   enabled: false
 
+defaultDashboards:
+  dashboards:
+    grafana-overview:
+      enabled: false
+    victoriametrics-vmalert:
+      enabled: false
+    victoriametrics-operator:
+      enabled: false
+  sources:
+    kube-prometheus:
+      enabled: false
+    victoriametrics-vmalert:
+      enabled: false
+    victoriametrics-operator:
+      enabled: false
+    kubernetes-system-api-server:
+      enabled: false
+    kubernetes-system-coredns:
+      enabled: false
+
 prometheus-node-exporter:
   enabled: true
 
