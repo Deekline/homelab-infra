@@ -21,6 +21,7 @@ spec:
           args:
             - --requirepass=$(DRAGONFLY_PASSWORD)
             - --default_lua_flags=allow-undeclared-keys disable-atomicity
+            - --force_epoll
           env:
             - name: DRAGONFLY_PASSWORD
               valueFrom:
