@@ -149,6 +149,15 @@ alertmanager:
           - severity = "warning"
         equal: ["alertname", "namespace", "pod"]
 
+kubeControllerManager:
+  enabled: false
+
+kubeScheduler:
+  enabled: false
+
+kubeProxy:
+  enabled: false
+
 prometheus-node-exporter:
   enabled: true
 
