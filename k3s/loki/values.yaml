@@ -11,6 +11,8 @@ loki:
     chunk_idle_period: 2h
     max_chunk_age: 4h
     chunk_retain_period: 1m
+    wal:
+      dir: /wal
 
   limits_config:
     retention_period: 7d
@@ -35,6 +37,12 @@ deploymentMode: SingleBinary
 
 singleBinary:
   replicas: 1
+  extraVolumes:
+    - name: wal
+      emptyDir: {}
+  extraVolumeMounts:
+    - name: wal
+      mountPath: /wal
   resources:
     requests:
       memory: 256Mi
