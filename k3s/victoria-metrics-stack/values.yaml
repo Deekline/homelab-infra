@@ -162,14 +162,12 @@ kubeEtcd:
   enabled: false
 
 defaultRules:
-  rules:
-    kubeScheduler:
+  groups:
+    kube-scheduler.rules:
       enabled: false
-    kubeControllerManager:
+    kubernetes-system-scheduler:
       enabled: false
-    kubeProxy:
-      enabled: false
-    etcd:
+    kubernetes-system-controller-manager:
       enabled: false
 
 defaultDashboards:
