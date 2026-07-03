@@ -161,6 +161,17 @@ kubeProxy:
 kubeEtcd:
   enabled: false
 
+defaultRules:
+  rules:
+    kubeScheduler:
+      enabled: false
+    kubeControllerManager:
+      enabled: false
+    kubeProxy:
+      enabled: false
+    etcd:
+      enabled: false
+
 defaultDashboards:
   dashboards:
     grafana-overview:
