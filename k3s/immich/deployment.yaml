@@ -21,7 +21,7 @@ spec:
         fsGroup: 3004
       containers:
         - name: immich-server
-          image: ghcr.io/immich-app/immich-server:v2.7.5
+          image: ghcr.io/immich-app/immich-server:v3.0.1
           ports:
             - containerPort: 2283
           env:
@@ -108,7 +108,7 @@ spec:
             runAsUser: 0
       containers:
         - name: immich-machine-learning
-          image: ghcr.io/immich-app/immich-machine-learning:v2.7.5
+          image: ghcr.io/immich-app/immich-machine-learning:v3.0.1
           ports:
             - containerPort: 3003
           env:
