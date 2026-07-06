@@ -5,11 +5,15 @@ metadata:
   namespace: immich
 spec:
   instances: 1
-  imageName: ghcr.io/gabe565/cloudnativepg-vecto-rs:16-vectors0.2.0
+  # Bridge image for pgvecto.rs -> VectorChord migration: bundles both
+  # extensions so Immich (still v2.7.5) can reindex onto vchord before we
+  # drop pgvecto.rs. Swap to tensorchord/cloudnative-vectorchord once done.
+  imageName: ghcr.io/corentingiraud/cnpg-pgvector-vectorchord:16-migration
 
   postgresql:
     shared_preload_libraries:
       - vectors.so
+      - vchord.so
 
   bootstrap:
     initdb:
