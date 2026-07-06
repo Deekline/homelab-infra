@@ -5,14 +5,12 @@ metadata:
   namespace: immich
 spec:
   instances: 1
-  # Bridge image for pgvecto.rs -> VectorChord migration: bundles both
-  # extensions so Immich (still v2.7.5) can reindex onto vchord before we
-  # drop pgvecto.rs. Swap to tensorchord/cloudnative-vectorchord once done.
-  imageName: ghcr.io/corentingiraud/cnpg-pgvector-vectorchord:16-migration
+  # VectorChord-only image — pgvecto.rs migration finished; Immich reindexed
+  # clip_index/face_index onto vchord while both extensions were installed.
+  imageName: ghcr.io/tensorchord/cloudnative-vectorchord:16-0.3.0
 
   postgresql:
     shared_preload_libraries:
-      - vectors.so
       - vchord.so
 
   bootstrap:
