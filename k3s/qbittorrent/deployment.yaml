@@ -16,7 +16,7 @@ spec:
         app: qbittorrent
     spec:
       securityContext:
-        fsGroup: 1000
+        fsGroup: 3006
       containers:
         - name: gluetun
           image: qmcgaw/gluetun:latest
@@ -54,9 +54,9 @@ spec:
             - containerPort: 8080
           env:
             - name: PUID
-              value: "1000"
+              value: "1001"
             - name: PGID
-              value: "1000"
+              value: "3006"
             - name: TZ
               value: Europe/Warsaw
             - name: WEBUI_PORT

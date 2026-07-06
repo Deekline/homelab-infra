@@ -18,7 +18,7 @@ spec:
       nodeSelector:
         kubernetes.io/hostname: k3s-worker-2
       securityContext:
-        fsGroup: 1000
+        fsGroup: 3006
       containers:
         - name: jellyfin
           image: jellyfin/jellyfin:latest
@@ -43,8 +43,8 @@ spec:
               memory: 2Gi
           securityContext:
             allowPrivilegeEscalation: false
-            runAsUser: 1000
-            runAsGroup: 1000
+            runAsUser: 1001
+            runAsGroup: 3006
       volumes:
         - name: config
           persistentVolumeClaim:

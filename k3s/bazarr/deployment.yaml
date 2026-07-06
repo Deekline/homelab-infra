@@ -16,7 +16,7 @@ spec:
         app: bazarr
     spec:
       securityContext:
-        fsGroup: 1000
+        fsGroup: 3006
       containers:
         - name: bazarr
           image: lscr.io/linuxserver/bazarr:latest
@@ -24,9 +24,9 @@ spec:
             - containerPort: 6767
           env:
             - name: PUID
-              value: "1000"
+              value: "1001"
             - name: PGID
-              value: "1000"
+              value: "3006"
             - name: TZ
               value: Europe/Warsaw
           volumeMounts:
