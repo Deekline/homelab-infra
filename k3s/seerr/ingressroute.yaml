@@ -1,13 +1,13 @@
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
-  name: jellyseerr
+  name: seerr
   namespace: media
 spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`jellyseerr.d-kline.org`)
+    - match: Host(`seerr.d-kline.org`)
       kind: Rule
       middlewares:
         - name: local-only
@@ -17,6 +17,6 @@ spec:
         - name: security-headers
           namespace: traefik
       services:
-        - name: jellyseerr
+        - name: seerr
           port: 5055
   tls: {}

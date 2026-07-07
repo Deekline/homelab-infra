@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: jellyseerr
+  name: seerr
   namespace: media
   annotations:
     reloader.stakater.com/auto: "true"
@@ -9,17 +9,17 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: jellyseerr
+      app: seerr
   template:
     metadata:
       labels:
-        app: jellyseerr
+        app: seerr
     spec:
       securityContext:
         fsGroup: 1000
       containers:
-        - name: jellyseerr
-          image: fallenbagel/jellyseerr:latest
+        - name: seerr
+          image: ghcr.io/seerr-team/seerr:latest
           ports:
             - containerPort: 5055
           env:
@@ -37,19 +37,21 @@ spec:
               memory: 512Mi
           securityContext:
             allowPrivilegeEscalation: false
+            runAsUser: 1000
+            runAsGroup: 1000
       volumes:
         - name: config
           persistentVolumeClaim:
-            claimName: jellyseerr-config
+            claimName: seerr-config
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: jellyseerr
+  name: seerr
   namespace: media
 spec:
   selector:
-    app: jellyseerr
+    app: seerr
   ports:
     - port: 5055
       targetPort: 5055

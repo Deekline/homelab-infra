@@ -3,7 +3,7 @@ kind: Application
 metadata:
   finalizers:
     - resources-finalizer.argocd.argoproj.io
-  name: jellyseerr
+  name: seerr
   namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: "5"
@@ -12,7 +12,7 @@ spec:
   source:
     repoURL: ssh://git@10.0.10.150:30009/deekline/homelab-infra.git
     targetRevision: deploy
-    path: k3s/jellyseerr
+    path: k3s/seerr
   destination:
     server: https://kubernetes.default.svc
     namespace: media
