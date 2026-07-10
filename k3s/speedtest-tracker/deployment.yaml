@@ -49,6 +49,8 @@ spec:
                         value: "1000"
                       - name: TZ
                         value: Europe/Warsaw
+                      - name: DB_CONNECTION
+                        value: sqlite
                       - name: DISPLAY_TIMEZONE
                         value: Europe/Warsaw
                       - name: APP_URL
