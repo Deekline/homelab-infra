@@ -50,7 +50,23 @@ spec:
                       - name: TZ
                         value: Europe/Warsaw
                       - name: DB_CONNECTION
-                        value: sqlite
+                        value: pgsql
+                      - name: DB_HOST
+                        value: speedtest-tracker-db-rw
+                      - name: DB_PORT
+                        value: "5432"
+                      - name: DB_DATABASE
+                        value: speedtest_tracker
+                      - name: DB_USERNAME
+                        valueFrom:
+                            secretKeyRef:
+                                name: speedtest-tracker-db-credentials
+                                key: username
+                      - name: DB_PASSWORD
+                        valueFrom:
+                            secretKeyRef:
+                                name: speedtest-tracker-db-credentials
+                                key: password
                       - name: DISPLAY_TIMEZONE
                         value: Europe/Warsaw
                       - name: APP_URL
