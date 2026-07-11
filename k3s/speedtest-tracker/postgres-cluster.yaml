@@ -1,0 +1,19 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: speedtest-tracker-db
+  namespace: speedtest-tracker
+spec:
+  instances: 1
+  imageName: ghcr.io/cloudnative-pg/postgresql:16
+
+  bootstrap:
+    initdb:
+      database: speedtest_tracker
+      owner: deekline
+      secret:
+        name: speedtest-tracker-db-credentials
+
+  storage:
+    size: 5Gi
+    storageClass: nfs-db
