@@ -69,6 +69,10 @@ spec:
                                 key: password
                       - name: DISPLAY_TIMEZONE
                         value: Europe/Warsaw
+                      - name: SPEEDTEST_SCHEDULE
+                        value: "0 */2 * * *"
+                      - name: PRUNE_RESULTS_OLDER_THAN
+                        value: "5"
                       - name: APP_URL
                         value: https://speedtest.d-kline.org
                       - name: APP_KEY
