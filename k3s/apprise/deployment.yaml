@@ -1,0 +1,102 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    name: apprise
+  name: apprise
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: apprise-data-nfs
+  namespace: apprise
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: nfs-storage
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: apprise
+  namespace: apprise
+  labels:
+    name: apprise
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: apprise
+  template:
+    metadata:
+      labels:
+        app: apprise
+    spec:
+      securityContext:
+        fsGroup: 1000
+      containers:
+        - name: apprise
+          image: caronc/apprise:latest
+          ports:
+            - name: http
+              containerPort: 8000
+          env:
+            - name: APPRISE_STATEFUL_MODE
+              value: simple
+            - name: APPRISE_WORKER_COUNT
+              value: "1"
+            - name: APPRISE_ADMIN
+              value: "y"
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+            readOnlyRootFilesystem: true
+            seccompProfile:
+              type: RuntimeDefault
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+            requests:
+              cpu: "250m"
+              memory: "128Mi"
+          volumeMounts:
+            - mountPath: /config
+              name: apprise-data
+            - mountPath: /plugin
+              name: apprise-data
+            - mountPath: /attach
+              name: apprise-data
+            - mountPath: /tmp
+              name: tmp
+      volumes:
+        - name: apprise-data
+          persistentVolumeClaim:
+            claimName: apprise-data-nfs
+        - name: tmp
+          emptyDir:
+            medium: Memory
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: apprise
+  namespace: apprise
+  labels:
+    name: apprise
+spec:
+  selector:
+    app: apprise
+  ports:
+    - name: http
+      port: 80
+      targetPort: http

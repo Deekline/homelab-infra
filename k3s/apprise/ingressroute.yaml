@@ -1,0 +1,32 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: apprise
+  namespace: apprise
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - kind: Rule
+      match: Host(`apprise.d-kline.org`) && PathPrefix(`/notify`)
+      middlewares:
+        - name: local-only
+          namespace: traefik
+        - name: security-headers
+          namespace: traefik
+      services:
+        - name: apprise
+          port: 80
+    - kind: Rule
+      match: Host(`apprise.d-kline.org`)
+      middlewares:
+        - name: local-only
+          namespace: traefik
+        - name: authelia
+          namespace: traefik
+        - name: security-headers
+          namespace: traefik
+      services:
+        - name: apprise
+          port: 80
+  tls: {}
