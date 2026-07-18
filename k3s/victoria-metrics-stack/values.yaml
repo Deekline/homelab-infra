@@ -150,6 +150,16 @@ alertmanager:
           - bot_token_file: /etc/vm/secrets/alertmanager-telegram/bot_token
             chat_id_file: /etc/vm/secrets/alertmanager-telegram/chat_id
             send_resolved: true
+            parse_mode: ""
+            message: |-
+              {{ if eq .Status "firing" }}🔥 FIRING{{ else }}✅ RESOLVED{{ end }}: {{ .CommonLabels.alertname }}
+              {{- if .CommonLabels.severity }}
+              Severity: {{ .CommonLabels.severity }}{{ end }}
+              {{- if .CommonLabels.namespace }}
+              Namespace: {{ .CommonLabels.namespace }}{{ end }}
+              {{- range .Alerts }}
+              {{ .Annotations.summary }}
+              {{- end }}
     inhibit_rules:
       - source_matchers:
           - severity = "critical"
