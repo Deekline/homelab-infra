@@ -23,17 +23,7 @@ lapi:
           name: crowdsec-secrets
           key: enrollKey
           optional: true
-  extraVolumes:
-    - name: gotify-notifier
-      secret:
-        secretName: crowdsec-secrets
-        items:
-          - key: gotify-http.yaml
-            path: gotify-http.yaml
   extraVolumeMounts:
-    - name: gotify-notifier
-      mountPath: /etc/crowdsec/notifications/gotify-http.yaml
-      subPath: gotify-http.yaml
     - name: crowdsec-profiles-volume
       mountPath: /etc/crowdsec/profiles.yaml
       subPath: profiles.yaml
@@ -63,8 +53,6 @@ config:
     decisions:
       - type: ban
         duration: 4h
-    notifications:
-      - http_gotify
     on_success: break
 
 agent:
