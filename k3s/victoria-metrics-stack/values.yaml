@@ -114,6 +114,9 @@ vmalert:
 
 alertmanager:
   enabled: true
+  spec:
+    secrets:
+      - alertmanager-telegram
   config:
     global:
       resolve_timeout: 5m
@@ -141,6 +144,10 @@ alertmanager:
       - name: gotify
         webhook_configs:
           - url: http://alertmanager-gotify-bridge.monitoring.svc.cluster.local:8080/gotify_webhook
+            send_resolved: true
+        telegram_configs:
+          - bot_token_file: /etc/vm/secrets/alertmanager-telegram/bot_token
+            chat_id_file: /etc/vm/secrets/alertmanager-telegram/chat_id
             send_resolved: true
     inhibit_rules:
       - source_matchers:
