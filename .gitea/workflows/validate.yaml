@@ -67,16 +67,13 @@ jobs:
     needs: [sops-check, kubeconform, trivy]
     if: failure()
     steps:
-      - name: Send Gotify notification
+      - name: Send Apprise notification
         run: |
-          curl -s -X POST "${{ secrets.GOTIFY_URL }}/message" \
-            -H "X-Gotify-Key: ${{ secrets.GOTIFY_TOKEN }}" \
-            -H "Content-Type: application/json" \
-            -d "{
-              \"title\": \"CI failed — homelab-infra\",
-              \"message\": \"Pipeline failed on branch ${{ github.ref_name }} (${{ github.sha }})\nTrigger: ${{ github.event_name }}\",
-              \"priority\": 7
-            }"
+          curl -s -X POST "${{ secrets.APPRISE_URL }}/notify/alerts" \
+            -F "title=CI failed — homelab-infra" \
+            -F "body=Pipeline failed on branch ${{ github.ref_name }} (${{ github.sha }})
+Trigger: ${{ github.event_name }}" \
+            -F "type=failure"
 
   promote:
     name: Promote to deploy
