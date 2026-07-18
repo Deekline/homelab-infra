@@ -71,8 +71,7 @@ jobs:
         run: |
           curl -s -X POST "${{ secrets.APPRISE_URL }}/notify/alerts" \
             -F "title=CI failed — homelab-infra" \
-            -F "body=Pipeline failed on branch ${{ github.ref_name }} (${{ github.sha }})
-Trigger: ${{ github.event_name }}" \
+            -F "body=Pipeline failed on branch ${{ github.ref_name }} (${{ github.sha }})"$'\n'"Trigger: ${{ github.event_name }}" \
             -F "type=failure"
 
   promote:
