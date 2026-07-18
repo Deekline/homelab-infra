@@ -69,7 +69,7 @@ jobs:
     steps:
       - name: Send Apprise notification
         run: |
-          curl -s -X POST "${{ vars.APPRISE_URL }}" \
+          curl -s -X POST "${{ secrets.APPRISE_URL }}" \
             -F "title=CI failed — homelab-infra" \
             -F "body=Pipeline failed on branch ${{ github.ref_name }} (${{ github.sha }})"$'\n'"Trigger: ${{ github.event_name }}" \
             -F "type=failure"
