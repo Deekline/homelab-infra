@@ -75,10 +75,14 @@ spec:
           volumeMounts:
             - name: n8n-home
               mountPath: /home/node/.n8n
+            - name: cache
+              mountPath: /home/node/.cache
             - name: tmp
               mountPath: /tmp
       volumes:
         - name: n8n-home
+          emptyDir: {}
+        - name: cache
           emptyDir: {}
         - name: tmp
           emptyDir:
