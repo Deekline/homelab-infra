@@ -35,6 +35,9 @@ lapi:
     - name: crowdsec-config-local-volume
       mountPath: /etc/crowdsec/config.yaml.local
       subPath: config.yaml.local
+    - name: crowdsec-notifications-http
+      mountPath: /etc/crowdsec/notifications/http.yaml
+      subPath: http.yaml
 
 config:
   config.yaml.local: |
