@@ -23,6 +23,11 @@ lapi:
           name: crowdsec-secrets
           key: enrollKey
           optional: true
+    - name: APPRISE_URL
+      valueFrom:
+        secretKeyRef:
+          name: crowdsec-secrets
+          key: appriseUrl
   extraVolumeMounts:
     - name: crowdsec-profiles-volume
       mountPath: /etc/crowdsec/profiles.yaml
@@ -53,7 +58,27 @@ config:
     decisions:
       - type: ban
         duration: 4h
+    notifications:
+      - http_default
     on_success: break
+
+  notifications:
+    http.yaml: |
+      type: http
+      name: http_default
+      log_level: info
+      group_wait: 30s
+      group_threshold: 10
+      format: |
+        {
+          "title": "CrowdSec ban",
+          "body": "{{ range . }}{{ range .Decisions }}{{ .Value }} banned for {{ .Duration }} ({{ .Scenario }}); {{ end }}{{ end }}",
+          "type": "warning"
+        }
+      url: ${APPRISE_URL}
+      method: POST
+      headers:
+        Content-Type: application/json
 
 agent:
   resources:
