@@ -1,0 +1,98 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: n8n
+  namespace: n8n
+  annotations:
+    reloader.stakater.com/auto: "true"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: n8n
+  template:
+    metadata:
+      labels:
+        app: n8n
+    spec:
+      securityContext:
+        fsGroup: 1000
+      containers:
+        - name: n8n
+          image: docker.n8n.io/n8nio/n8n:2.29.8
+          ports:
+            - name: http
+              containerPort: 5678
+          env:
+            - name: DB_TYPE
+              value: postgresdb
+            - name: DB_POSTGRESDB_HOST
+              value: n8n-db-rw
+            - name: DB_POSTGRESDB_DATABASE
+              value: n8n
+            - name: DB_POSTGRESDB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: n8n-db-credentials
+                  key: username
+            - name: DB_POSTGRESDB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: n8n-db-credentials
+                  key: password
+            - name: N8N_ENCRYPTION_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: n8n-encryption-key
+                  key: encryption-key
+            - name: N8N_HOST
+              value: n8n.d-kline.org
+            - name: N8N_PROTOCOL
+              value: https
+            - name: N8N_PORT
+              value: "5678"
+            - name: WEBHOOK_URL
+              value: https://n8n.d-kline.org/
+            - name: GENERIC_TIMEZONE
+              value: Europe/Warsaw
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+            readOnlyRootFilesystem: true
+            seccompProfile:
+              type: RuntimeDefault
+          resources:
+            requests:
+              cpu: 200m
+              memory: 256Mi
+            limits:
+              cpu: "1"
+              memory: 1Gi
+          volumeMounts:
+            - name: n8n-home
+              mountPath: /home/node/.n8n
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: n8n-home
+          emptyDir: {}
+        - name: tmp
+          emptyDir:
+            medium: Memory
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: n8n
+  namespace: n8n
+spec:
+  selector:
+    app: n8n
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
