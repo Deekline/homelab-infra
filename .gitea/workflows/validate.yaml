@@ -5,6 +5,10 @@ on:
     branches: [main, master]
   pull_request:
 
+concurrency:
+  group: promote-deploy
+  cancel-in-progress: false
+
 jobs:
   sops-check:
     name: Secrets encrypted
@@ -85,6 +89,15 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.GITEA_TOKEN }}
 
-      - name: Push to deploy branch
+      - name: Promote to deploy
         run: |
-          git push --force origin HEAD:deploy
+          git config user.name  "ci-bot"
+          git config user.email "ci@local"
+          git fetch origin deploy || true
+          git checkout -B deploy origin/deploy 2>/dev/null || git checkout -b deploy
+          git rm -rf --ignore-unmatch -- .
+          git checkout "$GITHUB_SHA" -- .
+          git add -A
+          git commit -m "deploy: ${GITHUB_REF_NAME}@${GITHUB_SHA:0:8} $(date -u +%F_%T)" \
+            || echo "no changes to promote"
+          git push origin deploy
