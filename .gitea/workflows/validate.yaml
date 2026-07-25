@@ -27,6 +27,20 @@ jobs:
           done
           exit $fail
 
+  gitleaks:
+    name: Secret scan (gitleaks)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run gitleaks
+        run: |
+          curl -sSL https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_linux_x64.tar.gz \
+            | tar xz gitleaks
+          ./gitleaks git . --no-banner --redact
+
   kubeconform:
     name: Validate manifests
     runs-on: ubuntu-latest
@@ -68,7 +82,7 @@ jobs:
   notify-failure:
     name: Notify failure
     runs-on: ubuntu-latest
-    needs: [sops-check, kubeconform, trivy]
+    needs: [sops-check, gitleaks, kubeconform, trivy]
     if: failure()
     steps:
       - name: Send Apprise notification
@@ -81,7 +95,7 @@ jobs:
   promote:
     name: Promote to deploy
     runs-on: ubuntu-latest
-    needs: [sops-check, kubeconform, trivy]
+    needs: [sops-check, gitleaks, kubeconform, trivy]
     if: github.event_name == 'push'
     steps:
       - uses: actions/checkout@v4
