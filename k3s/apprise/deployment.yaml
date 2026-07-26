@@ -41,7 +41,7 @@ spec:
         fsGroup: 1000
       containers:
         - name: apprise
-          image: caronc/apprise:1.12.0
+          image: caronc/apprise:latest
           ports:
             - name: http
               containerPort: 8000
