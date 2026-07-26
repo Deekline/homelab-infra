@@ -1,0 +1,29 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "ignorePaths": ["**/secrets.yaml"],
+  "labels": ["renovate", "dependencies"],
+  "schedule": ["* 12 * * 1,4"],
+  "enabledManagers": ["argocd", "kubernetes", "helm-values", "github-actions"],
+  "argocd": {
+    "managerFilePatterns": ["/^apps\\/.+\\.yaml$/"]
+  },
+  "kubernetes": {
+    "managerFilePatterns": ["/^k3s\\/.+\\.yaml$/"]
+  },
+  "packageRules": [
+    {
+      "description": "Group minor/patch chart and image bumps to cut PR noise",
+      "matchManagers": ["argocd", "kubernetes", "helm-values"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "chart/image minor and patch updates"
+    },
+    {
+      "description": "Keep major bumps isolated and clearly flagged for review",
+      "matchManagers": ["argocd", "kubernetes", "helm-values"],
+      "matchUpdateTypes": ["major"],
+      "labels": ["major-update"]
+    }
+  ],
+  "automerge": false
+}
