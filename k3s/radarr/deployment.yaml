@@ -19,7 +19,7 @@ spec:
         fsGroup: 3006
       containers:
         - name: radarr
-          image: lscr.io/linuxserver/radarr:latest
+          image: lscr.io/linuxserver/radarr:6.3.0.10514-ls312
           ports:
             - containerPort: 7878
           env:

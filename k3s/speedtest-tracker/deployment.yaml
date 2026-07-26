@@ -36,7 +36,7 @@ spec:
                 fsGroup: 1000
             containers:
                 - name: speedtest-tracker
-                  image: lscr.io/linuxserver/speedtest-tracker:latest
+                  image: lscr.io/linuxserver/speedtest-tracker:1.14.6-ls164
                   imagePullPolicy: Always
                   ports:
                       - name: http

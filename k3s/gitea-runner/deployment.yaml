@@ -29,7 +29,7 @@ spec:
       restartPolicy: Always
       containers:
         - name: runner
-          image: gitea/act_runner:latest
+          image: gitea/act_runner:v0.6.1
           command:
             - sh
             - -c
