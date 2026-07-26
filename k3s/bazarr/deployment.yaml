@@ -19,7 +19,7 @@ spec:
         fsGroup: 3006
       containers:
         - name: bazarr
-          image: lscr.io/linuxserver/bazarr:1.6.0-ls356
+          image: lscr.io/linuxserver/bazarr:v1.6.0-ls356
           ports:
             - containerPort: 6767
           env:
