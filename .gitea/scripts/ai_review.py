@@ -18,7 +18,7 @@ prompt = (
 
 payload = json.dumps({
     "model": "claude-sonnet-5",
-    "max_tokens": 1024,
+    "max_tokens": 2048,
     "messages": [{"role": "user", "content": prompt}],
 }).encode()
 
@@ -34,6 +34,11 @@ req = urllib.request.Request(
 with urllib.request.urlopen(req) as resp:
     result = json.load(resp)
 
-review = result["content"][0]["text"]
+# Sonnet 5 runs adaptive thinking by default, so content[0] may be a
+# thinking block rather than text — find the text block instead of
+# assuming position 0.
+text_blocks = [block["text"] for block in result["content"] if block["type"] == "text"]
+review = "\n\n".join(text_blocks)
+
 with open("review.md", "w") as f:
     f.write(review)
