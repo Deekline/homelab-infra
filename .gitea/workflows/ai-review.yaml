@@ -1,0 +1,38 @@
+name: AI PR Review
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  ai-review:
+    name: AI risk review
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.user.login == 'renovate-bot'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch PR diff
+        run: |
+          curl -sf -H "Authorization: token ${{ secrets.RENOVATE_TOKEN }}" \
+            "http://10.0.10.150:30008/api/v1/repos/deekline/homelab-infra/pulls/${{ github.event.pull_request.number }}.diff" \
+            -o pr.diff
+          head -c 100000 pr.diff > pr.diff.truncated
+
+      - name: Ask Claude for a risk review
+        run: python3 .gitea/scripts/ai_review.py
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+
+      - name: Post review as a PR comment
+        run: python3 .gitea/scripts/post_review_comment.py
+        env:
+          RENOVATE_TOKEN: ${{ secrets.RENOVATE_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+
+      - name: Notify via Apprise
+        run: |
+          curl -s -X POST "${{ secrets.APPRISE_URL }}" \
+            -F "title=Renovate PR ready for review — homelab-infra" \
+            -F "body=PR #${{ github.event.pull_request.number }}: ${{ github.event.pull_request.title }}"$'\n'"http://10.0.10.150:30008/deekline/homelab-infra/pulls/${{ github.event.pull_request.number }}" \
+            -F "type=info"
