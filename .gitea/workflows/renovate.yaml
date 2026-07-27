@@ -10,7 +10,7 @@ jobs:
     name: Run Renovate
     runs-on: ubuntu-latest
     container:
-      image: renovate/renovate:43.281.0
+      image: renovate/renovate:43.284.0
     steps:
       - name: Run Renovate
         run: renovate
