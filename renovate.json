@@ -13,10 +13,16 @@
   },
   "packageRules": [
     {
-      "description": "Group minor/patch chart and image bumps to cut PR noise",
-      "matchManagers": ["argocd", "kubernetes", "helm-values"],
+      "description": "Group minor/patch Helm chart bumps separately from raw image bumps",
+      "matchManagers": ["argocd", "helm-values"],
       "matchUpdateTypes": ["minor", "patch"],
-      "groupName": "chart/image minor and patch updates"
+      "groupName": "helm chart minor and patch updates"
+    },
+    {
+      "description": "Group minor/patch raw-manifest image bumps to cut PR noise",
+      "matchManagers": ["kubernetes"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "app image minor and patch updates"
     },
     {
       "description": "Keep major bumps isolated and clearly flagged for review",
