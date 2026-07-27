@@ -21,8 +21,20 @@ def referenced_values_files(app_manifest_path):
     return re.findall(r"-\s*\$values/(k3s/\S+\.ya?ml)", content)
 
 
+rendered_chart_diff = ""
+if os.path.exists("chart_render_diff.txt"):
+    rendered_chart_diff = open("chart_render_diff.txt").read().strip()
+
+# Apps already covered by a rendered manifest diff don't need the raw
+# values.yaml dumped too — the render already shows how those values
+# interact with the new chart, which is strictly stronger signal.
+apps_with_rendered_diff = set(re.findall(r"^### (\S+):", rendered_chart_diff, re.M))
+
 context_sections = []
 for app_manifest in changed_app_manifests(diff):
+    app_name = os.path.basename(app_manifest).removesuffix(".yaml")
+    if app_name in apps_with_rendered_diff:
+        continue
     for values_path in referenced_values_files(app_manifest):
         if not os.path.exists(values_path):
             continue
@@ -33,6 +45,11 @@ for app_manifest in changed_app_manifests(diff):
         )
 
 extra_context = "\n\n".join(context_sections)
+if rendered_chart_diff:
+    extra_context = (
+        f"Rendered manifest diff (ground truth for what actually changes "
+        f"in the cluster):\n\n{rendered_chart_diff}\n\n{extra_context}"
+    )
 
 prompt = (
     "You are reviewing an automated dependency-update pull request for a "
@@ -43,12 +60,16 @@ prompt = (
     "anything that could fail to deploy or fail at runtime), and "
     "**Recommendation** (safe to merge / merge with caution / needs manual "
     "testing before merge, with a one-line reason).\n\n"
-    "Ground the Risks section in the actual files below, not generic "
-    "version-bump boilerplate. If a values file is provided, check whether "
-    "its keys/structure are actually likely to conflict with the new "
-    "version — cite the specific keys you're concerned about, or say "
-    "there's nothing concerning in the current config instead of listing "
-    "hypothetical risks you can't tie to what's actually configured here.\n\n"
+    "Ground the Risks section in the actual context below, not generic "
+    "version-bump boilerplate. If a rendered manifest diff is provided, "
+    "that is ground truth for what actually changes in the cluster — base "
+    "your risk assessment on it directly rather than speculating about "
+    "what a chart version bump might do. If it shows no functional change, "
+    "say so plainly. If only a values file is provided (no rendered diff), "
+    "check whether its keys/structure are actually likely to conflict with "
+    "the new version — cite the specific keys you're concerned about, or "
+    "say there's nothing concerning instead of listing hypothetical risks "
+    "you can't tie to what's actually configured here.\n\n"
     f"Diff:\n{diff}"
 )
 

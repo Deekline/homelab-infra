@@ -19,6 +19,15 @@ jobs:
             -o pr.diff
           head -c 100000 pr.diff > pr.diff.truncated
 
+      - name: Install Helm
+        run: |
+          curl -sSL https://get.helm.sh/helm-v4.2.3-linux-amd64.tar.gz \
+            | tar -xz --strip-components=1 -C /usr/local/bin linux-amd64/helm
+          helm version
+
+      - name: Render chart version diff
+        run: python3 .gitea/scripts/render_chart_diff.py
+
       - name: Ask Claude for a risk review
         run: python3 .gitea/scripts/ai_review.py
         env:
