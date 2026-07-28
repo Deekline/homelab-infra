@@ -101,6 +101,8 @@ vmagent:
         memory: 64Mi
       limits:
         memory: 256Mi
+    nodeSelector:
+      kubernetes.io/hostname: k3s-worker-2
 
 vmalert:
   enabled: true
@@ -111,12 +113,16 @@ vmalert:
         memory: 32Mi
       limits:
         memory: 128Mi
+    nodeSelector:
+      kubernetes.io/hostname: k3s-worker-2
 
 alertmanager:
   enabled: true
   spec:
     secrets:
       - alertmanager-telegram
+    nodeSelector:
+      kubernetes.io/hostname: k3s-worker-2
   config:
     global:
       resolve_timeout: 5m
