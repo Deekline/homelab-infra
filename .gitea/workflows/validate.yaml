@@ -109,9 +109,9 @@ jobs:
           git config user.email "ci@local"
           git fetch origin deploy || true
           git checkout -B deploy origin/deploy 2>/dev/null || git checkout -b deploy
-          git rm -rf --ignore-unmatch -- .
-          git checkout "$GITHUB_SHA" -- .
-          git add -A
-          git commit -m "deploy: ${GITHUB_REF_NAME}@${GITHUB_SHA:0:8} $(date -u +%F_%T)" \
-            || echo "no changes to promote"
+
+          SOURCE_SUBJECT=$(git log -1 --format=%s "$GITHUB_SHA")
+          MSG=$(printf 'deploy: %s@%s %s\n\n%s' "$GITHUB_REF_NAME" "${GITHUB_SHA:0:8}" "$(date -u +%F_%T)" "$SOURCE_SUBJECT")
+
+          git merge --no-ff "$GITHUB_SHA" -m "$MSG"
           git push origin deploy
