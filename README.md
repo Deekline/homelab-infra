@@ -7,15 +7,17 @@ Kubernetes infrastructure for a self-hosted homelab running on a 3-node cluster 
 | Component | Role |
 |---|---|
 | k3s | Lightweight Kubernetes |
+| Cilium | CNI |
 | Traefik v3 | Ingress + TLS termination |
 | cert-manager | Wildcard TLS via Cloudflare DNS-01 |
 | ArgoCD | GitOps — all changes via Git push |
-| Authentik | OIDC/SSO identity provider |
+| Authelia | Forward-auth SSO (replaced Authentik, kept decommissioned in `apps/authentik.yaml.disabled`) |
 | CloudNativePG | PostgreSQL operator (one cluster per app) |
 | Dragonfly | Redis-compatible cache |
-| Prometheus + Grafana | Metrics and dashboards |
+| VictoriaMetrics stack | Metrics, Grafana dashboards, alerting (replaced Prometheus + Grafana) |
 | Loki + Promtail | Log aggregation |
 | CrowdSec | Behavioral IPS (Traefik bouncer) |
+| Apprise | Notification gateway (CI failures, alerts) |
 
 ## Repository Structure
 
@@ -38,10 +40,24 @@ sops -d k3s/<service>/secrets.yaml | kubectl apply -f -
 
 ## GitOps Flow
 
-Every change goes through Git — no manual `kubectl apply` in production.
+Every change goes through Git — no manual `kubectl apply` in production. ArgoCD watches the `deploy` branch, **not** `master`.
 
 ```
-git push → Gitea → ArgoCD detects drift → applies to cluster
+git push (master) → Gitea Actions CI validates → CI force-pushes to deploy → ArgoCD → cluster
 ```
 
-ArgoCD is configured with `automated.prune` and `automated.selfHeal` — the cluster always converges to what is in Git.
+CI (`.gitea/workflows/validate.yaml`) runs on every push/PR to `master`:
+
+| Job | Checks |
+|---|---|
+| `sops-check` | Fails if any `k3s/**/secrets.yaml` is unencrypted |
+| `gitleaks` | Secret scanning |
+| `kubeconform` | Validates rendered Kubernetes manifests |
+| `trivy` | Config misconfiguration scan |
+| `promote` | On success, merges the commit into `deploy` and pushes |
+
+Never push directly to `deploy` — only the `promote` job does that. ArgoCD runs with `automated.prune` and `automated.selfHeal`, so the cluster always converges to `deploy` branch state.
+
+## Dependency Updates
+
+Renovate (`.gitea/workflows/renovate.yaml`) runs on a schedule and opens PRs for chart/image updates against `master`. Each Renovate PR gets an automated risk review (`.gitea/workflows/ai-review.yaml`) that renders the chart version diff and asks Claude to assess it, posting the result as a PR comment.
