@@ -12,7 +12,7 @@ spec:
   sources:
     - repoURL: https://traefik.github.io/charts
       chart: traefik
-      targetRevision: "39.0.5"
+      targetRevision: "39.0.9"
       helm:
         valueFiles:
           - $values/k3s/traefik/values.yaml

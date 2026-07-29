@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: authentik
-          image: ghcr.io/goauthentik/server:2026.2.1
+          image: ghcr.io/goauthentik/server:2026.5.6
           args: ["server"]
           ports:
             - containerPort: 9000
@@ -65,7 +65,7 @@ spec:
     spec:
       containers:
         - name: authentik
-          image: ghcr.io/goauthentik/server:2026.2.1
+          image: ghcr.io/goauthentik/server:2026.5.6
           args: ["worker"]
           env:
             - name: AUTHENTIK_SECRET_KEY

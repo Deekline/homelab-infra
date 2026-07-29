@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: dragonfly
-          image: docker.dragonflydb.io/dragonflydb/dragonfly:v1.38.1
+          image: docker.dragonflydb.io/dragonflydb/dragonfly:v1.39.0
           ports:
             - containerPort: 6379
           args:
