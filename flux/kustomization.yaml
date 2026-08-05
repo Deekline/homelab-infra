@@ -7,3 +7,4 @@ resources:
   - bentopdf.yaml
   - homarr.yaml
   - immich-power-tools.yaml
+  - audiobookshelf.yaml
