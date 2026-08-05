@@ -4,3 +4,4 @@ resources:
   - git-source.yaml
   - root-kustomization.yaml
   - drawio.yaml
+  - bentopdf.yaml
