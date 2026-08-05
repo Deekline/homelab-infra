@@ -6,3 +6,4 @@ resources:
   - drawio.yaml
   - bentopdf.yaml
   - homarr.yaml
+  - immich-power-tools.yaml
