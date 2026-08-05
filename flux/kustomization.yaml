@@ -11,3 +11,4 @@ resources:
   - audiobookshelf.yaml
   - promtail.yaml
   - loki.yaml
+  - victoria-metrics-stack.yaml
