@@ -5,3 +5,4 @@ resources:
   - root-kustomization.yaml
   - drawio.yaml
   - bentopdf.yaml
+  - homarr.yaml
