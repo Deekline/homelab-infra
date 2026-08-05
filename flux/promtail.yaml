@@ -9,6 +9,7 @@ spec:
     kind: GitRepository
     name: homelab-infra
   path: ./k3s/promtail
+  targetNamespace: flux-system
   prune: true
   timeout: 3m
 ---
