@@ -1,0 +1,27 @@
+installCRDs: true
+
+imageReflectionController:
+  create: false
+
+imageAutomationController:
+  create: false
+
+sourceController:
+  resources:
+    limits:
+      memory: 256Mi
+
+kustomizeController:
+  resources:
+    limits:
+      memory: 512Mi
+
+helmController:
+  resources:
+    limits:
+      memory: 512Mi
+
+notificationController:
+  resources:
+    limits:
+      memory: 128Mi

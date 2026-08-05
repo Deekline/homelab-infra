@@ -1,0 +1,12 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: homelab-infra
+  namespace: flux-system
+spec:
+  interval: 1m
+  url: ssh://git@10.0.10.150:30009/deekline/homelab-infra.git
+  ref:
+    branch: deploy
+  secretRef:
+    name: gitea-deploy-key
