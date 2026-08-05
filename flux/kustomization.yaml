@@ -3,8 +3,10 @@ kind: Kustomization
 resources:
   - git-source.yaml
   - root-kustomization.yaml
+  - helm-repositories.yaml
   - drawio.yaml
   - bentopdf.yaml
   - homarr.yaml
   - immich-power-tools.yaml
   - audiobookshelf.yaml
+  - promtail.yaml
