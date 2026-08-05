@@ -41,7 +41,6 @@ spec:
   accessModes:
     - ReadWriteOnce
   storageClassName: nfs-storage
-  volumeName: pvc-3ef76572-8e26-4c83-86d8-e1931e01d91d
   resources:
     requests:
       storage: 1Gi
