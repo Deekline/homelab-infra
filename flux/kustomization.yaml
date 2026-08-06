@@ -24,3 +24,4 @@ resources:
   - gitea-runner.yaml
   - reloader.yaml
   - crowdsec.yaml
+  - dragonfly.yaml
