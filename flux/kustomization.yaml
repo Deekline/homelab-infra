@@ -22,3 +22,5 @@ resources:
   - sonarr.yaml
   - apprise.yaml
   - gitea-runner.yaml
+  - reloader.yaml
+  - crowdsec.yaml
