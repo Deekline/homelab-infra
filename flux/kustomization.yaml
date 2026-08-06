@@ -31,3 +31,4 @@ resources:
   - nfs-storageclasses.yaml
   - nfs-csi-driver.yaml
   - n8n.yaml
+  - speedtest-tracker.yaml
