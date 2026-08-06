@@ -25,3 +25,4 @@ resources:
   - reloader.yaml
   - crowdsec.yaml
   - dragonfly.yaml
+  - cert-manager.yaml
