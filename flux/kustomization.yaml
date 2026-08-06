@@ -28,3 +28,5 @@ resources:
   - cert-manager.yaml
   - crds.yaml
   - cloudnativepg.yaml
+  - nfs-storageclasses.yaml
+  - nfs-csi-driver.yaml
