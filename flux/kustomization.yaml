@@ -30,3 +30,4 @@ resources:
   - cloudnativepg.yaml
   - nfs-storageclasses.yaml
   - nfs-csi-driver.yaml
+  - n8n.yaml
