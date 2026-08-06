@@ -20,3 +20,5 @@ resources:
   - radarr.yaml
   - seerr.yaml
   - sonarr.yaml
+  - apprise.yaml
+  - gitea-runner.yaml
