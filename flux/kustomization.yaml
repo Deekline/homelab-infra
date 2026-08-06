@@ -27,3 +27,4 @@ resources:
   - dragonfly.yaml
   - cert-manager.yaml
   - crds.yaml
+  - cloudnativepg.yaml
