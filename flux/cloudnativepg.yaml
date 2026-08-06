@@ -38,8 +38,3 @@ spec:
     - kind: ConfigMap
       name: cloudnativepg-helm-values
       valuesKey: values.yaml
-  healthChecks:
-    - apiVersion: apps/v1
-      kind: Deployment
-      name: cloudnativepg-cloudnative-pg
-      namespace: cnpg-system
