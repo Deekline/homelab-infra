@@ -26,3 +26,4 @@ resources:
   - crowdsec.yaml
   - dragonfly.yaml
   - cert-manager.yaml
+  - crds.yaml
