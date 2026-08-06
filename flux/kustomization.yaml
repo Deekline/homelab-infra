@@ -12,3 +12,11 @@ resources:
   - promtail.yaml
   - loki.yaml
   - victoria-metrics-stack.yaml
+  - media-storage.yaml
+  - bazarr.yaml
+  - jellyfin.yaml
+  - prowlarr.yaml
+  - qbittorrent.yaml
+  - radarr.yaml
+  - seerr.yaml
+  - sonarr.yaml
