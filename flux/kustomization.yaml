@@ -34,3 +34,4 @@ resources:
   - speedtest-tracker.yaml
   - paperless.yaml
   - immich.yaml
+  - authelia.yaml
