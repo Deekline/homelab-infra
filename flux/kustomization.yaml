@@ -32,3 +32,4 @@ resources:
   - nfs-csi-driver.yaml
   - n8n.yaml
   - speedtest-tracker.yaml
+  - paperless.yaml
