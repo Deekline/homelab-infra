@@ -35,3 +35,4 @@ resources:
   - paperless.yaml
   - immich.yaml
   - authelia.yaml
+  - sops-operator.yaml
