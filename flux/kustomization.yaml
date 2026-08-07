@@ -37,3 +37,4 @@ resources:
   - authelia.yaml
   - sops-operator.yaml
   - traefik.yaml
+  - cilium.yaml
