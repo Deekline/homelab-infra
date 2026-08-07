@@ -51,3 +51,12 @@ metadata:
 spec:
   interval: 1h
   url: https://raw.githubusercontent.com/kubernetes-csi/csi-driver-nfs/master/charts
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: sops-secrets-operator
+  namespace: flux-system
+spec:
+  interval: 1h
+  url: https://isindir.github.io/sops-secrets-operator/
