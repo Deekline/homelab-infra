@@ -36,3 +36,4 @@ resources:
   - immich.yaml
   - authelia.yaml
   - sops-operator.yaml
+  - traefik.yaml
