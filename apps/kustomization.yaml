@@ -1,0 +1,40 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - git-source.yaml
+  - root-kustomization.yaml
+  - helm-repositories.yaml
+  - drawio.yaml
+  - bentopdf.yaml
+  - homarr.yaml
+  - immich-power-tools.yaml
+  - audiobookshelf.yaml
+  - promtail.yaml
+  - loki.yaml
+  - victoria-metrics-stack.yaml
+  - media-storage.yaml
+  - bazarr.yaml
+  - jellyfin.yaml
+  - prowlarr.yaml
+  - qbittorrent.yaml
+  - radarr.yaml
+  - seerr.yaml
+  - sonarr.yaml
+  - apprise.yaml
+  - gitea-runner.yaml
+  - reloader.yaml
+  - crowdsec.yaml
+  - dragonfly.yaml
+  - cert-manager.yaml
+  - crds.yaml
+  - cloudnativepg.yaml
+  - nfs-storageclasses.yaml
+  - nfs-csi-driver.yaml
+  - n8n.yaml
+  - speedtest-tracker.yaml
+  - paperless.yaml
+  - immich.yaml
+  - authelia.yaml
+  - sops-operator.yaml
+  - traefik.yaml
+  - cilium.yaml
