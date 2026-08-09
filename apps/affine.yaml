@@ -1,0 +1,18 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: affine
+  namespace: flux-system
+spec:
+  interval: 5m
+  sourceRef:
+    kind: GitRepository
+    name: homelab-infra
+  path: ./k3s/affine
+  prune: true
+  timeout: 3m
+  healthChecks:
+    - apiVersion: apps/v1
+      kind: Deployment
+      name: affine
+      namespace: affine

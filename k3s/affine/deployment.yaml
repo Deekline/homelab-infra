@@ -1,0 +1,149 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    name: affine
+  name: affine
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: affine-storage
+  namespace: affine
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: nfs-storage
+  resources:
+    requests:
+      storage: 10Gi
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: affine-config
+  namespace: affine
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: nfs-storage
+  resources:
+    requests:
+      storage: 1Gi
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: affine
+  namespace: affine
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: affine
+  template:
+    metadata:
+      labels:
+        app: affine
+    spec:
+      initContainers:
+        - name: affine-migration
+          image: ghcr.io/toeverything/affine:0.27.3
+          command: ["sh", "-c", "node ./scripts/self-host-predeploy.js"]
+          env:
+            - name: REDIS_SERVER_HOST
+              value: dragonfly.dragonfly.svc.cluster.local
+            - name: REDIS_SERVER_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: dragonfly-secret
+                  key: password
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: affine-db-credentials
+                  key: username
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: affine-db-credentials
+                  key: password
+            - name: DATABASE_URL
+              value: "postgresql://$(DB_USERNAME):$(DB_PASSWORD)@affine-db-rw:5432/affine"
+            - name: AFFINE_INDEXER_ENABLED
+              value: "false"
+          volumeMounts:
+            - name: storage
+              mountPath: /root/.affine/storage
+            - name: config
+              mountPath: /root/.affine/config
+      containers:
+        - name: affine
+          image: ghcr.io/toeverything/affine:0.27.3
+          ports:
+            - name: http
+              containerPort: 3010
+          env:
+            - name: REDIS_SERVER_HOST
+              value: dragonfly.dragonfly.svc.cluster.local
+            - name: REDIS_SERVER_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: dragonfly-secret
+                  key: password
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: affine-db-credentials
+                  key: username
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: affine-db-credentials
+                  key: password
+            - name: DATABASE_URL
+              value: "postgresql://$(DB_USERNAME):$(DB_PASSWORD)@affine-db-rw:5432/affine"
+            - name: AFFINE_INDEXER_ENABLED
+              value: "false"
+            - name: AFFINE_SERVER_HOST
+              value: affine.d-kline.org
+            - name: AFFINE_SERVER_HTTPS
+              value: "true"
+            - name: AFFINE_SERVER_EXTERNAL_URL
+              value: "https://affine.d-kline.org"
+          volumeMounts:
+            - name: storage
+              mountPath: /root/.affine/storage
+            - name: config
+              mountPath: /root/.affine/config
+          resources:
+            requests:
+              cpu: 250m
+              memory: 512Mi
+            limits:
+              memory: 1536Mi
+      volumes:
+        - name: storage
+          persistentVolumeClaim:
+            claimName: affine-storage
+        - name: config
+          persistentVolumeClaim:
+            claimName: affine-config
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: affine
+  namespace: affine
+spec:
+  selector:
+    app: affine
+  ports:
+    - name: http
+      port: 3010
+      targetPort: http
