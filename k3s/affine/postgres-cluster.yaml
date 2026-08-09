@@ -1,0 +1,19 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: affine-db
+  namespace: affine
+spec:
+  instances: 1
+  imageName: ghcr.io/cloudnative-pg/postgresql:16
+
+  bootstrap:
+    initdb:
+      database: affine
+      owner: affine
+      secret:
+        name: affine-db-credentials
+
+  storage:
+    size: 5Gi
+    storageClass: nfs-db

@@ -38,3 +38,4 @@ resources:
   - sops-operator.yaml
   - traefik.yaml
   - cilium.yaml
+  - affine.yaml
