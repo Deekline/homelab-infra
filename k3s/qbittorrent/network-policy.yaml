@@ -1,0 +1,57 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: qbittorrent
+  namespace: media
+spec:
+  endpointSelector:
+    matchLabels:
+      app: qbittorrent
+  # qBittorrent handles untrusted downloaded content — this is the app the
+  # whole media-namespace policy pass is actually about. Only Sonarr/Radarr
+  # (to manage downloads) and Traefik (WebUI) may reach it; nothing else in
+  # the namespace (bazarr/prowlarr/jellyfin/seerr) has any legitimate reason
+  # to talk to it directly.
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: traefik
+            app.kubernetes.io/name: traefik
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
+    - fromEndpoints:
+        - matchLabels:
+            app: sonarr
+        - matchLabels:
+            app: radarr
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
+  # Real torrent-peer traffic is encapsulated inside gluetun's WireGuard
+  # tunnel to ProtonVPN — invisible to Cilium either way, so there's no
+  # value in trying to allowlist individual peer IPs. What Cilium *can* see
+  # and restrict is everything outside that tunnel: DNS to resolve the VPN
+  # endpoint, and the tunnel-establishment traffic itself. ProtonVPN's
+  # server is picked dynamically by gluetun (no SERVER_COUNTRIES pin in the
+  # deployment), so this is deliberately left as a broad "world" allow
+  # rather than a precise FQDN/port match — narrow this once a real
+  # destination port is confirmed via Hubble during the audit-mode pass.
+  # No in-cluster CIDR egress needed: replies to Sonarr/Radarr/Traefik's
+  # already-permitted inbound connections are handled by connection
+  # tracking, not a separate egress rule.
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: kube-system
+            k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: UDP
+            - port: "53"
+              protocol: TCP
+    - toEntities:
+        - world

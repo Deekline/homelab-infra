@@ -1,0 +1,24 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: prowlarr
+  namespace: media
+spec:
+  endpointSelector:
+    matchLabels:
+      app: prowlarr
+  # Prowlarr pushes indexer config out to Sonarr/Radarr; nothing calls back
+  # into Prowlarr's own port for normal operation, so only Traefik (WebUI)
+  # is a legitimate caller.
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: traefik
+            app.kubernetes.io/name: traefik
+      toPorts:
+        - ports:
+            - port: "9696"
+              protocol: TCP
+  # No egress restriction this pass — Prowlarr needs to reach Sonarr/Radarr
+  # plus arbitrary indexer sites on the internet. Deferred to the
+  # FQDN-egress phase.

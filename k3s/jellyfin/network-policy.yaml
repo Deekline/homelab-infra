@@ -1,0 +1,32 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: jellyfin
+  namespace: media
+spec:
+  endpointSelector:
+    matchLabels:
+      app: jellyfin
+  # Jellyfin only serves the media library it already has on the shared
+  # PVC — it doesn't call any other app in this namespace. Traefik (end
+  # users) and Seerr (library sync/availability checks, confirmed live)
+  # are the only legitimate callers.
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: traefik
+            app.kubernetes.io/name: traefik
+      toPorts:
+        - ports:
+            - port: "8096"
+              protocol: TCP
+    - fromEndpoints:
+        - matchLabels:
+            app: seerr
+      toPorts:
+        - ports:
+            - port: "8096"
+              protocol: TCP
+  # No egress restriction this pass — Jellyfin needs indeterminate internet
+  # access for metadata providers (TMDB/TheTVDB/fanart.tv). Deferred to the
+  # FQDN-egress phase.

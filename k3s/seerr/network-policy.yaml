@@ -1,0 +1,25 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: seerr
+  namespace: media
+spec:
+  endpointSelector:
+    matchLabels:
+      app: seerr
+  # Seerr calls out to Sonarr/Radarr/Jellyfin; nothing calls back into
+  # Seerr's own port for normal operation, so only Traefik (WebUI) is a
+  # legitimate caller.
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: traefik
+            app.kubernetes.io/name: traefik
+      toPorts:
+        - ports:
+            - port: "5055"
+              protocol: TCP
+  # No egress restriction this pass — Seerr needs Sonarr/Radarr/Jellyfin
+  # (already covered by their own ingress rules + connection tracking for
+  # the replies) plus possibly external metadata lookups. Deferred to the
+  # FQDN-egress phase.

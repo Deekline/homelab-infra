@@ -1,0 +1,38 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: sonarr
+  namespace: media
+spec:
+  endpointSelector:
+    matchLabels:
+      app: sonarr
+  # Traefik (WebUI), Prowlarr (pushes indexer config), Bazarr (pulls
+  # episode metadata for subtitle matching), and Seerr (submits requests)
+  # are the only legitimate callers.
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: traefik
+            app.kubernetes.io/name: traefik
+      toPorts:
+        - ports:
+            - port: "8989"
+              protocol: TCP
+    - fromEndpoints:
+        - matchLabels:
+            app: prowlarr
+        - matchLabels:
+            app: bazarr
+        - matchLabels:
+            app: seerr
+      toPorts:
+        - ports:
+            - port: "8989"
+              protocol: TCP
+  # No egress restriction this pass — Sonarr needs qBittorrent (already
+  # covered by qBittorrent's own ingress rule + connection tracking for the
+  # replies) plus indeterminate internet access for metadata providers
+  # (TheTVDB etc.). Scoping that precisely is deferred to the FQDN-egress
+  # phase in cilium-network-policies.md. Leaving `egress:` unset here keeps
+  # egress in Cilium's default-allow state for this endpoint.
