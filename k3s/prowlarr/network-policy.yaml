@@ -7,14 +7,26 @@ spec:
   endpointSelector:
     matchLabels:
       app: prowlarr
-  # Prowlarr pushes indexer config out to Sonarr/Radarr; nothing calls back
-  # into Prowlarr's own port for normal operation, so only Traefik (WebUI)
-  # is a legitimate caller.
+  # Corrected 2026-08-10 via live audit-mode traffic: Prowlarr isn't just a
+  # one-way push of indexer config to Sonarr/Radarr — it also proxies
+  # indexer searches, so Sonarr/Radarr call back into Prowlarr's API on
+  # every search (confirmed live: sonarr/radarr -> prowlarr:9696, would
+  # have been silently blocked by the original ingress-from-Traefik-only
+  # rule). Traefik (WebUI), Sonarr, and Radarr are all legitimate callers.
   ingress:
     - fromEndpoints:
         - matchLabels:
             io.kubernetes.pod.namespace: traefik
             app.kubernetes.io/name: traefik
+      toPorts:
+        - ports:
+            - port: "9696"
+              protocol: TCP
+    - fromEndpoints:
+        - matchLabels:
+            app: sonarr
+        - matchLabels:
+            app: radarr
       toPorts:
         - ports:
             - port: "9696"
