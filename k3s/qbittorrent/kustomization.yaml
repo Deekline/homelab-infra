@@ -5,3 +5,4 @@ resources:
   - ingressroute.yaml
   - pvc.yaml
   - secrets.yaml
+  - network-policy.yaml
