@@ -4,8 +4,8 @@
   "ignorePaths": ["**/secrets.yaml"],
   "labels": ["renovate", "dependencies"],
   "schedule": ["* 12 * * 1,4"],
-  "enabledManagers": ["argocd", "kubernetes", "helm-values", "github-actions"],
-  "argocd": {
+  "enabledManagers": ["flux", "kubernetes", "helm-values", "github-actions"],
+  "flux": {
     "managerFilePatterns": ["/^apps\\/.+\\.yaml$/"]
   },
   "kubernetes": {
@@ -14,7 +14,7 @@
   "packageRules": [
     {
       "description": "Group minor/patch Helm chart bumps separately from raw image bumps",
-      "matchManagers": ["argocd", "helm-values"],
+      "matchManagers": ["flux", "helm-values"],
       "matchUpdateTypes": ["minor", "patch"],
       "groupName": "helm chart minor and patch updates"
     },
@@ -26,7 +26,7 @@
     },
     {
       "description": "Keep major bumps isolated and clearly flagged for review",
-      "matchManagers": ["argocd", "kubernetes", "helm-values"],
+      "matchManagers": ["flux", "kubernetes", "helm-values"],
       "matchUpdateTypes": ["major"],
       "labels": ["major-update"]
     }
