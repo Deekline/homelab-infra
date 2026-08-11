@@ -1,0 +1,32 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: bentopdf
+  namespace: bentopdf
+spec:
+  endpointSelector:
+    matchLabels:
+      app: bentopdf
+  # Same shape as drawio: a stateless, browser-side (WASM) tool. Only
+  # Traefik may reach it, on its actual container port.
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: traefik
+            app.kubernetes.io/name: traefik
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
+  # No outbound calls of its own beyond DNS — same reasoning as drawio.
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: kube-system
+            k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: UDP
+            - port: "53"
+              protocol: TCP
