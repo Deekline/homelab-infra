@@ -14,7 +14,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: gitea-runner-docker-storage
+  name: gitea-runner-docker-storage-pvc
   namespace: gitea-runner
 spec:
   accessModes:
@@ -94,7 +94,7 @@ spec:
           securityContext:
             privileged: true
           volumeMounts:
-            - name: docker-storage
+            - name: docker-storage-pvc
               mountPath: /var/lib/docker
 
       volumes:
@@ -104,8 +104,8 @@ spec:
         - name: data
           persistentVolumeClaim:
             claimName: gitea-runner-data
-        - name: docker-storage
+        - name: docker-storage-pvc
           persistentVolumeClaim:
-            claimName: gitea-runner-docker-storage
+            claimName: gitea-runner-docker-storage-pvc
         - name: cache
           emptyDir: {}
