@@ -11,6 +11,19 @@ spec:
     requests:
       storage: 1Gi
 ---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: gitea-runner-docker-storage
+  namespace: gitea-runner
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: local-path
+  resources:
+    requests:
+      storage: 10Gi
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -92,6 +105,7 @@ spec:
           persistentVolumeClaim:
             claimName: gitea-runner-data
         - name: docker-storage
-          emptyDir: {}
+          persistentVolumeClaim:
+            claimName: gitea-runner-docker-storage
         - name: cache
           emptyDir: {}
