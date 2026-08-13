@@ -53,7 +53,7 @@ if rendered_chart_diff:
 
 prompt = (
     "You are reviewing an automated dependency-update pull request for a "
-    "homelab Kubernetes GitOps repo (k3s, ArgoCD, Helm charts, raw manifests). "
+    "homelab Kubernetes GitOps repo (k3s, Flux CD, Helm charts, raw manifests). "
     "Write a concise PR review comment in markdown with three sections: "
     "**Summary** (what's changing and which app(s) are affected), "
     "**Risks** (breaking changes, major version bumps, config format changes, "
