@@ -19,6 +19,14 @@ spec:
         - ports:
             - port: "5055"
               protocol: TCP
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: homarr
+            app.kubernetes.io/name: homarr
+      toPorts:
+        - ports:
+            - port: "5055"
+              protocol: TCP
   # No egress restriction this pass — Seerr needs Sonarr/Radarr/Jellyfin
   # (already covered by their own ingress rules + connection tracking for
   # the replies) plus possibly external metadata lookups. Deferred to the

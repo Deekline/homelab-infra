@@ -30,6 +30,14 @@ spec:
         - ports:
             - port: "8989"
               protocol: TCP
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: homarr
+            app.kubernetes.io/name: homarr
+      toPorts:
+        - ports:
+            - port: "8989"
+              protocol: TCP
   # No egress restriction this pass — Sonarr needs qBittorrent (already
   # covered by qBittorrent's own ingress rule + connection tracking for the
   # replies) plus indeterminate internet access for metadata providers
