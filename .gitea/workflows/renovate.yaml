@@ -21,3 +21,5 @@ jobs:
           RENOVATE_REPOSITORIES: deekline/homelab-infra
           RENOVATE_BASE_BRANCHES: master
           RENOVATE_GIT_AUTHOR: "renovate-bot <renovate-bot@d-kline.org>"
+          RENOVATE_BINARY_SOURCE: install
+          DOCKER_HOST: ""
