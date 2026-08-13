@@ -1,4 +1,6 @@
-# Required when using helm releaseName in ArgoCD so VMServiceScrapes resolve correctly
+# Chart-defined key name (victoria-metrics-k8s-stack), not renameable — needed
+# whenever the Helm release name doesn't match what VMServiceScrapes expect,
+# regardless of GitOps tool. Currently applied via Flux's HelmRelease.
 argocdReleaseOverride: monitoring
 
 grafana:
