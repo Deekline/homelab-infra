@@ -80,3 +80,51 @@ spec:
           annotations:
             summary: "High CPU in {{ $labels.namespace }}/{{ $labels.pod }}/{{ $labels.container }}"
             description: "Container {{ $labels.container }} ({{ $labels.namespace }}/{{ $labels.pod }}) is using {{ printf \"%.1f\" $value }}% of its CPU limit."
+
+    - name: homelab.cnpg
+      rules:
+        - alert: CNPGPodNotReady
+          expr: |
+            kube_pod_status_ready{condition="false"}
+            * on(namespace, pod) group_left(label_cnpg_io_cluster)
+            kube_pod_labels{label_cnpg_io_cluster!=""}
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "CNPG pod not ready: {{ $labels.namespace }}/{{ $labels.pod }}"
+            description: "CloudNativePG pod {{ $labels.namespace }}/{{ $labels.pod }} (cluster {{ $labels.label_cnpg_io_cluster }}) has not been Ready for 5 minutes."
+
+    - name: homelab.certificates
+      rules:
+        - alert: CertificateExpiringSoon
+          expr: |
+            certmanager_certificate_expiration_timestamp_seconds - time() < 86400 * 14
+          for: 1h
+          labels:
+            severity: warning
+          annotations:
+            summary: "Certificate expiring soon: {{ $labels.namespace }}/{{ $labels.name }}"
+            description: "cert-manager Certificate {{ $labels.namespace }}/{{ $labels.name }} expires in under 14 days."
+
+        - alert: CertificateNotReady
+          expr: |
+            certmanager_certificate_ready_status{condition="False"} == 1
+          for: 1h
+          labels:
+            severity: warning
+          annotations:
+            summary: "Certificate not ready: {{ $labels.namespace }}/{{ $labels.name }}"
+            description: "cert-manager Certificate {{ $labels.namespace }}/{{ $labels.name }} has not been Ready for over an hour."
+
+    - name: homelab.flux
+      rules:
+        - alert: FluxReconcileFailing
+          expr: |
+            max by (namespace, name, kind) (gotk_reconcile_condition{type="Ready", status="False"}) == 1
+          for: 15m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Flux {{ $labels.kind }} not ready: {{ $labels.namespace }}/{{ $labels.name }}"
+            description: "Flux {{ $labels.kind }} {{ $labels.namespace }}/{{ $labels.name }} has not been Ready for 15 minutes."

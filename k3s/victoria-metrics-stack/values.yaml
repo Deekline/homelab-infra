@@ -143,12 +143,6 @@ alertmanager:
             - alertname = "InfoInhibitor"
         - receiver: "null"
           matchers:
-            - alertname = "AlertmanagerFailedToSendAlerts"
-        - receiver: "null"
-          matchers:
-            - alertname = "AlertmanagerClusterFailedToSendAlerts"
-        - receiver: "null"
-          matchers:
             - alertname = "RecordingRulesNoData"
             - recording = "count:up0"
     receivers:

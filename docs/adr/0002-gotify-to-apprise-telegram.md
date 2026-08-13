@@ -48,10 +48,10 @@ Rejected for CrowdSec and future producers: every new integration would mean wri
 - **Apprise's `/notify` endpoint has no authentication**, unlike Gotify's per-app `X-Gotify-Key` token. It currently relies on the `local-only` Traefik IP allowlist as its only access control. Tracked as a follow-up in `docs/optimizations.md` (nginx basic auth, since Authelia's SSO redirect flow doesn't work for non-interactive callers like CI or Alertmanager).
 - **The Telegram destination is registered by hand, not in git.** Apprise's stateful config lives only on its own PVC; if that volume is ever lost, the bot token/chat ID must be re-entered manually through the Configuration Manager UI. This was a deliberate tradeoff to avoid storing a live bot token in a way any producer's config would need to reference directly.
 - **No independent fallback channel.** Gotify's delivery path was entirely separate from any third-party service; now, if Telegram itself has an outage, there is currently no secondary channel configured. Accepted at homelab scale given Telegram's reliability and reach.
-- **CrowdSec's notification plugin was removed along with Gotify** and is not yet repointed at Apprise — it currently has no notification target configured at all. Tracked as an open follow-up, not resolved by this ADR.
+- **CrowdSec is repointed at Apprise** (`k3s/crowdsec/values.yaml`'s `http_default` notification plugin, `profiles.yaml` wired to fire it on every IP ban) — closed after this ADR was first written; it no longer has a notification gap.
 
 ## Revisit if
 
 - Telegram itself becomes unreliable, blocked, or otherwise unsuitable as the primary channel.
 - Apprise's lack of authentication on `/notify` becomes a real exposure concern rather than a theoretical one (see `docs/optimizations.md`).
-- A producer needs a notification target Apprise can't relay to well, or the CrowdSec integration gap needs closing.
+- A producer needs a notification target Apprise can't relay to well.
