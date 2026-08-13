@@ -24,6 +24,19 @@ spec:
     requests:
       storage: 10Gi
 ---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: gitea-runner-act-cache-pvc
+  namespace: gitea-runner
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: local-path
+  resources:
+    requests:
+      storage: 2Gi
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -77,6 +90,8 @@ spec:
               mountPath: /config
             - name: data
               mountPath: /data
+            - name: act-cache
+              mountPath: /root/.cache/act
             - name: cache
               mountPath: /cache
           resources:
@@ -107,5 +122,8 @@ spec:
         - name: docker-storage-pvc
           persistentVolumeClaim:
             claimName: gitea-runner-docker-storage-pvc
+        - name: act-cache
+          persistentVolumeClaim:
+            claimName: gitea-runner-act-cache-pvc
         - name: cache
           emptyDir: {}
