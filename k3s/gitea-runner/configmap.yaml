@@ -16,3 +16,13 @@ data:
     cache:
       enabled: true
       dir: /cache
+    container:
+      # Default ("") auto-detects the runner's own DOCKER_HOST
+      # (tcp://localhost:2375, the pod's dind sidecar) and mounts it into
+      # every job container. From inside a job container that's a dead
+      # address (dind's docker network, not the pod's), so anything that
+      # touches Docker fails with "Cannot connect to the Docker daemon at
+      # tcp://localhost:2375" — hit both Renovate and Trivy. "-" still
+      # auto-detects for act_runner's own use, just stops mounting it into
+      # job/service containers.
+      docker_host: "-"
