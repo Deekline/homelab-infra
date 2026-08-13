@@ -61,6 +61,11 @@ spec:
             - -c
             - |
               while ! nc -z localhost 2375; do sleep 1; done
+              # GitHub's HTTP/2 endpoint intermittently sends a stream CANCEL
+              # when multiple concurrent job containers clone the same action
+              # at once (capacity: 3 == up to 3 simultaneous clones). Forcing
+              # HTTP/1.1 avoids the multiplexed-stream failure mode.
+              git config --global http.version HTTP/1.1
               # Register only if not already registered (persisted in PVC)
               if [ ! -f /data/.runner ]; then
                 act_runner register --no-interactive \
