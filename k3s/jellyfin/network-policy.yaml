@@ -27,6 +27,14 @@ spec:
         - ports:
             - port: "8096"
               protocol: TCP
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: homarr
+            app.kubernetes.io/name: homarr
+      toPorts:
+        - ports:
+            - port: "8096"
+              protocol: TCP
   # No egress restriction this pass — Jellyfin needs indeterminate internet
   # access for metadata providers (TMDB/TheTVDB/fanart.tv). Deferred to the
   # FQDN-egress phase.

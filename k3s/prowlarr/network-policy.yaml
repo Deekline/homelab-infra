@@ -31,6 +31,14 @@ spec:
         - ports:
             - port: "9696"
               protocol: TCP
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: homarr
+            app.kubernetes.io/name: homarr
+      toPorts:
+        - ports:
+            - port: "9696"
+              protocol: TCP
   # No egress restriction this pass — Prowlarr needs to reach Sonarr/Radarr
   # plus arbitrary indexer sites on the internet. Deferred to the
   # FQDN-egress phase.

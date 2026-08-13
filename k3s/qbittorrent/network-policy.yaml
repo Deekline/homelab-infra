@@ -30,6 +30,14 @@ spec:
         - ports:
             - port: "8080"
               protocol: TCP
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: homarr
+            app.kubernetes.io/name: homarr
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
   # Real torrent-peer traffic is encapsulated inside gluetun's WireGuard
   # tunnel to ProtonVPN — invisible to Cilium either way, so there's no
   # value in trying to allowlist individual peer IPs. What Cilium *can* see
