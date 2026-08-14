@@ -28,6 +28,8 @@ resources:
   - cert-manager.yaml
   - crds.yaml
   - cloudnativepg.yaml
+  - garage.yaml
+  - cnpg-barman-plugin.yaml
   - nfs-storageclasses.yaml
   - nfs-csi-driver.yaml
   - n8n.yaml

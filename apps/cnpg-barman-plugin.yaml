@@ -1,0 +1,20 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: cnpg-barman-plugin
+  namespace: flux-system
+spec:
+  interval: 5m
+  sourceRef:
+    kind: GitRepository
+    name: homelab-infra
+  path: ./k3s/cnpg-barman-plugin
+  prune: true
+  timeout: 3m
+  dependsOn:
+    - name: cloudnativepg-values
+  healthChecks:
+    - apiVersion: apps/v1
+      kind: Deployment
+      name: barman-cloud
+      namespace: cnpg-system
