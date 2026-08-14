@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
   - deployment.yaml
   - secrets.yaml
+  - backup-credentials-secrets.yaml
   - postgres-cluster.yaml
   - ingressroute.yaml
   - configmap.yaml
