@@ -119,12 +119,12 @@ spec:
 
     - name: homelab.flux
       rules:
-        - alert: FluxReconcileFailing
+        - alert: FluxReconcileErrors
           expr: |
-            max by (namespace, name, kind) (gotk_reconcile_condition{type="Ready", status="False"}) == 1
+            increase(controller_runtime_reconcile_errors_total{namespace="flux-system"}[15m]) > 0
           for: 15m
           labels:
             severity: warning
           annotations:
-            summary: "Flux {{ $labels.kind }} not ready: {{ $labels.namespace }}/{{ $labels.name }}"
-            description: "Flux {{ $labels.kind }} {{ $labels.namespace }}/{{ $labels.name }} has not been Ready for 15 minutes."
+            summary: "Flux {{ $labels.controller }} reconcile errors"
+            description: "Flux {{ $labels.controller }} controller has had reconcile errors in the last 15 minutes."
