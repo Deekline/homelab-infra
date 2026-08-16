@@ -1,0 +1,13 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: ScheduledBackup
+metadata:
+  name: n8n-db-backup
+  namespace: n8n
+spec:
+  cluster:
+    name: n8n-db
+  # nightly at 21:30 (6-field cron: seconds minutes hours day month weekday)
+  schedule: "0 30 21 * * *"
+  method: plugin
+  pluginConfiguration:
+    name: barman-cloud.cloudnative-pg.io

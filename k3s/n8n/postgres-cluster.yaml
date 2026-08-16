@@ -17,3 +17,9 @@ spec:
   storage:
     size: 5Gi
     storageClass: nfs-db
+
+  plugins:
+    - name: barman-cloud.cloudnative-pg.io
+      isWALArchiver: true
+      parameters:
+        barmanObjectName: n8n-db-backup

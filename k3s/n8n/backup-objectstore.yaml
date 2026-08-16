@@ -1,0 +1,21 @@
+apiVersion: barmancloud.cnpg.io/v1
+kind: ObjectStore
+metadata:
+  name: n8n-db-backup
+  namespace: n8n
+spec:
+  configuration:
+    destinationPath: s3://cnpg-backups/n8n-db/
+    endpointURL: http://garage.garage.svc.cluster.local:3900
+    s3Credentials:
+      accessKeyId:
+        name: n8n-db-backup-credentials
+        key: ACCESS_KEY_ID
+      secretAccessKey:
+        name: n8n-db-backup-credentials
+        key: ACCESS_SECRET_KEY
+    data:
+      compression: gzip
+    wal:
+      compression: gzip
+  retentionPolicy: 14d

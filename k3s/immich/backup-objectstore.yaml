@@ -1,0 +1,21 @@
+apiVersion: barmancloud.cnpg.io/v1
+kind: ObjectStore
+metadata:
+  name: immich-db-backup
+  namespace: immich
+spec:
+  configuration:
+    destinationPath: s3://cnpg-backups/immich-db/
+    endpointURL: http://garage.garage.svc.cluster.local:3900
+    s3Credentials:
+      accessKeyId:
+        name: immich-db-backup-credentials
+        key: ACCESS_KEY_ID
+      secretAccessKey:
+        name: immich-db-backup-credentials
+        key: ACCESS_SECRET_KEY
+    data:
+      compression: gzip
+    wal:
+      compression: gzip
+  retentionPolicy: 14d
