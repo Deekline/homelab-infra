@@ -17,8 +17,6 @@ spec:
         - ports:
             - port: "5432"
               protocol: TCP
-    # CNPG operator's own health/status polling (instance manager's :8000,
-    # not postgres itself) — reconciliation breaks without this
     - fromEndpoints:
         - matchLabels:
             io.kubernetes.pod.namespace: cnpg-system
@@ -41,3 +39,5 @@ spec:
               protocol: UDP
             - port: "53"
               protocol: TCP
+    - toEntities:
+        - kube-apiserver
