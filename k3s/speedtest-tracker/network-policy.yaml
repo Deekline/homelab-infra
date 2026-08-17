@@ -1,0 +1,54 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: speedtest-tracker
+  namespace: speedtest-tracker
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: speedtest-tracker
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: traefik
+            app.kubernetes.io/name: traefik
+      toPorts:
+        - ports:
+            - port: "80"
+              protocol: TCP
+    # homarr's dashboard Speedtest Tracker widget calls the in-cluster
+    # service directly (confirmed 2026-08-17 — not routed through Traefik),
+    # so it needs its own allow, separate from the traefik rule above.
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: homarr
+            app.kubernetes.io/name: homarr
+      toPorts:
+        - ports:
+            - port: "80"
+              protocol: TCP
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: kube-system
+            k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: UDP
+            - port: "53"
+              protocol: TCP
+    # same-namespace CNPG primary — SPEEDTEST_SCHEDULE app queries/writes results
+    - toEndpoints:
+        - matchLabels:
+            cnpg.io/cluster: speedtest-tracker-db
+      toPorts:
+        - ports:
+            - port: "5432"
+              protocol: TCP
+    # actual speedtest runs (SPEEDTEST_SCHEDULE, every 2h) hit dynamically-chosen
+    # Ookla test servers worldwide — can't scope to a fixed FQDN list without
+    # breaking the app's whole purpose, same reasoning as qbittorrent's gluetun
+    # egress in the media namespace batch.
+    - toEntities:
+        - world

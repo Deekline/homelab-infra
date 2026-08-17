@@ -4,4 +4,6 @@ resources:
   - deployment.yaml
   - secrets.yaml
   - postgres-cluster.yaml
+  - network-policy.yaml
+  - db-network-policy.yaml
   - ingressroute.yaml
