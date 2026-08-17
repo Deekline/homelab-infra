@@ -1,0 +1,43 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: speedtest-tracker-db
+  namespace: speedtest-tracker
+spec:
+  endpointSelector:
+    matchLabels:
+      cnpg.io/cluster: speedtest-tracker-db
+  ingress:
+    # the app itself
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: speedtest-tracker
+            app.kubernetes.io/name: speedtest-tracker
+      toPorts:
+        - ports:
+            - port: "5432"
+              protocol: TCP
+    # CNPG operator's own health/status polling (instance manager's :8000,
+    # not postgres itself) — reconciliation breaks without this
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: cnpg-system
+            app.kubernetes.io/name: cloudnative-pg
+      toPorts:
+        - ports:
+            - port: "8000"
+              protocol: TCP
+    # metrics (:9187) intentionally not opened yet — confirmed live (see
+    # cilium-network-policies.md) that nothing in-cluster actually scrapes
+    # app-namespace pods today; revisit only if a VMServiceScrape is added.
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: kube-system
+            k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: UDP
+            - port: "53"
+              protocol: TCP
