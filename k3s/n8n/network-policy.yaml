@@ -1,0 +1,26 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: n8n
+  namespace: n8n
+spec:
+  endpointSelector:
+    matchLabels:
+      app: n8n
+  # Nothing else in the cluster calls into n8n's own port — only Traefik
+  # (WebUI + inbound webhooks routed through n8n.d-kline.org).
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: traefik
+            app.kubernetes.io/name: traefik
+      toPorts:
+        - ports:
+            - port: "5678"
+              protocol: TCP
+  # No egress restriction this pass — n8n is a workflow-automation engine;
+  # its whole purpose is calling arbitrary external APIs from user-defined
+  # workflows (HTTP Request nodes, third-party webhooks), same reasoning as
+  # leaving the *arr apps' egress open in the media namespace batch. DB
+  # traffic to n8n-db-rw:5432 is same-namespace and covered by this default
+  # allow too.
