@@ -1,0 +1,53 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: n8n-db
+  namespace: n8n
+spec:
+  endpointSelector:
+    matchLabels:
+      cnpg.io/cluster: n8n-db
+  ingress:
+    # the app itself
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: n8n
+            app: n8n
+      toPorts:
+        - ports:
+            - port: "5432"
+              protocol: TCP
+    # CNPG operator's own health/status polling (instance manager's :8000,
+    # not postgres itself) — reconciliation breaks without this
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: cnpg-system
+            app.kubernetes.io/name: cloudnative-pg
+      toPorts:
+        - ports:
+            - port: "8000"
+              protocol: TCP
+    # metrics (:9187) intentionally not opened yet — nothing in-cluster
+    # scrapes app-namespace pods today, see cilium-network-policies.md.
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: kube-system
+            k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: UDP
+            - port: "53"
+              protocol: TCP
+    # barman-cloud CNPG-I plugin runs as a sidecar in this same pod — WAL
+    # archiving + scheduled backups ship straight to garage (in-cluster S3)
+    # on its own, not through the app.
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: garage
+            app: garage
+      toPorts:
+        - ports:
+            - port: "3900"
+              protocol: TCP
