@@ -1,0 +1,81 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    name: calibre-web
+  name: calibre-web
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: calibre-web
+  namespace: calibre-web
+  annotations:
+    reloader.stakater.com/auto: "true"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: calibre-web
+  template:
+    metadata:
+      labels:
+        app: calibre-web
+    spec:
+      securityContext:
+        fsGroup: 1000
+      containers:
+        - name: calibre-web
+          image: crocodilestick/calibre-web-automated:v4.0.6
+          ports:
+            - containerPort: 8083
+          env:
+            - name: PUID
+              value: "1000"
+            - name: PGID
+              value: "1000"
+            - name: TZ
+              value: Europe/Warsaw
+            # library/ingest are NFS mounts — disables SQLite WAL and
+            # switches to polling-based file watching, avoiding
+            # "database is locked" errors on network filesystems.
+            - name: NETWORK_SHARE_MODE
+              value: "true"
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            - name: library
+              mountPath: /calibre-library
+            - name: ingest
+              mountPath: /cwa-book-ingest
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: "1"
+              memory: 1Gi
+          securityContext:
+            allowPrivilegeEscalation: false
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: calibre-web-config
+        - name: library
+          persistentVolumeClaim:
+            claimName: calibre-web-library
+        - name: ingest
+          persistentVolumeClaim:
+            claimName: calibre-web-ingest
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: calibre-web
+  namespace: calibre-web
+spec:
+  selector:
+    app: calibre-web
+  ports:
+    - port: 8083
+      targetPort: 8083
