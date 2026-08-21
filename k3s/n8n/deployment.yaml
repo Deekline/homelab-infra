@@ -55,6 +55,8 @@ spec:
               value: https://n8n.d-kline.org/
             - name: GENERIC_TIMEZONE
               value: Europe/Warsaw
+            - name: N8N_DIAGNOSTICS_ENABLED
+              value: "false"
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
