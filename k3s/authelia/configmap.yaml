@@ -45,6 +45,15 @@ data:
           networks:
             - internal
           policy: bypass
+        # OPDS (KOReader and other e-reader clients) can't complete an
+        # interactive 2FA login either — bypass auth for just that path.
+        # Calibre-Web's own HTTP Basic Auth protects it instead.
+        - domain: calibre-web.d-kline.org
+          resources:
+            - "^/opds.*$"
+          networks:
+            - internal
+          policy: bypass
         # All other services require 2FA from LAN
         - domain: "*.d-kline.org"
           networks:

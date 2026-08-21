@@ -1,0 +1,26 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: calibre-web
+  namespace: calibre-web
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    # /opds is bypassed from 2FA in Authelia's own access_control rules
+    # (KOReader can't complete an interactive login) — Calibre-Web's own
+    # HTTP Basic Auth protects that path instead. The rest of the app still
+    # gets full 2FA through this same authelia middleware.
+    - match: Host(`calibre-web.d-kline.org`)
+      kind: Rule
+      middlewares:
+        - name: local-only
+          namespace: traefik
+        - name: authelia
+          namespace: traefik
+        - name: security-headers
+          namespace: traefik
+      services:
+        - name: calibre-web
+          port: 8083
+  tls: {}

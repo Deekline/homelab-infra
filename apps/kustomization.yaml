@@ -41,3 +41,4 @@ resources:
   - traefik.yaml
   - cilium.yaml
   - affine.yaml
+  - calibre-web.yaml

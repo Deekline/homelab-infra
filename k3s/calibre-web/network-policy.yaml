@@ -1,0 +1,24 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: calibre-web
+  namespace: calibre-web
+spec:
+  endpointSelector:
+    matchLabels:
+      app: calibre-web
+  # Nothing else in the cluster calls in — WebUI and /opds (KOReader) both
+  # go through Traefik only.
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: traefik
+            app.kubernetes.io/name: traefik
+      toPorts:
+        - ports:
+            - port: "8083"
+              protocol: TCP
+  # No egress restriction this pass — Calibre-Web fetches cover art and
+  # metadata from online sources (Google Books etc.) when editing books,
+  # same "indeterminate internet access" reasoning as the *arr apps.
+  # Deferred to the FQDN-egress phase.
