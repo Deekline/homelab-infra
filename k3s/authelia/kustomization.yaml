@@ -6,3 +6,5 @@ resources:
   - postgres-cluster.yaml
   - ingressroute.yaml
   - configmap.yaml
+  - network-policy.yaml
+  - db-network-policy.yaml
