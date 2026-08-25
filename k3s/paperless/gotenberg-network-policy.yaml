@@ -1,0 +1,29 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: gotenberg
+  namespace: paperless
+spec:
+  endpointSelector:
+    matchLabels:
+      app: gotenberg
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: paperless
+            app: paperless
+      toPorts:
+        - ports:
+            - port: "3000"
+              protocol: TCP
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: kube-system
+            k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: UDP
+            - port: "53"
+              protocol: TCP
