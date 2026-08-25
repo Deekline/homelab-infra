@@ -5,3 +5,5 @@ resources:
   - secrets.yaml
   - postgres-cluster.yaml
   - ingressroute.yaml
+  - network-policy.yaml
+  - db-network-policy.yaml
