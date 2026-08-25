@@ -9,3 +9,6 @@ resources:
   - scheduled-backup.yaml
   - ingressroute.yaml
   - pvc.yaml
+  - network-policy.yaml
+  - ml-network-policy.yaml
+  - db-network-policy.yaml
