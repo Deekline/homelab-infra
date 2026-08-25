@@ -9,3 +9,7 @@ resources:
   - scheduled-backup.yaml
   - ingressroute.yaml
   - pvc.yaml
+  - network-policy.yaml
+  - gotenberg-network-policy.yaml
+  - tika-network-policy.yaml
+  - db-network-policy.yaml
