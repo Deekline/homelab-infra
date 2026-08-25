@@ -43,9 +43,11 @@ spec:
         - ports:
             - port: "5432"
               protocol: TCP
-    - toFQDNs:
-        - matchName: "smtp.gmail.com"
+    - toEntities:
+        - world
       toPorts:
         - ports:
             - port: "587"
               protocol: TCP
+            - port: "123"
+              protocol: UDP
