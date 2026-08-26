@@ -67,3 +67,11 @@ spec:
         - ports:
             - port: "9998"
               protocol: TCP
+    - toEntities:
+        - world
+      toPorts:
+        - ports:
+            - port: "80"
+              protocol: TCP
+            - port: "443"
+              protocol: TCP
