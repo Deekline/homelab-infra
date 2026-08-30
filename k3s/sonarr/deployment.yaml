@@ -34,6 +34,18 @@ spec:
               mountPath: /config
             - name: media-library
               mountPath: /data
+          readinessProbe:
+            httpGet:
+              path: /ping
+              port: 8989
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /ping
+              port: 8989
+            initialDelaySeconds: 30
+            periodSeconds: 30
           resources:
             requests:
               cpu: 200m

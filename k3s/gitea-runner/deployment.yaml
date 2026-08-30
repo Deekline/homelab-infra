@@ -99,6 +99,23 @@ spec:
               mountPath: /root/.cache/act
             - name: cache
               mountPath: /cache
+          # No HTTP surface at all (no metrics/health port in config.yaml,
+          # confirmed no Service in front) — process check is the only
+          # option. Deliberately not "pgrep -f act_runner daemon": the
+          # entrypoint's own wrapper script (PID 1, comm "sh") contains
+          # that exact string in its argv and self-matches, so -f always
+          # succeeds even if the actual daemon process died. Plain
+          # "pgrep act_runner" matches only the real binary by comm name.
+          readinessProbe:
+            exec:
+              command: ["pgrep", "act_runner"]
+            initialDelaySeconds: 10
+            periodSeconds: 15
+          livenessProbe:
+            exec:
+              command: ["pgrep", "act_runner"]
+            initialDelaySeconds: 30
+            periodSeconds: 30
           resources:
             requests:
               cpu: 100m
@@ -113,6 +130,16 @@ spec:
               value: ""
           securityContext:
             privileged: true
+          readinessProbe:
+            exec:
+              command: ["docker", "info"]
+            initialDelaySeconds: 10
+            periodSeconds: 15
+          livenessProbe:
+            exec:
+              command: ["docker", "info"]
+            initialDelaySeconds: 30
+            periodSeconds: 30
           volumeMounts:
             - name: docker-storage-pvc
               mountPath: /var/lib/docker

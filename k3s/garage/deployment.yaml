@@ -64,6 +64,20 @@ spec:
               subPath: garage.toml
             - name: data
               mountPath: /var/lib/garage
+          # /health on the admin API is unauthenticated by design (unlike
+          # /metrics, confirmed 403 without a token) — safe for a probe.
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: admin
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: admin
+            initialDelaySeconds: 30
+            periodSeconds: 30
           resources:
             requests:
               cpu: 100m
