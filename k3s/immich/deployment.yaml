@@ -64,6 +64,22 @@ spec:
               mountPath: /usr/src/app/external/_incoming
               subPath: _incomings
               readOnly: true
+          startupProbe:
+            httpGet:
+              path: /api/server/ping
+              port: 2283
+            periodSeconds: 10
+            failureThreshold: 18
+          readinessProbe:
+            httpGet:
+              path: /api/server/ping
+              port: 2283
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /api/server/ping
+              port: 2283
+            periodSeconds: 30
           resources:
             requests:
               cpu: 100m
@@ -126,6 +142,22 @@ spec:
           volumeMounts:
             - name: model-cache
               mountPath: /cache
+          startupProbe:
+            httpGet:
+              path: /ping
+              port: 3003
+            periodSeconds: 10
+            failureThreshold: 18
+          readinessProbe:
+            httpGet:
+              path: /ping
+              port: 3003
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /ping
+              port: 3003
+            periodSeconds: 30
           resources:
             requests:
               cpu: 100m
