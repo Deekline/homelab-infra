@@ -48,19 +48,22 @@ spec:
               mountPath: /calibre-library
             - name: ingest
               mountPath: /cwa-book-ingest
+          startupProbe:
+            httpGet:
+              path: /
+              port: 8083
+            periodSeconds: 10
+            failureThreshold: 30
           readinessProbe:
             httpGet:
               path: /
               port: 8083
-            initialDelaySeconds: 10
             periodSeconds: 10
           livenessProbe:
             httpGet:
               path: /
               port: 8083
-            initialDelaySeconds: 30
             periodSeconds: 30
-            failureThreshold: 5
           resources:
             requests:
               cpu: 100m

@@ -83,17 +83,21 @@ spec:
                   volumeMounts:
                       - name: data
                         mountPath: /config
+                  startupProbe:
+                      httpGet:
+                          path: /
+                          port: http
+                      periodSeconds: 10
+                      failureThreshold: 30
                   readinessProbe:
                       httpGet:
                           path: /
                           port: http
-                      initialDelaySeconds: 10
                       periodSeconds: 10
                   livenessProbe:
                       httpGet:
                           path: /
                           port: http
-                      initialDelaySeconds: 30
                       periodSeconds: 30
                   resources:
                       requests:

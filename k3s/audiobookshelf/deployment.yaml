@@ -32,17 +32,21 @@ spec:
               mountPath: /metadata
             - name: library
               mountPath: /audiobooks
+          startupProbe:
+            httpGet:
+              path: /healthcheck
+              port: 80
+            periodSeconds: 10
+            failureThreshold: 30
           readinessProbe:
             httpGet:
               path: /healthcheck
               port: 80
-            initialDelaySeconds: 10
             periodSeconds: 10
           livenessProbe:
             httpGet:
               path: /healthcheck
               port: 80
-            initialDelaySeconds: 30
             periodSeconds: 30
           resources:
             requests:
