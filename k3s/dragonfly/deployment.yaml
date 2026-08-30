@@ -28,6 +28,25 @@ spec:
                 secretKeyRef:
                   name: dragonfly-secret
                   key: password
+          # redis-cli exits 0 even on auth failure (confirmed: exits 0 with
+          # "NOAUTH" on a wrong password) — must grep the actual reply, an
+          # exit-code-only check would pass through a broken auth config.
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - redis-cli -a "$DRAGONFLY_PASSWORD" ping | grep -q PONG
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - redis-cli -a "$DRAGONFLY_PASSWORD" ping | grep -q PONG
+            initialDelaySeconds: 15
+            periodSeconds: 30
           resources:
             requests:
               cpu: 100m

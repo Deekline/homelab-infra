@@ -45,6 +45,22 @@ spec:
             allowPrivilegeEscalation: false
             runAsUser: 1001
             runAsGroup: 3006
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 8096
+            periodSeconds: 10
+            failureThreshold: 30
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8096
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8096
+            periodSeconds: 30
       volumes:
         - name: config
           persistentVolumeClaim:
