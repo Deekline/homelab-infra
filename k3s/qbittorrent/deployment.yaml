@@ -73,17 +73,21 @@ spec:
               mountPath: /config
             - name: media-library
               mountPath: /data
+          startupProbe:
+            httpGet:
+              path: /
+              port: 8080
+            periodSeconds: 10
+            failureThreshold: 30
           readinessProbe:
             httpGet:
               path: /
               port: 8080
-            initialDelaySeconds: 10
             periodSeconds: 10
           livenessProbe:
             httpGet:
               path: /
               port: 8080
-            initialDelaySeconds: 30
             periodSeconds: 30
           resources:
             requests:

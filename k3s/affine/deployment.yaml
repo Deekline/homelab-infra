@@ -120,9 +120,6 @@ spec:
               mountPath: /root/.affine/storage
             - name: config
               mountPath: /root/.affine/config
-          # Frontend is an SPA catch-all — any path (including /api/health)
-          # returns 200 with the same HTML, so this only proves the server
-          # process is up, not that DB/redis connectivity is healthy.
           startupProbe:
             httpGet:
               path: /

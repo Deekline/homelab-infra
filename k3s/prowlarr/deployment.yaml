@@ -32,17 +32,21 @@ spec:
           volumeMounts:
             - name: config
               mountPath: /config
+          startupProbe:
+            httpGet:
+              path: /ping
+              port: 9696
+            periodSeconds: 10
+            failureThreshold: 30
           readinessProbe:
             httpGet:
               path: /ping
               port: 9696
-            initialDelaySeconds: 10
             periodSeconds: 10
           livenessProbe:
             httpGet:
               path: /ping
               port: 9696
-            initialDelaySeconds: 30
             periodSeconds: 30
           resources:
             requests:
