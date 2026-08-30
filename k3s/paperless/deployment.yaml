@@ -79,6 +79,22 @@ spec:
             - name: docs
               mountPath: /usr/src/paperless/export
               subPath: export
+          startupProbe:
+            httpGet:
+              path: /
+              port: 8000
+            periodSeconds: 10
+            failureThreshold: 18
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8000
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8000
+            periodSeconds: 30
           resources:
             requests:
               cpu: 200m
@@ -132,6 +148,18 @@ spec:
             - --chromium-allow-list=file:///tmp/.*
           ports:
             - containerPort: 3000
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 15
+            periodSeconds: 30
           resources:
             requests:
               cpu: 100m
@@ -174,6 +202,18 @@ spec:
           image: docker.io/apache/tika:3.3.1.0
           ports:
             - containerPort: 9998
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 9998
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 9998
+            initialDelaySeconds: 30
+            periodSeconds: 30
           resources:
             requests:
               cpu: 100m
