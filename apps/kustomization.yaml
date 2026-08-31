@@ -22,6 +22,7 @@ resources:
   - sonarr.yaml
   - apprise.yaml
   - gitea-runner.yaml
+  - flux-notifications.yaml
   - reloader.yaml
   - crowdsec.yaml
   - dragonfly.yaml
