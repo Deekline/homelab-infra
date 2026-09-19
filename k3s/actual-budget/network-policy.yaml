@@ -1,0 +1,33 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: actual-budget
+  namespace: actual-budget
+spec:
+  endpointSelector:
+    matchLabels:
+      app: actual-budget
+  # WebUI/API only reachable through Traefik.
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: traefik
+            app.kubernetes.io/name: traefik
+      toPorts:
+        - ports:
+            - port: "5006"
+              protocol: TCP
+  # No external calls from the core server (SQLite-backed, no bank sync
+  # wired up yet) — DNS only. Revisit if/when a transaction importer is
+  # added that needs its own egress.
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: kube-system
+            k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: UDP
+            - port: "53"
+              protocol: TCP

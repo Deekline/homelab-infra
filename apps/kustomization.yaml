@@ -43,3 +43,4 @@ resources:
   - cilium.yaml
   - affine.yaml
   - calibre-web.yaml
+  - actual-budget.yaml
