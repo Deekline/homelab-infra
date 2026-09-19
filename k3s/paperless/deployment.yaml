@@ -19,7 +19,7 @@ spec:
         fsGroup: 3006
       containers:
         - name: paperless
-          image: ghcr.io/paperless-ngx/paperless-ngx:3.0.5
+          image: ghcr.io/paperless-ngx/paperless-ngx:3.1.3
           ports:
             - containerPort: 8000
           env:
@@ -141,7 +141,7 @@ spec:
     spec:
       containers:
         - name: gotenberg
-          image: docker.io/gotenberg/gotenberg:8.36
+          image: docker.io/gotenberg/gotenberg:8.37
           args:
             - gotenberg
             - --chromium-disable-javascript=true
