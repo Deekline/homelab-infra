@@ -73,19 +73,17 @@ metrics:
     addRoutersLabels: true
     addServicesLabels: true
 
-logs:
-  general:
-    level: INFO
-  access:
-    enabled: true
-    format: json
-    fields:
-      general:
-        defaultmode: keep
-        names:
-          ClientUsername: drop
-      headers:
-        defaultmode: keep
+log:
+  level: INFO
+accessLog:
+  enabled: true
+  format: json
+  fields:
+    defaultMode: keep
+    names:
+      ClientUsername: drop
+    headers:
+      defaultMode: keep
 
 volumes:
   - name: crowdsec-bouncer-key
