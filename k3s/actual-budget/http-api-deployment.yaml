@@ -1,7 +1,3 @@
-# REST wrapper around the Actual Budget Node API (jhonderson/actual-http-api).
-# Internal only (no IngressRoute): used for category management now and by the
-# statement-parser (category sync + transaction import) later.
-# Image tag must track the actual-server version (both 26.9.0) — bump together.
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -27,6 +23,8 @@ spec:
           env:
             - name: TZ
               value: Europe/Warsaw
+            - name: NODE_ENV
+              value: production
             - name: ACTUAL_SERVER_URL
               value: http://actual-budget:5006/
             - name: ACTUAL_SERVER_PASSWORD
@@ -62,8 +60,6 @@ spec:
             capabilities:
               drop: ["ALL"]
       volumes:
-        # Budget cache is re-downloaded from actual-budget on start; no need
-        # for a PVC (and SQLite on NFS is best avoided anyway).
         - name: data
           emptyDir: {}
 ---
