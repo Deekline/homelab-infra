@@ -1,0 +1,80 @@
+# REST wrapper around the Actual Budget Node API (jhonderson/actual-http-api).
+# Internal only (no IngressRoute): used for category management now and by the
+# statement-parser (category sync + transaction import) later.
+# Image tag must track the actual-server version (both 26.9.0) — bump together.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: actual-http-api
+  namespace: actual-budget
+  annotations:
+    reloader.stakater.com/auto: "true"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: actual-http-api
+  template:
+    metadata:
+      labels:
+        app: actual-http-api
+    spec:
+      containers:
+        - name: actual-http-api
+          image: jhonderson/actual-http-api:26.9.0
+          ports:
+            - containerPort: 5007
+          env:
+            - name: TZ
+              value: Europe/Warsaw
+            - name: ACTUAL_SERVER_URL
+              value: http://actual-budget:5006/
+            - name: ACTUAL_SERVER_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: actual-http-api
+                  key: server-password
+            - name: API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: actual-http-api
+                  key: api-key
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          readinessProbe:
+            tcpSocket:
+              port: 5007
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: 5007
+            periodSeconds: 30
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+      volumes:
+        # Budget cache is re-downloaded from actual-budget on start; no need
+        # for a PVC (and SQLite on NFS is best avoided anyway).
+        - name: data
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: actual-http-api
+  namespace: actual-budget
+spec:
+  selector:
+    app: actual-http-api
+  ports:
+    - port: 5007
+      targetPort: 5007

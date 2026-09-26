@@ -7,7 +7,6 @@ spec:
   endpointSelector:
     matchLabels:
       app: actual-budget
-  # WebUI/API only reachable through Traefik.
   ingress:
     - fromEndpoints:
         - matchLabels:
@@ -17,9 +16,13 @@ spec:
         - ports:
             - port: "5006"
               protocol: TCP
-  # No external calls from the core server (SQLite-backed, no bank sync
-  # wired up yet) — DNS only. Revisit if/when a transaction importer is
-  # added that needs its own egress.
+    - fromEndpoints:
+        - matchLabels:
+            app: actual-http-api
+      toPorts:
+        - ports:
+            - port: "5006"
+              protocol: TCP
   egress:
     - toEndpoints:
         - matchLabels:
