@@ -5,3 +5,5 @@ resources:
   - pvc.yaml
   - ingressroute.yaml
   - network-policy.yaml
+  - http-api-secrets.yaml
+  - http-api-deployment.yaml
