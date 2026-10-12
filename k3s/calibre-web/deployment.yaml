@@ -26,7 +26,7 @@ spec:
         fsGroup: 3006
       containers:
         - name: calibre-web
-          image: crocodilestick/calibre-web-automated:v4.0.6
+          image: crocodilestick/calibre-web-automated:v4.0.8
           ports:
             - containerPort: 8083
           env:

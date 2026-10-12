@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: actual-http-api
-          image: jhonderson/actual-http-api:26.9.0
+          image: jhonderson/actual-http-api:26.10.0
           ports:
             - containerPort: 5007
           env:
