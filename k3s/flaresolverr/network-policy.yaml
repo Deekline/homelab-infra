@@ -1,0 +1,20 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: flaresolverr
+  namespace: media
+spec:
+  endpointSelector:
+    matchLabels:
+      app: flaresolverr
+  # Only Prowlarr uses it, as an indexer proxy. No WebUI, so no Traefik route.
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            app: prowlarr
+      toPorts:
+        - ports:
+            - port: "8191"
+              protocol: TCP
+  # No egress restriction — headless Chromium loads arbitrary indexer sites.
+  # Deferred to the FQDN-egress phase, same as prowlarr.

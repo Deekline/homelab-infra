@@ -16,6 +16,7 @@ resources:
   - bazarr.yaml
   - jellyfin.yaml
   - prowlarr.yaml
+  - flaresolverr.yaml
   - qbittorrent.yaml
   - radarr.yaml
   - seerr.yaml
