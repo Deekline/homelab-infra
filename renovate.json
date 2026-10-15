@@ -29,6 +29,11 @@
       "matchManagers": ["flux", "kubernetes", "helm-values"],
       "matchUpdateTypes": ["major"],
       "labels": ["major-update"]
+    },
+    {
+      "description": "Immich server and machine-learning must run the same version — always bump together in one PR",
+      "matchPackageNames": ["/^ghcr\\.io\\/immich-app\\//"],
+      "groupName": "immich"
     }
   ],
   "automerge": false
