@@ -11,9 +11,10 @@ grafana:
 
   resources:
     requests:
-      memory: 128Mi
+      cpu: 30m
+      memory: 480Mi
     limits:
-      memory: 800Mi
+      memory: 1Gi
 
   admin:
     existingSecret: grafana-admin-credentials
@@ -71,9 +72,10 @@ vmsingle:
     retentionPeriod: "30d"
     resources:
       requests:
-        memory: 512Mi
+        cpu: 75m
+        memory: 1088Mi
       limits:
-        memory: 1Gi
+        memory: 1280Mi
     storage:
       storageClassName: nfs-monitoring
       accessModes:
@@ -100,7 +102,8 @@ vmagent:
     scrapeInterval: 60s
     resources:
       requests:
-        memory: 64Mi
+        cpu: 50m
+        memory: 128Mi
       limits:
         memory: 256Mi
     nodeSelector:
@@ -112,7 +115,8 @@ vmalert:
     evaluationInterval: 60s
     resources:
       requests:
-        memory: 32Mi
+        cpu: 10m
+        memory: 64Mi
       limits:
         memory: 128Mi
     nodeSelector:
