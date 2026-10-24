@@ -97,8 +97,8 @@ spec:
             periodSeconds: 30
           resources:
             requests:
-              cpu: 200m
-              memory: 512Mi
+              cpu: 100m
+              memory: 1056Mi
             limits:
               cpu: "1"
               memory: 2Gi
@@ -162,7 +162,7 @@ spec:
             periodSeconds: 30
           resources:
             requests:
-              cpu: 100m
+              cpu: 10m
               memory: 256Mi
             limits:
               cpu: 500m
@@ -216,7 +216,7 @@ spec:
             periodSeconds: 30
           resources:
             requests:
-              cpu: 100m
+              cpu: 10m
               memory: 256Mi
             limits:
               cpu: 500m
