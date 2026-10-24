@@ -52,8 +52,8 @@ spec:
               mountPath: /dev/net/tun
           resources:
             requests:
-              cpu: 50m
-              memory: 32Mi
+              cpu: 10m
+              memory: 64Mi
             limits:
               cpu: 250m
               memory: 128Mi
@@ -93,11 +93,11 @@ spec:
             periodSeconds: 30
           resources:
             requests:
-              cpu: 200m
+              cpu: 40m
               memory: 256Mi
             limits:
               cpu: "1"
-              memory: 512Mi
+              memory: 640Mi
           securityContext:
             allowPrivilegeEscalation: false
       volumes:
