@@ -45,7 +45,8 @@ singleBinary:
       mountPath: /wal
   resources:
     requests:
-      memory: 256Mi
+      cpu: 40m
+      memory: 288Mi
     limits:
       memory: 512Mi
   persistence:
