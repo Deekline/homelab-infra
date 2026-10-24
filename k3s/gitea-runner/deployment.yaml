@@ -109,7 +109,7 @@ spec:
             failureThreshold: 20
           resources:
             requests:
-              cpu: 100m
+              cpu: 10m
               memory: 256Mi
             limits:
               memory: 512Mi
@@ -137,6 +137,10 @@ spec:
               command: ["docker", "info"]
             periodSeconds: 30
             timeoutSeconds: 5
+          resources:
+            requests:
+              cpu: 25m
+              memory: 480Mi
           volumeMounts:
             - name: docker-storage-pvc
               mountPath: /var/lib/docker

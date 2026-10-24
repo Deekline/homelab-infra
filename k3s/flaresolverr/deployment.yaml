@@ -41,11 +41,11 @@ spec:
             periodSeconds: 30
           resources:
             requests:
-              cpu: 100m
-              memory: 256Mi
+              cpu: 10m
+              memory: 416Mi
             limits:
               cpu: "1"
-              memory: 1Gi
+              memory: 1280Mi
           securityContext:
             allowPrivilegeEscalation: false
 ---
