@@ -8,6 +8,10 @@
 #   4. Encrypt: sops -e secrets.yaml > secrets.yaml (in-place) or sops secrets.yaml (interactive)
 #
 creation_rules:
+  # Docker Compose secrets for the VMs (decrypted by doco-cd): encrypt all values
+  - path_regex: docker/.+\.sops\.(env|ya?ml|json)$
+    age: age1vnjflcl0aeefw82f5klz764c4r5ddg9ad63y7vmu58dxmw026sms047q3j
+
   # Encrypt only the 'stringData' values in secret files
   - path_regex: .*secrets\.yaml$
     encrypted_regex: ^(data|stringData)$

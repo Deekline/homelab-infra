@@ -1,15 +1,18 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["config:recommended"],
-  "ignorePaths": ["**/secrets.yaml"],
+  "ignorePaths": ["**/secrets.yaml", "**/*.sops.*"],
   "labels": ["renovate", "dependencies"],
   "schedule": ["* 12 * * 1,4"],
-  "enabledManagers": ["flux", "kubernetes", "helm-values", "github-actions"],
+  "enabledManagers": ["flux", "kubernetes", "helm-values", "github-actions", "docker-compose"],
   "flux": {
     "managerFilePatterns": ["/^apps\\/.+\\.yaml$/"]
   },
   "kubernetes": {
     "managerFilePatterns": ["/^k3s\\/.+\\.yaml$/"]
+  },
+  "docker-compose": {
+    "managerFilePatterns": ["/^docker\\/.+\\/compose\\.ya?ml$/"]
   },
   "packageRules": [
     {
@@ -25,8 +28,14 @@
       "groupName": "app image minor and patch updates"
     },
     {
+      "description": "Group minor/patch image bumps for the VM compose stacks, separate from cluster images",
+      "matchManagers": ["docker-compose"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "compose image minor and patch updates"
+    },
+    {
       "description": "Keep major bumps isolated and clearly flagged for review",
-      "matchManagers": ["flux", "kubernetes", "helm-values"],
+      "matchManagers": ["flux", "kubernetes", "helm-values", "docker-compose"],
       "matchUpdateTypes": ["major"],
       "labels": ["major-update"]
     },
