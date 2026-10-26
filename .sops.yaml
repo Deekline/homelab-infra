@@ -8,6 +8,12 @@
 #   4. Encrypt: sops -e secrets.yaml > secrets.yaml (in-place) or sops secrets.yaml (interactive)
 #
 creation_rules:
+  - path_regex: docker/.+/alertmanager\.sops\.ya?ml$
+    encrypted_regex: ^(bot_token|chat_id)$
+    age: >-
+      age1vnjflcl0aeefw82f5klz764c4r5ddg9ad63y7vmu58dxmw026sms047q3j,
+      age13llaej5dgax7hgmakqdmhhuzrjs72jx2se2n973rgdrvz6wqx5as2edhts
+
   # Docker Compose secrets for the VMs (decrypted by doco-cd): encrypt all values
   - path_regex: docker/.+\.sops\.(env|ya?ml|json)$
     age: >-

@@ -1,0 +1,115 @@
+groups:
+- name: homelab.pod
+  rules:
+  - alert: PodOOMKilled
+    annotations:
+      description: Container {{ $labels.container }} in pod {{ $labels.namespace }}/{{ $labels.pod }} was OOMKilled.
+      summary: 'OOMKilled: {{ $labels.namespace }}/{{ $labels.pod }}'
+    expr: |
+      kube_pod_container_status_last_terminated_reason{reason="OOMKilled"} == 1
+    for: 0m
+    labels:
+      severity: warning
+  - alert: PodFailed
+    annotations:
+      description: Pod {{ $labels.namespace }}/{{ $labels.pod }} has been in Failed state for more than 5 minutes.
+      summary: 'Pod failed: {{ $labels.namespace }}/{{ $labels.pod }}'
+    expr: |
+      kube_pod_status_phase{phase="Failed"} == 1
+    for: 5m
+    labels:
+      severity: warning
+- name: homelab.node
+  rules:
+  - alert: NodeHighMemoryUsage
+    annotations:
+      description: 'Node {{ $labels.instance }} memory usage is {{ printf "%.1f" $value }}% (threshold: 85%).'
+      summary: High memory on {{ $labels.instance }}
+    expr: |
+      (
+        node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes
+      ) / node_memory_MemTotal_bytes * 100 > 85
+    for: 10m
+    labels:
+      severity: warning
+  - alert: NodeHighCPUUsage
+    annotations:
+      description: 'Node {{ $labels.instance }} CPU usage is {{ printf "%.1f" $value }}% (threshold: 85%).'
+      summary: High CPU on {{ $labels.instance }}
+    expr: |
+      100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 85
+    for: 10m
+    labels:
+      severity: warning
+- name: homelab.container
+  rules:
+  - alert: ContainerHighMemoryUsage
+    annotations:
+      description: Container {{ $labels.container }} ({{ $labels.namespace }}/{{ $labels.pod }}) is using {{ printf "%.1f" $value }}% of its memory limit.
+      summary: High memory in {{ $labels.namespace }}/{{ $labels.pod }}/{{ $labels.container }}
+    expr: |
+      (
+        container_memory_working_set_bytes{container!="", image!=""}
+        / on(namespace, pod, container)
+        kube_pod_container_resource_limits{resource="memory", container!=""}
+      ) * 100 > 90
+    for: 10m
+    labels:
+      severity: warning
+  - alert: ContainerHighCPUUsage
+    annotations:
+      description: Container {{ $labels.container }} ({{ $labels.namespace }}/{{ $labels.pod }}) is using {{ printf "%.1f" $value }}% of its CPU limit.
+      summary: High CPU in {{ $labels.namespace }}/{{ $labels.pod }}/{{ $labels.container }}
+    expr: |
+      (
+        rate(container_cpu_usage_seconds_total{container!="", image!=""}[5m])
+        / on(namespace, pod, container)
+        kube_pod_container_resource_limits{resource="cpu", container!=""}
+      ) * 100 > 90
+    for: 10m
+    labels:
+      severity: warning
+- name: homelab.cnpg
+  rules:
+  - alert: CNPGPodNotReady
+    annotations:
+      description: CloudNativePG pod {{ $labels.namespace }}/{{ $labels.pod }} (cluster {{ $labels.label_cnpg_io_cluster }}) has not been Ready for 5 minutes.
+      summary: 'CNPG pod not ready: {{ $labels.namespace }}/{{ $labels.pod }}'
+    expr: |
+      kube_pod_status_ready{condition="false"}
+      * on(namespace, pod) group_left(label_cnpg_io_cluster)
+      kube_pod_labels{label_cnpg_io_cluster!=""}
+    for: 5m
+    labels:
+      severity: critical
+- name: homelab.certificates
+  rules:
+  - alert: CertificateExpiringSoon
+    annotations:
+      description: cert-manager Certificate {{ $labels.namespace }}/{{ $labels.name }} expires in under 14 days.
+      summary: 'Certificate expiring soon: {{ $labels.namespace }}/{{ $labels.name }}'
+    expr: |
+      certmanager_certificate_expiration_timestamp_seconds - time() < 86400 * 14
+    for: 1h
+    labels:
+      severity: warning
+  - alert: CertificateNotReady
+    annotations:
+      description: cert-manager Certificate {{ $labels.namespace }}/{{ $labels.name }} has not been Ready for over an hour.
+      summary: 'Certificate not ready: {{ $labels.namespace }}/{{ $labels.name }}'
+    expr: |
+      certmanager_certificate_ready_status{condition="False"} == 1
+    for: 1h
+    labels:
+      severity: warning
+- name: homelab.flux
+  rules:
+  - alert: FluxReconcileErrors
+    annotations:
+      description: Flux {{ $labels.controller }} controller has had reconcile errors in the last 15 minutes.
+      summary: Flux {{ $labels.controller }} reconcile errors
+    expr: |
+      increase(controller_runtime_reconcile_errors_total{namespace="flux-system"}[15m]) > 0
+    for: 15m
+    labels:
+      severity: warning
