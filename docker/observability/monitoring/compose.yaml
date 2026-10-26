@@ -42,7 +42,6 @@ services:
       - .sops.env
     environment:
       GF_SECURITY_ALLOW_EMBEDDING: "true"
-      GF_EXPLORE_ENABLED: "false"
       GF_PLUGINS_PREINSTALL_SYNC: victoriametrics-logs-datasource@0.33.1
     configs:
       - source: grafana-datasources
