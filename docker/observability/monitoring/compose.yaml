@@ -11,6 +11,17 @@ services:
     ports:
       - "8428:8428"
 
+  victorialogs:
+    image: victoriametrics/victoria-logs:v1.53.0
+    restart: unless-stopped
+    command:
+      - -storageDataPath=/storage
+      - -retentionPeriod=7d
+    volumes:
+      - /srv/data/victorialogs:/storage
+    ports:
+      - "9428:9428"
+
   grafana-init:
     image: busybox:1.37.0
     command: ["chown", "-R", "472:472", "/var/lib/grafana"]
@@ -25,11 +36,14 @@ services:
         condition: service_completed_successfully
       victoriametrics:
         condition: service_started
+      victorialogs:
+        condition: service_started
     env_file:
       - .sops.env
     environment:
       GF_SECURITY_ALLOW_EMBEDDING: "true"
       GF_EXPLORE_ENABLED: "false"
+      GF_PLUGINS_PREINSTALL_SYNC: victoriametrics-logs-datasource@0.33.1
     configs:
       - source: grafana-datasources
         target: /etc/grafana/provisioning/datasources/datasources.yaml
@@ -51,3 +65,8 @@ configs:
           isDefault: true
           jsonData:
             timeInterval: 60s
+        - name: VictoriaLogs
+          type: victoriametrics-logs-datasource
+          uid: victorialogs
+          url: http://victorialogs:9428
+          access: proxy
