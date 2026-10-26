@@ -23,7 +23,7 @@ receivers:
     - name: "null"
     - name: telegram
       telegram_configs:
-        - bot_token: ENC[AES256_GCM,data:9zBR3Lhn6SgL5/pnc8fsdDI0D4fbxCK/zNnqe6GUn0Kr7dqWvgbsoljqvG+xOQ==,iv:IemWYMPBV+sL1sjybyFGAQPdA+0Nsxz/2Cx07UtBHnA=,tag:ACZ6xTcMJtin2MslNWFVDA==,type:str]
+        - bot_token: ENC[AES256_GCM,data:aCziaY7z+x255gNDd7lFs2PXBaqeS+Wrlz+8dijuMWYhNGN54lU5ge332iRnHA==,iv:07V+WyU3UxrmZgYNNRbgUFvoJchZ/kEbunOdTYrWYRM=,tag:CXRonfVZlQGR+vBDNzbFfQ==,type:str]
           chat_id: ENC[AES256_GCM,data:s+tdA1trczrZcA==,iv:OoGMS4b697T0UTmG+dX+qOCg7pVSldQQ93gcI0DaDNs=,tag:PNAlT0mwFyUha2P7Mt6O4w==,type:int]
           send_resolved: true
           parse_mode: ""
@@ -58,6 +58,6 @@ sops:
             -----END AGE ENCRYPTED FILE-----
           recipient: age13llaej5dgax7hgmakqdmhhuzrjs72jx2se2n973rgdrvz6wqx5as2edhts
     encrypted_regex: ^(bot_token|chat_id)$
-    lastmodified: "2026-10-26T16:45:37Z"
-    mac: ENC[AES256_GCM,data:nUCFz4BLz1jRjzTvfd2Nqx+jCV/815pcWmv6y31NuAwPWB+iIM7oFgewTjTHd/f9zG1hiv607IXay1zR/okgKnUKXJtL0+roGeC80mjrNE3goyhfL+oVhBluo0DHblHNh9Y1Y2rAujkEQ5HUxJ9uCimtgzakGM07FedJRscUjsA=,iv:YxSBp22sMFUqqcqi6DN1URaqgKggMLczqnammFGCpA0=,tag:fueqfxBeyeJE32fp1HRdpw==,type:str]
+    lastmodified: "2026-10-26T20:30:51Z"
+    mac: ENC[AES256_GCM,data:up3ioHMLdJoZhjdhGwkZrd3AHjznyNNgQ24I43VlrQtF9Hl+MauA3fKsDSO05BfPmYgwS3V+KnnVp6hi8vw7MiuOruKns69pas+ZykQ61CNQy3ihXyyTwmovFtMvdtRpCMeO5CLfZjFuRwpunQ3Aep6EebP3zPf5phzINDX3eS8=,iv:+utUWnRuJ6SN0ApUyUiJyXmHOzXVSLamJSiI9CW3ocg=,tag:NSDjl2VEXiSuHuw9E34swQ==,type:str]
     version: 3.13.1
