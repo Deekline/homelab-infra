@@ -1,0 +1,53 @@
+services:
+  victoriametrics:
+    image: victoriametrics/victoria-metrics:v1.154.0
+    restart: unless-stopped
+    command:
+      - -storageDataPath=/storage
+      - -retentionPeriod=30d
+      - -selfScrapeInterval=60s
+    volumes:
+      - /srv/data/victoriametrics:/storage
+    ports:
+      - "8428:8428"
+
+  grafana-init:
+    image: busybox:1.37.0
+    command: ["chown", "-R", "472:472", "/var/lib/grafana"]
+    volumes:
+      - /srv/data/grafana:/var/lib/grafana
+
+  grafana:
+    image: grafana/grafana:13.2.4
+    restart: unless-stopped
+    depends_on:
+      grafana-init:
+        condition: service_completed_successfully
+      victoriametrics:
+        condition: service_started
+    env_file:
+      - .sops.env
+    environment:
+      GF_SECURITY_ALLOW_EMBEDDING: "true"
+      GF_EXPLORE_ENABLED: "false"
+    configs:
+      - source: grafana-datasources
+        target: /etc/grafana/provisioning/datasources/datasources.yaml
+    volumes:
+      - /srv/data/grafana:/var/lib/grafana
+    ports:
+      - "3000:3000"
+
+configs:
+  grafana-datasources:
+    content: |
+      apiVersion: 1
+      datasources:
+        - name: VictoriaMetrics
+          type: prometheus
+          uid: victoriametrics
+          url: http://victoriametrics:8428
+          access: proxy
+          isDefault: true
+          jsonData:
+            timeInterval: 60s
