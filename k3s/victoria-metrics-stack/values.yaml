@@ -105,9 +105,9 @@ vmagent:
     resources:
       requests:
         cpu: 50m
-        memory: 128Mi
+        memory: 192Mi
       limits:
-        memory: 256Mi
+        memory: 512Mi
     nodeSelector:
       kubernetes.io/hostname: k3s-worker-2
 
