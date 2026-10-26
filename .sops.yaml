@@ -10,7 +10,9 @@
 creation_rules:
   # Docker Compose secrets for the VMs (decrypted by doco-cd): encrypt all values
   - path_regex: docker/.+\.sops\.(env|ya?ml|json)$
-    age: age1vnjflcl0aeefw82f5klz764c4r5ddg9ad63y7vmu58dxmw026sms047q3j
+    age: >-
+      age1vnjflcl0aeefw82f5klz764c4r5ddg9ad63y7vmu58dxmw026sms047q3j,
+      age13llaej5dgax7hgmakqdmhhuzrjs72jx2se2n973rgdrvz6wqx5as2edhts
 
   # Encrypt only the 'stringData' values in secret files
   - path_regex: .*secrets\.yaml$
