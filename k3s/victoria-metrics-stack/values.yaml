@@ -98,6 +98,8 @@ vmsingle:
 
 vmagent:
   enabled: true
+  additionalRemoteWrites:
+    - url: http://10.0.10.11:8428/api/v1/write
   spec:
     scrapeInterval: 60s
     resources:
