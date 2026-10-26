@@ -69,7 +69,7 @@ services:
     command:
       - --config.file=/etc/alertmanager/alertmanager.yml
       - --storage.path=/alertmanager
-      - --web.external-url=http://10.0.10.11:9093
+      - --web.external-url=http://${OBSERVABILITY_IP:?}:9093
     volumes:
       - ./alertmanager.sops.yml:/etc/alertmanager/alertmanager.yml:ro
       - /srv/data/alertmanager:/alertmanager
@@ -91,7 +91,7 @@ services:
       - -remoteRead.url=http://victoriametrics:8428
       - -notifier.url=http://alertmanager:9093
       - -evaluationInterval=60s
-      - -external.url=http://10.0.10.11:8880
+      - -external.url=http://${OBSERVABILITY_IP:?}:8880
     volumes:
       - ./rules:/etc/vmalert/rules:ro
     ports:
