@@ -47,12 +47,25 @@ services:
     configs:
       - source: grafana-datasources
         target: /etc/grafana/provisioning/datasources/datasources.yaml
+      - source: grafana-dashboard-provider
+        target: /etc/grafana/provisioning/dashboards/provider.yaml
     volumes:
       - /srv/data/grafana:/var/lib/grafana
+      - ./dashboards:/etc/grafana/dashboards:ro
     ports:
       - "3000:3000"
 
 configs:
+  grafana-dashboard-provider:
+    content: |
+      apiVersion: 1
+      providers:
+        - name: homelab
+          type: file
+          allowUiUpdates: false
+          options:
+            path: /etc/grafana/dashboards
+            foldersFromFilesStructure: true
   grafana-datasources:
     content: |
       apiVersion: 1
