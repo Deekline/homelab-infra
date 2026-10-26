@@ -1,0 +1,63 @@
+global:
+    resolve_timeout: 5m
+route:
+    group_by:
+        - alertname
+        - namespace
+    group_wait: 30s
+    group_interval: 5m
+    repeat_interval: 12h
+    receiver: telegram
+    routes:
+        - receiver: "null"
+          matchers:
+            - alertname = "Watchdog"
+        - receiver: "null"
+          matchers:
+            - alertname = "InfoInhibitor"
+        - receiver: "null"
+          matchers:
+            - alertname = "RecordingRulesNoData"
+            - recording = "count:up0"
+receivers:
+    - name: "null"
+    - name: telegram
+      telegram_configs:
+        - bot_token: ENC[AES256_GCM,data:tQeWeuEVEjVe+ZKBMzI7FA8PjYfSQqRpnJYGf0Xa9rMiJ0jpf30aR8dWICBWdA==,iv:DrZ8lfT5bq7X/5zG8mo/eKmyzjcQ3umpcG9FhPsj+FY=,tag:DAanFPBPO8Oz4emuGnJG+g==,type:str]
+          chat_id: ENC[AES256_GCM,data:bhaDo8UBxtaLCw==,iv:yRj6MzZR1ZlM1a/jd9i6fd2ojmTi4M7C6z/e9BH47bc=,tag:SVRT485EEy6UzcJwDoCRWQ==,type:str]
+          send_resolved: true
+          parse_mode: ""
+          message: "[VM] {{ if eq .Status \"firing\" }}\U0001F525 FIRING{{ else }}✅ RESOLVED{{ end }}: {{ .CommonLabels.alertname }}\n{{- if .CommonLabels.severity }}\nSeverity: {{ .CommonLabels.severity }}{{ end }}\n{{- if .CommonLabels.namespace }}\nNamespace: {{ .CommonLabels.namespace }}{{ end }}\n{{- range .Alerts }}\n{{ .Annotations.summary }}\n{{- end }}"
+inhibit_rules:
+    - source_matchers:
+        - severity = "critical"
+      target_matchers:
+        - severity = "warning"
+      equal:
+        - alertname
+        - namespace
+        - pod
+sops:
+    age:
+        - enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSA5RkRHUUo5K3l5ZWQ0S0w3
+            WUcvMUlkYXlWaW5JNWVRVU5EcTcrVTVhdlNjCm5qQ3RSNG56YkJOY1cxcElNVFc0
+            dE1Zb2VqdGRJTmJYdU52aEhxeUF1UkUKLS0tIDFUMWZMZ0lXeUpsMWtkTjNIMktJ
+            emV1WFBsdU1KUXU3U1pJcFg2d3VHajQKYclgsysbfBkkjAghWUJTlw2um2YtctDI
+            CWv0ncMFB/kjxlDxQ5Rmn90Mdgn+6Qq95Eo9iLb0Yglvn+aTovIGvg==
+            -----END AGE ENCRYPTED FILE-----
+          recipient: age1vnjflcl0aeefw82f5klz764c4r5ddg9ad63y7vmu58dxmw026sms047q3j
+        - enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSA1Sk4rcmZoMEpORm0wOEw1
+            bXhiRHpJVm9HMjdHK2pnMU4xQWwvWUFOd0dvCkV1WUYyRWJwZk5zM1JrK3Zkcld0
+            aktYMXNDZ041SkFRbXdKdGJWQ1UvN0UKLS0tIGtmYTVTQmVETitHNjlQZlExc1Vi
+            SGJocTd1aEk3NXcvVWZvTXNReDF6bm8KcqiCZcW9zRCQhytmGLxwqDmArOsIGQ+M
+            lR0DWYIT3ZJz1zFc5RMneNMCSD3XKryDsyYxgdc8UOtcHUbea/TNGQ==
+            -----END AGE ENCRYPTED FILE-----
+          recipient: age13llaej5dgax7hgmakqdmhhuzrjs72jx2se2n973rgdrvz6wqx5as2edhts
+    encrypted_regex: ^(bot_token|chat_id)$
+    lastmodified: "2026-10-26T16:35:19Z"
+    mac: ENC[AES256_GCM,data:l3r8rLOKKsu0jqQx2g3vZ9e4fIrbDBJ4tjrx57WlxAFklqSIb9UzEJdjscGlkJXFbCnMgckDbpANe0rVl6+I2i5+0joll6MXIEbGa9J87yuHJ9JQVVuj736wW+WI+3A5yun0qsDEJvVXtXoCC6sjTWdr4dB0dFS6WGFywwgzhDk=,iv:/H6YFUx/ARCCZI8p/6+J/5CFZiOI+xX5pA8/9hE3jKo=,tag:GioL739Xy0o4Z91bJCxcMg==,type:str]
+    version: 3.13.1
