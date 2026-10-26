@@ -24,7 +24,7 @@ receivers:
     - name: telegram
       telegram_configs:
         - bot_token: ENC[AES256_GCM,data:aCziaY7z+x255gNDd7lFs2PXBaqeS+Wrlz+8dijuMWYhNGN54lU5ge332iRnHA==,iv:07V+WyU3UxrmZgYNNRbgUFvoJchZ/kEbunOdTYrWYRM=,tag:CXRonfVZlQGR+vBDNzbFfQ==,type:str]
-          chat_id: ENC[AES256_GCM,data:s+tdA1trczrZcA==,iv:OoGMS4b697T0UTmG+dX+qOCg7pVSldQQ93gcI0DaDNs=,tag:PNAlT0mwFyUha2P7Mt6O4w==,type:int]
+          chat_id: ENC[AES256_GCM,data:gIEm0w5GEdiE,iv:+3TumiA00OLpOL3prmeoEdTKjlKlD89fvJ84xN00e+c=,tag:QozAVgrQnxztwfSwdh2qgQ==,type:int]
           send_resolved: true
           parse_mode: ""
           message: "[VM] {{ if eq .Status \"firing\" }}\U0001F525 FIRING{{ else }}✅ RESOLVED{{ end }}: {{ .CommonLabels.alertname }}\n{{- if .CommonLabels.severity }}\nSeverity: {{ .CommonLabels.severity }}{{ end }}\n{{- if .CommonLabels.namespace }}\nNamespace: {{ .CommonLabels.namespace }}{{ end }}\n{{- range .Alerts }}\n{{ .Annotations.summary }}\n{{- end }}"
@@ -58,6 +58,6 @@ sops:
             -----END AGE ENCRYPTED FILE-----
           recipient: age13llaej5dgax7hgmakqdmhhuzrjs72jx2se2n973rgdrvz6wqx5as2edhts
     encrypted_regex: ^(bot_token|chat_id)$
-    lastmodified: "2026-10-26T20:30:51Z"
-    mac: ENC[AES256_GCM,data:up3ioHMLdJoZhjdhGwkZrd3AHjznyNNgQ24I43VlrQtF9Hl+MauA3fKsDSO05BfPmYgwS3V+KnnVp6hi8vw7MiuOruKns69pas+ZykQ61CNQy3ihXyyTwmovFtMvdtRpCMeO5CLfZjFuRwpunQ3Aep6EebP3zPf5phzINDX3eS8=,iv:+utUWnRuJ6SN0ApUyUiJyXmHOzXVSLamJSiI9CW3ocg=,tag:NSDjl2VEXiSuHuw9E34swQ==,type:str]
+    lastmodified: "2026-10-26T20:40:29Z"
+    mac: ENC[AES256_GCM,data:0vd7lo/GMmWVCDDow0WHQSZcQUz8uoGFT9a+0dwGFvqhZ4mInRrbVj6/Fgw5hYRB7Tj0vtVwxJIncfhqpsBHKCOCLag/s4LZmoBPqVu/OQz3N8lhr92HNFZiSsUi5gxeIloyfy4gr7v1N8HozymYsgOEpuH0VvsUyJKgmdFqNFM=,iv:+MggNYhkyonNxzScxWtGUsHSxfo+2tru7wjwcvVy41I=,tag:73lxx0yBeFrTbzinQxi/6Q==,type:str]
     version: 3.13.1
