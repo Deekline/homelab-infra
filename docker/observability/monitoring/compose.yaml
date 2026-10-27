@@ -40,17 +40,6 @@ services:
     env_file:
       - opnsense-exporter.sops.env
 
-  victorialogs:
-    image: victoriametrics/victoria-logs:v1.53.0
-    restart: unless-stopped
-    command:
-      - -storageDataPath=/storage
-      - -retentionPeriod=7d
-    volumes:
-      - /srv/data/victorialogs:/storage
-    ports:
-      - "9428:9428"
-
   grafana-init:
     image: busybox:1.37.0
     command: ["chown", "-R", "472:472", "/var/lib/grafana"]
@@ -64,8 +53,6 @@ services:
       grafana-init:
         condition: service_completed_successfully
       victoriametrics:
-        condition: service_started
-      victorialogs:
         condition: service_started
     env_file:
       - .sops.env
