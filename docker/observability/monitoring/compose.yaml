@@ -23,6 +23,21 @@ services:
     environment:
       PVE_VERIFY_SSL: "false"
 
+  opnsense-exporter:
+    image: ghcr.io/athennamind/opnsense-exporter:0.0.18
+    restart: unless-stopped
+    command:
+      - --opnsense.protocol=https
+      - --opnsense.address=${OPNSENSE_IP:?}
+      - --opnsense.insecure
+      - --exporter.instance-label=opnsense
+      - --exporter.disable-carp
+      - --exporter.disable-ipsec
+      - --exporter.disable-openvpn
+      - --web.listen-address=:8080
+    env_file:
+      - opnsense-exporter.sops.env
+
   victorialogs:
     image: victoriametrics/victoria-logs:v1.53.0
     restart: unless-stopped
@@ -128,6 +143,11 @@ configs:
               target_label: instance
             - target_label: __address__
               replacement: pve-exporter:9221
+        - job_name: opnsense
+          scrape_interval: 60s
+          scrape_timeout: 30s
+          static_configs:
+            - targets: ["opnsense-exporter:8080"]
   grafana-dashboard-provider:
     content: |
       apiVersion: 1
