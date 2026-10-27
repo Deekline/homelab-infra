@@ -1,0 +1,50 @@
+services:
+  victoriametrics:
+    image: victoriametrics/victoria-metrics:v1.154.0
+    restart: unless-stopped
+    command:
+      - -storageDataPath=/storage
+      - -retentionPeriod=30d
+      - -selfScrapeInterval=60s
+      - -promscrape.config=/etc/victoriametrics/scrape.yaml
+    configs:
+      - source: victoriametrics-scrape
+        target: /etc/victoriametrics/scrape.yaml
+    environment:
+      PVE_IP: ${PVE_IP:?}
+    volumes:
+      - /srv/data/victoriametrics:/storage
+    ports:
+      - "8428:8428"
+
+  pve-exporter:
+    image: prompve/prometheus-pve-exporter:3.10.1
+    restart: unless-stopped
+    env_file:
+      - pve-exporter.sops.env
+    environment:
+      PVE_VERIFY_SSL: "false"
+
+  opnsense-exporter:
+    image: ghcr.io/athennamind/opnsense-exporter:0.0.18
+    restart: unless-stopped
+    command:
+      - --opnsense.protocol=https
+      - --opnsense.address=${OPNSENSE_IP:?}
+      - --opnsense.insecure
+      - --exporter.instance-label=opnsense
+      - --exporter.disable-carp
+      - --exporter.disable-ipsec
+      - --exporter.disable-openvpn
+      - --web.listen-address=:8080
+    env_file:
+      - opnsense-exporter.sops.env
+
+configs:
+  victoriametrics-scrape:
+    file: ./scrape.yaml
+
+networks:
+  default:
+    name: observability
+    external: true
