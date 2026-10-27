@@ -4,67 +4,7 @@
 argocdReleaseOverride: monitoring
 
 grafana:
-  enabled: true
-
-  initChownData:
-    enabled: false
-
-  resources:
-    requests:
-      cpu: 30m
-      memory: 480Mi
-    limits:
-      memory: 1Gi
-
-  admin:
-    existingSecret: grafana-admin-credentials
-    userKey: admin-user
-    passwordKey: admin-password
-
-  grafana.ini:
-    security:
-      allow_embedding: true
-    auth.anonymous:
-      enabled: true
-      org_name: Main Org.
-      org_role: Viewer
-    explore:
-      enabled: false
-
-  persistence:
-    enabled: true
-    storageClassName: nfs-monitoring
-    size: 5Gi
-
-  ingress:
-    enabled: false
-
-  affinity:
-    podAntiAffinity:
-      preferredDuringSchedulingIgnoredDuringExecution:
-        - weight: 50
-          podAffinityTerm:
-            labelSelector:
-              matchExpressions:
-                - key: app.kubernetes.io/name
-                  operator: In
-                  values:
-                    - vmsingle
-            topologyKey: kubernetes.io/hostname
-
-  sidecar:
-    datasources:
-      defaultDatasourceEnabled: true
-      defaultDatasourceScrapeInterval: 60s
-    dashboards:
-      defaultFolderName: "Internal"
-
-  additionalDataSources:
-    - name: Loki
-      type: loki
-      url: http://loki.monitoring.svc.cluster.local:3100
-      access: proxy
-      isDefault: false
+  enabled: false
 
 vmsingle:
   enabled: true
@@ -112,68 +52,10 @@ vmagent:
       kubernetes.io/hostname: k3s-worker-2
 
 vmalert:
-  enabled: true
-  spec:
-    evaluationInterval: 60s
-    resources:
-      requests:
-        cpu: 10m
-        memory: 64Mi
-      limits:
-        memory: 128Mi
-    nodeSelector:
-      kubernetes.io/hostname: k3s-worker-2
+  enabled: false
 
 alertmanager:
-  enabled: true
-  spec:
-    secrets:
-      - alertmanager-telegram
-    nodeSelector:
-      kubernetes.io/hostname: k3s-worker-2
-  config:
-    global:
-      resolve_timeout: 5m
-    route:
-      group_by: ["alertname", "namespace"]
-      group_wait: 30s
-      group_interval: 5m
-      repeat_interval: 12h
-      receiver: telegram
-      routes:
-        - receiver: "null"
-          matchers:
-            - alertname = "Watchdog"
-        - receiver: "null"
-          matchers:
-            - alertname = "InfoInhibitor"
-        - receiver: "null"
-          matchers:
-            - alertname = "RecordingRulesNoData"
-            - recording = "count:up0"
-    receivers:
-      - name: "null"
-      - name: telegram
-        telegram_configs:
-          - bot_token_file: /etc/vm/secrets/alertmanager-telegram/bot_token
-            chat_id_file: /etc/vm/secrets/alertmanager-telegram/chat_id
-            send_resolved: true
-            parse_mode: ""
-            message: |-
-              {{ if eq .Status "firing" }}🔥 FIRING{{ else }}✅ RESOLVED{{ end }}: {{ .CommonLabels.alertname }}
-              {{- if .CommonLabels.severity }}
-              Severity: {{ .CommonLabels.severity }}{{ end }}
-              {{- if .CommonLabels.namespace }}
-              Namespace: {{ .CommonLabels.namespace }}{{ end }}
-              {{- range .Alerts }}
-              {{ .Annotations.summary }}
-              {{- end }}
-    inhibit_rules:
-      - source_matchers:
-          - severity = "critical"
-        target_matchers:
-          - severity = "warning"
-        equal: ["alertname", "namespace", "pod"]
+  enabled: false
 
 kubeControllerManager:
   enabled: false
@@ -188,33 +70,10 @@ kubeEtcd:
   enabled: false
 
 defaultRules:
-  groups:
-    kube-scheduler.rules:
-      enabled: false
-    kubernetes-system-scheduler:
-      enabled: false
-    kubernetes-system-controller-manager:
-      enabled: false
+  enabled: false
 
 defaultDashboards:
-  dashboards:
-    grafana-overview:
-      enabled: false
-    victoriametrics-vmalert:
-      enabled: false
-    victoriametrics-operator:
-      enabled: false
-  sources:
-    kube-prometheus:
-      enabled: false
-    victoriametrics-vmalert:
-      enabled: false
-    victoriametrics-operator:
-      enabled: false
-    kubernetes-system-api-server:
-      enabled: false
-    kubernetes-system-coredns:
-      enabled: false
+  enabled: false
 
 prometheus-node-exporter:
   enabled: true
