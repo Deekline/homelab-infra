@@ -10,7 +10,6 @@ resources:
   - immich-power-tools.yaml
   - audiobookshelf.yaml
   - promtail.yaml
-  - loki.yaml
   - victoria-metrics-stack.yaml
   - media-storage.yaml
   - bazarr.yaml
