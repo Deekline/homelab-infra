@@ -10,6 +10,8 @@ services:
     configs:
       - source: victoriametrics-scrape
         target: /etc/victoriametrics/scrape.yaml
+    environment:
+      PVE_IP: ${PVE_IP:?}
     volumes:
       - /srv/data/victoriametrics:/storage
     ports:
@@ -126,28 +128,7 @@ services:
 
 configs:
   victoriametrics-scrape:
-    content: |
-      scrape_configs:
-        - job_name: pve
-          scrape_interval: 60s
-          metrics_path: /pve
-          params:
-            cluster: ["1"]
-            node: ["1"]
-          static_configs:
-            - targets: ["${PVE_IP:?}"]
-          relabel_configs:
-            - source_labels: [__address__]
-              target_label: __param_target
-            - source_labels: [__param_target]
-              target_label: instance
-            - target_label: __address__
-              replacement: pve-exporter:9221
-        - job_name: opnsense
-          scrape_interval: 60s
-          scrape_timeout: 30s
-          static_configs:
-            - targets: ["opnsense-exporter:8080"]
+    file: ./scrape.yaml
   grafana-dashboard-provider:
     content: |
       apiVersion: 1
@@ -175,3 +156,8 @@ configs:
           uid: victorialogs
           url: http://victorialogs:9428
           access: proxy
+
+networks:
+  default:
+    name: observability
+    external: true
