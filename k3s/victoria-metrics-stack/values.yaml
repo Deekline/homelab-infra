@@ -7,39 +7,15 @@ grafana:
   enabled: false
 
 vmsingle:
-  enabled: true
-  spec:
-    retentionPeriod: "30d"
-    resources:
-      requests:
-        cpu: 75m
-        memory: 1088Mi
-      limits:
-        memory: 1280Mi
-    storage:
-      storageClassName: nfs-monitoring
-      accessModes:
-        - ReadWriteOnce
-      resources:
-        requests:
-          storage: 20Gi
-    affinity:
-      podAntiAffinity:
-        preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 100
-            podAffinityTerm:
-              labelSelector:
-                matchExpressions:
-                  - key: app.kubernetes.io/name
-                    operator: In
-                    values:
-                      - loki
-              topologyKey: kubernetes.io/hostname
+  enabled: false
+
+external:
+  vm:
+    write:
+      url: http://10.0.10.11:8428/api/v1/write
 
 vmagent:
   enabled: true
-  additionalRemoteWrites:
-    - url: http://10.0.10.11:8428/api/v1/write
   spec:
     scrapeInterval: 60s
     resources:
