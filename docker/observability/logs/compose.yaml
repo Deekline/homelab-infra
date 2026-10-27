@@ -5,10 +5,14 @@ services:
     command:
       - -storageDataPath=/storage
       - -retentionPeriod=7d
+      - -syslog.listenAddr.tcp=:514
+      - -syslog.listenAddr.udp=:514
     volumes:
       - /srv/data/victorialogs:/storage
     ports:
       - "9428:9428"
+      - "514:514/tcp"
+      - "514:514/udp"
 
 networks:
   default:
