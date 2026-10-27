@@ -14,6 +14,17 @@ creation_rules:
       age1vnjflcl0aeefw82f5klz764c4r5ddg9ad63y7vmu58dxmw026sms047q3j,
       age13llaej5dgax7hgmakqdmhhuzrjs72jx2se2n973rgdrvz6wqx5as2edhts
 
+  - path_regex: docker/vars\.sops\.env$
+    age: >-
+      age1vnjflcl0aeefw82f5klz764c4r5ddg9ad63y7vmu58dxmw026sms047q3j,
+      age13llaej5dgax7hgmakqdmhhuzrjs72jx2se2n973rgdrvz6wqx5as2edhts,
+      age1hee45x6sq7d3r6eec7tmupgm0lx8zelygr59hqdcjzfjp32z35yqcurr5z
+
+  - path_regex: docker/edge/.+\.sops\.(env|ya?ml|json)$
+    age: >-
+      age1vnjflcl0aeefw82f5klz764c4r5ddg9ad63y7vmu58dxmw026sms047q3j,
+      age1hee45x6sq7d3r6eec7tmupgm0lx8zelygr59hqdcjzfjp32z35yqcurr5z
+
   # Docker Compose secrets for the VMs (decrypted by doco-cd): encrypt all values
   - path_regex: docker/.+\.sops\.(env|ya?ml|json)$
     age: >-
