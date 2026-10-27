@@ -1,5 +1,8 @@
 kubeletDir: /var/lib/kubelet
 
+controller:
+  enableSnapshotter: false
+
 node:
   resources:
     limits:
