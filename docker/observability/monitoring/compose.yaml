@@ -40,49 +40,6 @@ services:
     env_file:
       - opnsense-exporter.sops.env
 
-  alertmanager-init:
-    image: busybox:1.37.0
-    command: ["chown", "-R", "65534:65534", "/alertmanager"]
-    volumes:
-      - /srv/data/alertmanager:/alertmanager
-
-  alertmanager:
-    image: prom/alertmanager:v0.34.1
-    restart: unless-stopped
-    depends_on:
-      alertmanager-init:
-        condition: service_completed_successfully
-    command:
-      - --config.file=/etc/alertmanager/alertmanager.yml
-      - --storage.path=/alertmanager
-      - --web.external-url=http://${OBSERVABILITY_IP:?}:9093
-    volumes:
-      - ./alertmanager.sops.yml:/etc/alertmanager/alertmanager.yml:ro
-      - /srv/data/alertmanager:/alertmanager
-    ports:
-      - "9093:9093"
-
-  vmalert:
-    image: victoriametrics/vmalert:v1.154.0
-    restart: unless-stopped
-    depends_on:
-      victoriametrics:
-        condition: service_started
-      alertmanager:
-        condition: service_started
-    command:
-      - -rule=/etc/vmalert/rules/*.yaml
-      - -datasource.url=http://victoriametrics:8428
-      - -remoteWrite.url=http://victoriametrics:8428
-      - -remoteRead.url=http://victoriametrics:8428
-      - -notifier.url=http://alertmanager:9093
-      - -evaluationInterval=60s
-      - -external.url=http://${OBSERVABILITY_IP:?}:8880
-    volumes:
-      - ./rules:/etc/vmalert/rules:ro
-    ports:
-      - "8880:8880"
-
 configs:
   victoriametrics-scrape:
     file: ./scrape.yaml
