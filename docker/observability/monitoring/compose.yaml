@@ -6,10 +6,22 @@ services:
       - -storageDataPath=/storage
       - -retentionPeriod=30d
       - -selfScrapeInterval=60s
+      - -promscrape.config=/etc/victoriametrics/scrape.yaml
+    configs:
+      - source: victoriametrics-scrape
+        target: /etc/victoriametrics/scrape.yaml
     volumes:
       - /srv/data/victoriametrics:/storage
     ports:
       - "8428:8428"
+
+  pve-exporter:
+    image: prompve/prometheus-pve-exporter:3.10.1
+    restart: unless-stopped
+    env_file:
+      - pve-exporter.sops.env
+    environment:
+      PVE_VERIFY_SSL: "false"
 
   victorialogs:
     image: victoriametrics/victoria-logs:v1.53.0
@@ -98,6 +110,24 @@ services:
       - "8880:8880"
 
 configs:
+  victoriametrics-scrape:
+    content: |
+      scrape_configs:
+        - job_name: pve
+          scrape_interval: 60s
+          metrics_path: /pve
+          params:
+            cluster: ["1"]
+            node: ["1"]
+          static_configs:
+            - targets: ["${PVE_IP:?}"]
+          relabel_configs:
+            - source_labels: [__address__]
+              target_label: __param_target
+            - source_labels: [__param_target]
+              target_label: instance
+            - target_label: __address__
+              replacement: pve-exporter:9221
   grafana-dashboard-provider:
     content: |
       apiVersion: 1
