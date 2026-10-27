@@ -1,0 +1,39 @@
+services:
+  grafana-init:
+    image: busybox:1.37.0
+    command: ["chown", "-R", "472:472", "/var/lib/grafana"]
+    volumes:
+      - /srv/data/grafana:/var/lib/grafana
+
+  grafana:
+    image: grafana/grafana:13.2.4
+    restart: unless-stopped
+    depends_on:
+      grafana-init:
+        condition: service_completed_successfully
+    env_file:
+      - .sops.env
+    environment:
+      GF_SECURITY_ALLOW_EMBEDDING: "true"
+      GF_PLUGINS_PREINSTALL_SYNC: victoriametrics-logs-datasource@0.33.1
+    configs:
+      - source: datasources
+        target: /etc/grafana/provisioning/datasources/datasources.yaml
+      - source: dashboards
+        target: /etc/grafana/provisioning/dashboards/dashboards.yaml
+    volumes:
+      - /srv/data/grafana:/var/lib/grafana
+      - ./dashboards:/etc/grafana/dashboards:ro
+    ports:
+      - "3000:3000"
+
+configs:
+  datasources:
+    file: ./provisioning/datasources.yaml
+  dashboards:
+    file: ./provisioning/dashboards.yaml
+
+networks:
+  default:
+    name: observability
+    external: true
