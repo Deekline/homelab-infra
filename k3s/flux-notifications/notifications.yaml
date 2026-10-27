@@ -5,7 +5,7 @@ metadata:
   namespace: flux-system
 spec:
   type: alertmanager
-  address: http://vmalertmanager-monitoring-victoria-metrics-k8s-stack.monitoring.svc.cluster.local:9093
+  address: http://10.0.10.11:9093/api/v2/alerts
 
 ---
 apiVersion: notification.toolkit.fluxcd.io/v1beta3
