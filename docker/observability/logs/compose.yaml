@@ -1,0 +1,16 @@
+services:
+  victorialogs:
+    image: victoriametrics/victoria-logs:v1.53.0
+    restart: unless-stopped
+    command:
+      - -storageDataPath=/storage
+      - -retentionPeriod=7d
+    volumes:
+      - /srv/data/victorialogs:/storage
+    ports:
+      - "9428:9428"
+
+networks:
+  default:
+    name: observability
+    external: true
