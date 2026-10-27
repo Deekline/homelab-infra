@@ -40,36 +40,6 @@ services:
     env_file:
       - opnsense-exporter.sops.env
 
-  grafana-init:
-    image: busybox:1.37.0
-    command: ["chown", "-R", "472:472", "/var/lib/grafana"]
-    volumes:
-      - /srv/data/grafana:/var/lib/grafana
-
-  grafana:
-    image: grafana/grafana:13.2.4
-    restart: unless-stopped
-    depends_on:
-      grafana-init:
-        condition: service_completed_successfully
-      victoriametrics:
-        condition: service_started
-    env_file:
-      - .sops.env
-    environment:
-      GF_SECURITY_ALLOW_EMBEDDING: "true"
-      GF_PLUGINS_PREINSTALL_SYNC: victoriametrics-logs-datasource@0.33.1
-    configs:
-      - source: grafana-datasources
-        target: /etc/grafana/provisioning/datasources/datasources.yaml
-      - source: grafana-dashboard-provider
-        target: /etc/grafana/provisioning/dashboards/provider.yaml
-    volumes:
-      - /srv/data/grafana:/var/lib/grafana
-      - ./dashboards:/etc/grafana/dashboards:ro
-    ports:
-      - "3000:3000"
-
   alertmanager-init:
     image: busybox:1.37.0
     command: ["chown", "-R", "65534:65534", "/alertmanager"]
@@ -116,33 +86,6 @@ services:
 configs:
   victoriametrics-scrape:
     file: ./scrape.yaml
-  grafana-dashboard-provider:
-    content: |
-      apiVersion: 1
-      providers:
-        - name: homelab
-          type: file
-          allowUiUpdates: false
-          options:
-            path: /etc/grafana/dashboards
-            foldersFromFilesStructure: true
-  grafana-datasources:
-    content: |
-      apiVersion: 1
-      datasources:
-        - name: VictoriaMetrics
-          type: prometheus
-          uid: victoriametrics
-          url: http://victoriametrics:8428
-          access: proxy
-          isDefault: true
-          jsonData:
-            timeInterval: 60s
-        - name: VictoriaLogs
-          type: victoriametrics-logs-datasource
-          uid: victorialogs
-          url: http://victorialogs:9428
-          access: proxy
 
 networks:
   default:
