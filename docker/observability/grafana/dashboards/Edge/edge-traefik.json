@@ -1,0 +1,242 @@
+{
+  "uid": "edge-traefik",
+  "title": "Edge Traefik",
+  "tags": ["edge", "traefik"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "editable": false,
+  "graphTooltip": 1,
+  "refresh": "30s",
+  "time": { "from": "now-6h", "to": "now" },
+  "templating": {
+    "list": [
+      {
+        "name": "search",
+        "label": "Search logs",
+        "type": "textbox",
+        "query": "",
+        "current": { "text": "", "value": "" },
+        "hide": 0
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1,
+      "type": "stat",
+      "title": "Requests / s",
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "victoriametrics" },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(rate(traefik_entrypoint_requests_total{job=\"traefik-edge\",entrypoint=\"websecure\"}[5m]))"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "reqps", "decimals": 2 }, "overrides": [] },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "graphMode": "area" }
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "5xx share",
+      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "victoriametrics" },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(rate(traefik_entrypoint_requests_total{job=\"traefik-edge\",entrypoint=\"websecure\",code=~\"5..\"}[5m])) / sum(rate(traefik_entrypoint_requests_total{job=\"traefik-edge\",entrypoint=\"websecure\"}[5m])) or vector(0)"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "decimals": 1,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "orange", "value": 0.01 },
+              { "color": "red", "value": 0.05 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "colorMode": "value" }
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "Blocked (403) in range",
+      "description": "Requests rejected at the edge, mostly by local-only.",
+      "gridPos": { "h": 4, "w": 6, "x": 12, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "victoriametrics" },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(increase(traefik_entrypoint_requests_total{job=\"traefik-edge\",code=\"403\"}[$__range])) or vector(0)"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "short", "decimals": 0 }, "overrides": [] },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] } }
+    },
+    {
+      "id": 4,
+      "type": "stat",
+      "title": "Certificate expires in",
+      "gridPos": { "h": 4, "w": 6, "x": 18, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "victoriametrics" },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "min(traefik_tls_certs_not_after{job=\"traefik-edge\"}) - time()"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "dtdurations",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "orange", "value": 1209600 },
+              { "color": "green", "value": 2592000 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "colorMode": "value" }
+    },
+    {
+      "id": 5,
+      "type": "timeseries",
+      "title": "Requests by status code",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 4 },
+      "datasource": { "type": "prometheus", "uid": "victoriametrics" },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (code) (rate(traefik_entrypoint_requests_total{job=\"traefik-edge\",entrypoint=\"websecure\"}[$__rate_interval]))",
+          "legendFormat": "{{code}}"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "reqps", "custom": { "drawStyle": "line", "fillOpacity": 10, "stacking": { "mode": "normal" } } }, "overrides": [] }
+    },
+    {
+      "id": 6,
+      "type": "timeseries",
+      "title": "Latency p95 (edge → cluster)",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 4 },
+      "datasource": { "type": "prometheus", "uid": "victoriametrics" },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "histogram_quantile(0.95, sum by (le, service) (rate(traefik_service_request_duration_seconds_bucket{job=\"traefik-edge\"}[$__rate_interval])))",
+          "legendFormat": "{{service}}"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "s" }, "overrides": [] }
+    },
+    {
+      "id": 7,
+      "type": "table",
+      "title": "Top hosts",
+      "gridPos": { "h": 9, "w": 8, "x": 0, "y": 12 },
+      "datasource": { "type": "victoriametrics-logs-datasource", "uid": "victorialogs" },
+      "targets": [
+        {
+          "refId": "A",
+          "queryType": "stats",
+          "editorMode": "code",
+          "expr": "host:=edge log_type:access | stats by (RequestHost) count() requests | sort by (requests desc) | limit 15",
+          "legendFormat": "{{RequestHost}}"
+        }
+      ],
+      "transformations": [
+        { "id": "reduce", "options": { "mode": "seriesToRows", "reducers": ["lastNotNull"] } },
+        { "id": "organize", "options": { "renameByName": { "Field": "Host", "Last *": "Requests", "Last": "Requests" } } },
+        { "id": "sortBy", "options": { "sort": [{ "field": "Requests", "desc": true }] } }
+      ]
+    },
+    {
+      "id": 8,
+      "type": "table",
+      "title": "Top clients",
+      "gridPos": { "h": 9, "w": 8, "x": 8, "y": 12 },
+      "datasource": { "type": "victoriametrics-logs-datasource", "uid": "victorialogs" },
+      "targets": [
+        {
+          "refId": "A",
+          "queryType": "stats",
+          "editorMode": "code",
+          "expr": "host:=edge log_type:access | stats by (ClientHost) count() requests | sort by (requests desc) | limit 15",
+          "legendFormat": "{{ClientHost}}"
+        }
+      ],
+      "transformations": [
+        { "id": "reduce", "options": { "mode": "seriesToRows", "reducers": ["lastNotNull"] } },
+        { "id": "organize", "options": { "renameByName": { "Field": "Client IP", "Last *": "Requests", "Last": "Requests" } } },
+        { "id": "sortBy", "options": { "sort": [{ "field": "Requests", "desc": true }] } }
+      ]
+    },
+    {
+      "id": 9,
+      "type": "table",
+      "title": "Errors by host and status (≥ 400)",
+      "gridPos": { "h": 9, "w": 8, "x": 16, "y": 12 },
+      "datasource": { "type": "victoriametrics-logs-datasource", "uid": "victorialogs" },
+      "targets": [
+        {
+          "refId": "A",
+          "queryType": "stats",
+          "editorMode": "code",
+          "expr": "host:=edge log_type:access DownstreamStatus:>=400 | stats by (RequestHost, DownstreamStatus) count() requests | sort by (requests desc) | limit 15",
+          "legendFormat": "{{RequestHost}} {{DownstreamStatus}}"
+        }
+      ],
+      "transformations": [
+        { "id": "reduce", "options": { "mode": "seriesToRows", "reducers": ["lastNotNull"] } },
+        { "id": "organize", "options": { "renameByName": { "Field": "Host / status", "Last *": "Requests", "Last": "Requests" } } },
+        { "id": "sortBy", "options": { "sort": [{ "field": "Requests", "desc": true }] } }
+      ]
+    },
+    {
+      "id": 10,
+      "type": "logs",
+      "title": "Access log",
+      "description": "Every request through the edge. Expand a line for ClientHost, RouterName, Duration and the other fields.",
+      "gridPos": { "h": 12, "w": 24, "x": 0, "y": 21 },
+      "datasource": { "type": "victoriametrics-logs-datasource", "uid": "victorialogs" },
+      "targets": [
+        {
+          "refId": "A",
+          "queryType": "instant",
+          "editorMode": "code",
+          "expr": "host:=edge log_type:access $search",
+          "maxLines": 500
+        }
+      ],
+      "options": { "showTime": true, "wrapLogMessage": true, "sortOrder": "Descending", "enableLogDetails": true }
+    },
+    {
+      "id": 11,
+      "type": "logs",
+      "title": "Edge VM logs (containers and system)",
+      "gridPos": { "h": 12, "w": 24, "x": 0, "y": 33 },
+      "datasource": { "type": "victoriametrics-logs-datasource", "uid": "victorialogs" },
+      "targets": [
+        {
+          "refId": "A",
+          "queryType": "instant",
+          "editorMode": "code",
+          "expr": "host:=edge log_type:in(container, system) $search",
+          "maxLines": 500
+        }
+      ],
+      "options": { "showTime": true, "wrapLogMessage": true, "sortOrder": "Descending", "enableLogDetails": true }
+    }
+  ]
+}
