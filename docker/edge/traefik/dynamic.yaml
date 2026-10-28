@@ -4,7 +4,7 @@ http:
       rule: PathPrefix(`/`)
       priority: 1
       entryPoints: [websecure]
-      middlewares: [local-only]
+      middlewares: [crowdsec, local-only]
       service: cluster
       tls:
         certResolver: cloudflare
@@ -15,10 +15,23 @@ http:
     auth:
       rule: 'Host(`auth.{{ env "DOMAIN" }}`)'
       entryPoints: [websecure]
+      middlewares: [crowdsec]
       service: cluster
       tls: {}
 
   middlewares:
+    crowdsec:
+      plugin:
+        crowdsec:
+          enabled: true
+          crowdsecMode: stream
+          crowdsecLapiScheme: http
+          crowdsecLapiHost: crowdsec:8080
+          crowdsecLapiKey: '{{ env "BOUNCER_KEY_traefik" }}'
+          updateIntervalSeconds: 15
+          defaultDecisionSeconds: 60
+          httpTimeoutSeconds: 10
+
     local-only:
       ipAllowList:
         sourceRange:
