@@ -1,0 +1,162 @@
+{
+  "uid": "kubernetes-logs",
+  "title": "Kubernetes logs",
+  "tags": ["kubernetes", "logs"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "editable": false,
+  "graphTooltip": 1,
+  "refresh": "1m",
+  "time": { "from": "now-6h", "to": "now" },
+  "templating": {
+    "list": [
+      {
+        "name": "namespace",
+        "label": "Namespace",
+        "type": "query",
+        "datasource": { "type": "victoriametrics-logs-datasource", "uid": "victorialogs" },
+        "query": { "refId": "namespace", "type": "fieldValue", "field": "namespace", "query": "namespace:*", "limit": 200 },
+        "refresh": 2,
+        "multi": true,
+        "includeAll": true,
+        "allValue": "*",
+        "current": { "text": ["All"], "value": ["$__all"] },
+        "sort": 1
+      },
+      {
+        "name": "pod",
+        "label": "Pod",
+        "type": "query",
+        "datasource": { "type": "victoriametrics-logs-datasource", "uid": "victorialogs" },
+        "query": { "refId": "pod", "type": "fieldValue", "field": "pod", "query": "namespace:* namespace:in($namespace)", "limit": 500 },
+        "refresh": 2,
+        "multi": true,
+        "includeAll": true,
+        "allValue": "*",
+        "current": { "text": ["All"], "value": ["$__all"] },
+        "sort": 1
+      },
+      {
+        "name": "search",
+        "label": "Search",
+        "type": "textbox",
+        "query": "",
+        "current": { "text": "", "value": "" }
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "Log volume by namespace",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "datasource": { "type": "victoriametrics-logs-datasource", "uid": "victorialogs" },
+      "targets": [
+        {
+          "refId": "A",
+          "queryType": "statsRange",
+          "editorMode": "code",
+          "expr": "namespace:* namespace:in($namespace) pod:in($pod) $search | stats by (namespace) count() logs",
+          "legendFormat": "{{namespace}}"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "short", "custom": { "drawStyle": "bars", "fillOpacity": 60, "stacking": { "mode": "normal" } } }, "overrides": [] }
+    },
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "Error lines by namespace",
+      "description": "Lines containing error, fatal or panic (case-insensitive).",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "datasource": { "type": "victoriametrics-logs-datasource", "uid": "victorialogs" },
+      "targets": [
+        {
+          "refId": "A",
+          "queryType": "statsRange",
+          "editorMode": "code",
+          "expr": "namespace:* namespace:in($namespace) pod:in($pod) (i(error) OR i(fatal) OR i(panic)) $search | stats by (namespace) count() errors",
+          "legendFormat": "{{namespace}}"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "short", "custom": { "drawStyle": "bars", "fillOpacity": 60, "stacking": { "mode": "normal" } } }, "overrides": [] }
+    },
+    {
+      "id": 3,
+      "type": "table",
+      "title": "Top pods by error lines",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "datasource": { "type": "victoriametrics-logs-datasource", "uid": "victorialogs" },
+      "targets": [
+        {
+          "refId": "A",
+          "queryType": "stats",
+          "editorMode": "code",
+          "expr": "namespace:* namespace:in($namespace) pod:in($pod) (i(error) OR i(fatal) OR i(panic)) $search | stats by (namespace, pod) count() errors | sort by (errors desc) | limit 20",
+          "legendFormat": "{{namespace}} / {{pod}}"
+        }
+      ],
+      "transformations": [
+        { "id": "reduce", "options": { "mode": "seriesToRows", "reducers": ["lastNotNull"] } },
+        { "id": "organize", "options": { "renameByName": { "Field": "Namespace / pod", "Last *": "Error lines", "Last": "Error lines" } } },
+        { "id": "sortBy", "options": { "sort": [{ "field": "Error lines", "desc": true }] } }
+      ]
+    },
+    {
+      "id": 4,
+      "type": "table",
+      "title": "Top pods by log volume",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+      "datasource": { "type": "victoriametrics-logs-datasource", "uid": "victorialogs" },
+      "targets": [
+        {
+          "refId": "A",
+          "queryType": "stats",
+          "editorMode": "code",
+          "expr": "namespace:* namespace:in($namespace) pod:in($pod) $search | stats by (namespace, pod) count() logs | sort by (logs desc) | limit 20",
+          "legendFormat": "{{namespace}} / {{pod}}"
+        }
+      ],
+      "transformations": [
+        { "id": "reduce", "options": { "mode": "seriesToRows", "reducers": ["lastNotNull"] } },
+        { "id": "organize", "options": { "renameByName": { "Field": "Namespace / pod", "Last *": "Lines", "Last": "Lines" } } },
+        { "id": "sortBy", "options": { "sort": [{ "field": "Lines", "desc": true }] } }
+      ]
+    },
+    {
+      "id": 5,
+      "type": "logs",
+      "title": "Errors",
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 16 },
+      "datasource": { "type": "victoriametrics-logs-datasource", "uid": "victorialogs" },
+      "targets": [
+        {
+          "refId": "A",
+          "queryType": "instant",
+          "editorMode": "code",
+          "expr": "namespace:* namespace:in($namespace) pod:in($pod) (i(error) OR i(fatal) OR i(panic)) $search",
+          "maxLines": 500
+        }
+      ],
+      "options": { "showTime": true, "wrapLogMessage": true, "sortOrder": "Descending", "enableLogDetails": true }
+    },
+    {
+      "id": 6,
+      "type": "logs",
+      "title": "All logs",
+      "gridPos": { "h": 14, "w": 24, "x": 0, "y": 26 },
+      "datasource": { "type": "victoriametrics-logs-datasource", "uid": "victorialogs" },
+      "targets": [
+        {
+          "refId": "A",
+          "queryType": "instant",
+          "editorMode": "code",
+          "expr": "namespace:* namespace:in($namespace) pod:in($pod) $search",
+          "maxLines": 1000
+        }
+      ],
+      "options": { "showTime": true, "wrapLogMessage": true, "sortOrder": "Descending", "enableLogDetails": true }
+    }
+  ]
+}
