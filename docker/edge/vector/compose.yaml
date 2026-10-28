@@ -8,6 +8,7 @@ services:
     security_opt: ["no-new-privileges:true"]
     environment:
       OBSERVABILITY_IP: ${OBSERVABILITY_IP:?}
+      VECTOR_DANGEROUSLY_ALLOW_ENV_VAR_INTERPOLATION: "true"
     configs:
       - source: vector
         target: /etc/vector/vector.yaml
