@@ -1,0 +1,30 @@
+services:
+  vector:
+    image: timberio/vector:0.59.0-debian
+    restart: unless-stopped
+    hostname: edge
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    environment:
+      OBSERVABILITY_IP: ${OBSERVABILITY_IP:?}
+    configs:
+      - source: vector
+        target: /etc/vector/vector.yaml
+    volumes:
+      - /srv/vector:/var/lib/vector
+      - /srv/traefik/logs:/var/log/traefik:ro
+      - /var/log/journal:/var/log/journal:ro
+      - /run/log/journal:/run/log/journal:ro
+      - /etc/machine-id:/etc/machine-id:ro
+    tmpfs:
+      - /tmp
+
+configs:
+  vector:
+    file: ./vector.yaml
+
+networks:
+  default:
+    name: edge
+    external: true
