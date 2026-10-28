@@ -1,0 +1,27 @@
+services:
+  crowdsec:
+    image: crowdsecurity/crowdsec:v1.8.1
+    restart: unless-stopped
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    env_file:
+      - bouncer.sops.env
+    environment:
+      COLLECTIONS: crowdsecurity/traefik crowdsecurity/linux
+      CUSTOM_HOSTNAME: edge
+    configs:
+      - source: acquis
+        target: /etc/crowdsec/acquis.d/traefik.yaml
+    volumes:
+      - /srv/crowdsec/config:/etc/crowdsec
+      - /srv/crowdsec/data:/var/lib/crowdsec/data
+      - /srv/traefik/logs:/var/log/traefik:ro
+
+configs:
+  acquis:
+    file: ./acquis.yaml
+
+networks:
+  default:
+    name: edge
+    external: true
