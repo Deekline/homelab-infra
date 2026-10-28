@@ -35,6 +35,13 @@ http:
       service: pihole
       tls: {}
 
+    gitea:
+      rule: 'Host(`gitea.{{ env "DOMAIN" }}`)'
+      entryPoints: [websecure]
+      middlewares: [crowdsec, mgmt-only]
+      service: gitea
+      tls: {}
+
     ha:
       rule: 'Host(`ha.{{ env "DOMAIN" }}`)'
       entryPoints: [websecure]
@@ -71,6 +78,11 @@ http:
       loadBalancer:
         servers:
           - url: 'http://{{ env "PIHOLE_IP" }}'
+
+    gitea:
+      loadBalancer:
+        servers:
+          - url: 'http://{{ env "NAS_IP" }}:30008'
 
     ha:
       loadBalancer:
