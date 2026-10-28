@@ -1,0 +1,28 @@
+type: http
+name: alertmanager
+log_level: info
+group_wait: 30s
+group_threshold: 10
+format: |
+  [
+  {{- range $i, $alert := . }}{{ range $j, $d := $alert.Decisions }}
+    {{- if or $i $j }},{{ end }}
+    {
+      "labels": {
+        "alertname": "CrowdsecBan",
+        "severity": "info",
+        "source": "edge",
+        "scenario": "{{ $d.Scenario }}",
+        "ip": "{{ $d.Value }}"
+      },
+      "annotations": {
+        "summary": "{{ $d.Value }} banned for {{ $d.Duration }} ({{ $d.Scenario }})"
+      },
+      "endsAt": "{{ now | dateModify "+4h" | date "2006-01-02T15:04:05Z07:00" }}"
+    }
+  {{- end }}{{ end }}
+  ]
+url: http://${OBSERVABILITY_IP}:9093/api/v2/alerts
+method: POST
+headers:
+  Content-Type: application/json
