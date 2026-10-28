@@ -25,6 +25,12 @@ certificatesResolvers:
           - "1.1.1.1:53"
           - "1.0.0.1:53"
 
+experimental:
+  plugins:
+    crowdsec:
+      moduleName: github.com/maxlerebourg/crowdsec-bouncer-traefik-plugin
+      version: v1.7.1
+
 providers:
   file:
     filename: /etc/traefik/dynamic.yaml

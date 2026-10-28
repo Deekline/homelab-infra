@@ -1,7 +1,7 @@
 services:
   traefik-init:
     image: busybox:1.37.0
-    command: ["sh", "-c", "mkdir -p /data/logs && chown -R 65532:65532 /data"]
+    command: ["sh", "-c", "mkdir -p /data/logs /data/plugins-storage && chown -R 65532:65532 /data"]
     volumes:
       - /srv/traefik:/data
 
@@ -17,6 +17,7 @@ services:
     security_opt: ["no-new-privileges:true"]
     env_file:
       - cloudflare.sops.env
+      - ../crowdsec/bouncer.sops.env
     environment:
       DOMAIN: ${DOMAIN:?}
       K3S_INGRESS_IP: ${K3S_INGRESS_IP:?}
@@ -28,6 +29,7 @@ services:
     volumes:
       - /srv/traefik:/data
       - /srv/traefik/logs:/var/log/traefik
+      - /srv/traefik/plugins-storage:/plugins-storage
     ports:
       - "80:8000"
       - "443:8443"
