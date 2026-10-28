@@ -12,6 +12,7 @@ services:
         target: /etc/victoriametrics/scrape.yaml
     environment:
       PVE_IP: ${PVE_IP:?}
+      EDGE_IP: ${EDGE_IP:?}
     volumes:
       - /srv/data/victoriametrics:/storage
     ports:
