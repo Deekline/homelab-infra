@@ -18,7 +18,8 @@ format: |
       "annotations": {
         "summary": "{{ $d.Value }} banned for {{ $d.Duration }} ({{ $d.Scenario }})"
       },
-      "endsAt": "{{ now | dateModify "+4h" | date "2006-01-02T15:04:05Z07:00" }}"
+      "startsAt": "{{ now | date "2006-01-02T15:04:05Z07:00" }}",
+      "endsAt":"{{ now | dateModify "+4h" | date "2006-01-02T15:04:05Z07:00" }}"
     }
   {{- end }}{{ end }}
   ]
