@@ -1,7 +1,7 @@
 services:
   traefik-init:
     image: busybox:1.37.0
-    command: ["chown", "-R", "65532:65532", "/data"]
+    command: ["sh", "-c", "mkdir -p /data/logs && chown -R 65532:65532 /data"]
     volumes:
       - /srv/traefik:/data
 
@@ -14,7 +14,7 @@ services:
     user: "65532:65532"
     read_only: true
     cap_drop: [ALL]
-    security_opt: [no-new-privileges:true]
+    security_opt: ["no-new-privileges:true"]
     env_file:
       - cloudflare.sops.env
     environment:
@@ -27,6 +27,7 @@ services:
         target: /etc/traefik/dynamic.yaml
     volumes:
       - /srv/traefik:/data
+      - /srv/traefik/logs:/var/log/traefik
     ports:
       - "80:8000"
       - "443:8443"
