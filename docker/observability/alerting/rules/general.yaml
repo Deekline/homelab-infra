@@ -86,10 +86,10 @@ groups:
   rules:
   - alert: TargetDown
     annotations:
-      description: '{{ printf "%.4g" $value }}% of the {{ $labels.job }}/{{ $labels.service }} targets in {{ $labels.namespace }} namespace are down.'
+      description: '{{ $labels.job }} target {{ $labels.instance }} is unreachable (scrape failing for 10 minutes).'
       runbook_url: https://runbooks.prometheus-operator.dev/runbooks/general/targetdown
-      summary: One or more targets are unreachable.
-    expr: (100 * (count(up == 0) by(cluster,job,namespace,service) / count(up) by(cluster,job,namespace,service))) > 10
+      summary: 'Target {{ $labels.instance }} ({{ $labels.job }}) is unreachable.'
+    expr: up == 0
     for: 10m
     labels:
       severity: warning
