@@ -33,7 +33,7 @@ experimental:
 
 providers:
   file:
-    filename: /etc/traefik/dynamic.yaml
+    directory: /etc/traefik/dynamic
 
 api:
   dashboard: true

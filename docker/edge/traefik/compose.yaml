@@ -21,11 +21,20 @@ services:
     environment:
       DOMAIN: ${DOMAIN:?}
       K3S_INGRESS_IP: ${K3S_INGRESS_IP:?}
+      PVE_IP: ${PVE_IP:?}
+      PX1_IP: ${PX1_IP:?}
+      PX2_IP: ${PX2_IP:?}
+      NAS_IP: ${NAS_IP:?}
+      PIHOLE_IP: ${PIHOLE_IP:?}
+      HA_IP: ${HA_IP:?}
+      MGMT_SOURCES: ${MGMT_SOURCES:?}
     configs:
       - source: static
         target: /etc/traefik/traefik.yml
       - source: dynamic
-        target: /etc/traefik/dynamic.yaml
+        target: /etc/traefik/dynamic/dynamic.yaml
+      - source: external-services
+        target: /etc/traefik/dynamic/external-services.yaml
     volumes:
       - /srv/traefik:/data
       - /srv/traefik/logs:/var/log/traefik
@@ -40,6 +49,8 @@ configs:
     file: ./traefik.yaml
   dynamic:
     file: ./dynamic.yaml
+  external-services:
+    file: ./external-services.yaml
 
 networks:
   default:

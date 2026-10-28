@@ -1,0 +1,91 @@
+http:
+  routers:
+    pve:
+      rule: 'Host(`pve.{{ env "DOMAIN" }}`)'
+      entryPoints: [websecure]
+      middlewares: [crowdsec, mgmt-only]
+      service: pve
+      tls: {}
+
+    pve1:
+      rule: 'Host(`pve1.{{ env "DOMAIN" }}`)'
+      entryPoints: [websecure]
+      middlewares: [crowdsec, mgmt-only]
+      service: pve1
+      tls: {}
+
+    pve2:
+      rule: 'Host(`pve2.{{ env "DOMAIN" }}`)'
+      entryPoints: [websecure]
+      middlewares: [crowdsec, mgmt-only]
+      service: pve2
+      tls: {}
+
+    nas:
+      rule: 'Host(`nas.{{ env "DOMAIN" }}`)'
+      entryPoints: [websecure]
+      middlewares: [crowdsec, mgmt-only]
+      service: nas
+      tls: {}
+
+    pihole:
+      rule: 'Host(`pihole.{{ env "DOMAIN" }}`)'
+      entryPoints: [websecure]
+      middlewares: [crowdsec, mgmt-only]
+      service: pihole
+      tls: {}
+
+    ha:
+      rule: 'Host(`ha.{{ env "DOMAIN" }}`)'
+      entryPoints: [websecure]
+      middlewares: [crowdsec, mgmt-only]
+      service: ha
+      tls: {}
+
+  services:
+    pve:
+      loadBalancer:
+        serversTransport: self-signed
+        servers:
+          - url: 'https://{{ env "PVE_IP" }}:8006'
+
+    pve1:
+      loadBalancer:
+        serversTransport: self-signed
+        servers:
+          - url: 'https://{{ env "PX1_IP" }}:8006'
+
+    pve2:
+      loadBalancer:
+        serversTransport: self-signed
+        servers:
+          - url: 'https://{{ env "PX2_IP" }}:8006'
+
+    nas:
+      loadBalancer:
+        serversTransport: self-signed
+        servers:
+          - url: 'https://{{ env "NAS_IP" }}'
+
+    pihole:
+      loadBalancer:
+        servers:
+          - url: 'http://{{ env "PIHOLE_IP" }}'
+
+    ha:
+      loadBalancer:
+        passHostHeader: false
+        servers:
+          - url: 'http://{{ env "HA_IP" }}:8123'
+
+  serversTransports:
+    self-signed:
+      insecureSkipVerify: true
+
+  middlewares:
+    mgmt-only:
+      ipAllowList:
+        sourceRange:
+{{- range $source := splitList "," (env "MGMT_SOURCES") }}
+          - {{ trim $source }}
+{{- end }}
