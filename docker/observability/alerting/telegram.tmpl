@@ -1,0 +1,20 @@
+{{ define "telegram.message" -}}
+[VM] {{ if eq .Status "firing" }}🔥 FIRING{{ else }}✅ RESOLVED{{ end }}: {{ .CommonLabels.alertname }}{{ with .CommonLabels.severity }} ({{ . }}){{ end }}
+{{- range .Alerts }}
+
+{{ if eq .Status "firing" }}🔥{{ else }}✅{{ end }} {{ or .Annotations.description .Annotations.summary }}
+{{- with .Labels.job }}
+• job: {{ . }}{{ end }}
+{{- with .Labels.instance }}
+• instance: {{ . }}{{ end }}
+{{- with .Labels.namespace }}
+• namespace: {{ . }}{{ end }}
+{{- with .Labels.pod }}
+• pod: {{ . }}{{ end }}
+{{- with .Labels.ip }}
+• ip: {{ . }}{{ end }}
+• since: {{ .StartsAt.UTC.Format "02 Jan 15:04 UTC" }}{{ if eq .Status "resolved" }} → {{ .EndsAt.UTC.Format "15:04 UTC" }}{{ end }}
+{{- with .GeneratorURL }}
+• details: {{ . }}{{ end }}
+{{- end }}
+{{- end }}
