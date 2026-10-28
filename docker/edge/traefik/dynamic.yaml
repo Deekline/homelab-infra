@@ -1,0 +1,39 @@
+http:
+  routers:
+    cluster:
+      rule: PathPrefix(`/`)
+      priority: 1
+      entryPoints: [websecure]
+      middlewares: [local-only]
+      service: cluster
+      tls:
+        certResolver: cloudflare
+        domains:
+          - main: '{{ env "DOMAIN" }}'
+            sans: ['*.{{ env "DOMAIN" }}']
+
+    auth:
+      rule: 'Host(`auth.{{ env "DOMAIN" }}`)'
+      entryPoints: [websecure]
+      service: cluster
+      tls: {}
+
+  middlewares:
+    local-only:
+      ipAllowList:
+        sourceRange:
+          - 10.0.0.0/8
+          - 172.16.0.0/12
+          - 192.168.0.0/16
+
+  services:
+    cluster:
+      loadBalancer:
+        passHostHeader: true
+        serversTransport: cluster
+        servers:
+          - url: 'https://{{ env "K3S_INGRESS_IP" }}'
+
+  serversTransports:
+    cluster:
+      serverName: 'edge.{{ env "DOMAIN" }}'

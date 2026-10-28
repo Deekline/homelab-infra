@@ -1,0 +1,46 @@
+entryPoints:
+  web:
+    address: ":8000"
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
+          permanent: true
+  websecure:
+    address: ":8443"
+    transport:
+      respondingTimeouts:
+        readTimeout: 0s
+        writeTimeout: 0s
+        idleTimeout: 0s
+
+certificatesResolvers:
+  cloudflare:
+    acme:
+      storage: /data/acme.json
+      dnsChallenge:
+        provider: cloudflare
+        resolvers:
+          - "1.1.1.1:53"
+          - "1.0.0.1:53"
+
+providers:
+  file:
+    filename: /etc/traefik/dynamic.yaml
+
+api:
+  dashboard: true
+  insecure: true
+
+metrics:
+  prometheus:
+    addEntryPointsLabels: true
+    addRoutersLabels: true
+    addServicesLabels: true
+
+log:
+  level: INFO
+
+accessLog:
+  format: json

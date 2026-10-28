@@ -1,0 +1,44 @@
+services:
+  traefik-init:
+    image: busybox:1.37.0
+    command: ["chown", "-R", "65532:65532", "/data"]
+    volumes:
+      - /srv/traefik:/data
+
+  traefik:
+    image: traefik:v3.6.25
+    restart: unless-stopped
+    depends_on:
+      traefik-init:
+        condition: service_completed_successfully
+    user: "65532:65532"
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    env_file:
+      - cloudflare.sops.env
+    environment:
+      DOMAIN: ${DOMAIN:?}
+      K3S_INGRESS_IP: ${K3S_INGRESS_IP:?}
+    configs:
+      - source: static
+        target: /etc/traefik/traefik.yml
+      - source: dynamic
+        target: /etc/traefik/dynamic.yaml
+    volumes:
+      - /srv/traefik:/data
+    ports:
+      - "80:8000"
+      - "443:8443"
+      - "8080:8080"
+
+configs:
+  static:
+    file: ./traefik.yaml
+  dynamic:
+    file: ./dynamic.yaml
+
+networks:
+  default:
+    name: edge
+    external: true
