@@ -1,5 +1,7 @@
 global:
     resolve_timeout: 5m
+templates:
+    - /etc/alertmanager/templates/*.tmpl
 route:
     group_by:
         - alertname
@@ -27,7 +29,7 @@ receivers:
           chat_id: ENC[AES256_GCM,data:gIEm0w5GEdiE,iv:+3TumiA00OLpOL3prmeoEdTKjlKlD89fvJ84xN00e+c=,tag:QozAVgrQnxztwfSwdh2qgQ==,type:int]
           send_resolved: true
           parse_mode: ""
-          message: "[VM] {{ if eq .Status \"firing\" }}\U0001F525 FIRING{{ else }}✅ RESOLVED{{ end }}: {{ .CommonLabels.alertname }}\n{{- if .CommonLabels.severity }}\nSeverity: {{ .CommonLabels.severity }}{{ end }}\n{{- if .CommonLabels.namespace }}\nNamespace: {{ .CommonLabels.namespace }}{{ end }}\n{{- range .Alerts }}\n{{ .Annotations.summary }}\n{{- end }}"
+          message: '{{ template "telegram.message" . }}'
 inhibit_rules:
     - source_matchers:
         - severity = "critical"
@@ -58,6 +60,6 @@ sops:
             -----END AGE ENCRYPTED FILE-----
           recipient: age13llaej5dgax7hgmakqdmhhuzrjs72jx2se2n973rgdrvz6wqx5as2edhts
     encrypted_regex: ^(bot_token|chat_id)$
-    lastmodified: "2026-10-26T20:40:29Z"
-    mac: ENC[AES256_GCM,data:0vd7lo/GMmWVCDDow0WHQSZcQUz8uoGFT9a+0dwGFvqhZ4mInRrbVj6/Fgw5hYRB7Tj0vtVwxJIncfhqpsBHKCOCLag/s4LZmoBPqVu/OQz3N8lhr92HNFZiSsUi5gxeIloyfy4gr7v1N8HozymYsgOEpuH0VvsUyJKgmdFqNFM=,iv:+MggNYhkyonNxzScxWtGUsHSxfo+2tru7wjwcvVy41I=,tag:73lxx0yBeFrTbzinQxi/6Q==,type:str]
+    lastmodified: "2026-10-28T14:28:45Z"
+    mac: ENC[AES256_GCM,data:Yv/8SxuJ/jzDWM526L50gLc652DSI0ibt8oH04owaSqjaLdjIlG+geT7yEDcC1BsjOwfig9y0aW9YjgEwpPoSUqwLlV4oyDf1sBF7uzmJqpvS6rWBsjQJ6y+K75StuXyRvMb8FJFpfLgBwqStQXUoOuD73xwWRZ6Sl/5eOBrX2Y=,iv:dlaCagbEi+5M3QmBk5aXjVIr9WjwIpqtVJvkaMl4s0Y=,tag:JxZ9PfYuaG60YZjry8HVUw==,type:str]
     version: 3.13.1
