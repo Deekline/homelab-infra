@@ -3,7 +3,7 @@ services:
     image: crowdsecurity/crowdsec:v1.8.1
     restart: unless-stopped
     cap_drop: [ALL]
-    cap_add: [SETUID, SETGID]
+    cap_add: [SETUID, SETGID, DAC_OVERRIDE, KILL]
     security_opt: ["no-new-privileges:true"]
     env_file:
       - bouncer.sops.env
