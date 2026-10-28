@@ -1,0 +1,181 @@
+{
+  "uid": "opnsense-logs",
+  "title": "OPNsense logs",
+  "tags": ["opnsense", "firewall", "logs"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "editable": false,
+  "graphTooltip": 1,
+  "refresh": "1m",
+  "time": { "from": "now-6h", "to": "now" },
+  "description": "Firewall log (filterlog, IPv4) parsed at query time. Interfaces: vtnet0 WAN, vtnet1 LAN, vtnet2 MULTIMEDIA, vtnet3 WIFI, vtnet5 DMZ.",
+  "templating": {
+    "list": [
+      {
+        "name": "iface",
+        "label": "Interface",
+        "type": "custom",
+        "query": "WAN : vtnet0,LAN : vtnet1,MULTIMEDIA : vtnet2,WIFI : vtnet3,vtnet4 : vtnet4,DMZ : vtnet5,Tailscale : tailscale0",
+        "multi": true,
+        "includeAll": true,
+        "allValue": "*",
+        "current": { "text": ["All"], "value": ["$__all"] }
+      },
+      {
+        "name": "action",
+        "label": "Action",
+        "type": "custom",
+        "query": "block,pass",
+        "multi": true,
+        "includeAll": true,
+        "allValue": "*",
+        "current": { "text": ["All"], "value": ["$__all"] }
+      },
+      {
+        "name": "search",
+        "label": "Filter (e.g. dstport:443 or proto:udp)",
+        "type": "textbox",
+        "query": "",
+        "current": { "text": "", "value": "" }
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "Firewall events by action",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "datasource": { "type": "victoriametrics-logs-datasource", "uid": "victorialogs" },
+      "targets": [
+        {
+          "refId": "A",
+          "queryType": "statsRange",
+          "editorMode": "code",
+          "expr": "app_name:filterlog | extract \"<rule>,<_>,<_>,<rid>,<iface>,<reason>,<action>,<dir>,<ipver>,<_>,<_>,<_>,<_>,<_>,<_>,<_>,<proto>,<_>,<src>,<dst>,<srcport>,<dstport>,\" from _msg | filter ipver:=4 iface:in($iface) action:in($action) $search | stats by (action) count() events",
+          "legendFormat": "{{action}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "unit": "short", "custom": { "drawStyle": "bars", "fillOpacity": 60, "stacking": { "mode": "normal" } } },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "block" }, "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "red" } }] },
+          { "matcher": { "id": "byName", "options": "pass" }, "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "green" } }] }
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "Blocked by interface",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "datasource": { "type": "victoriametrics-logs-datasource", "uid": "victorialogs" },
+      "targets": [
+        {
+          "refId": "A",
+          "queryType": "statsRange",
+          "editorMode": "code",
+          "expr": "app_name:filterlog | extract \"<rule>,<_>,<_>,<rid>,<iface>,<reason>,<action>,<dir>,<ipver>,<_>,<_>,<_>,<_>,<_>,<_>,<_>,<proto>,<_>,<src>,<dst>,<srcport>,<dstport>,\" from _msg | filter ipver:=4 iface:in($iface) action:=block $search | stats by (iface) count() blocked",
+          "legendFormat": "{{iface}}"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "short", "custom": { "drawStyle": "bars", "fillOpacity": 60, "stacking": { "mode": "normal" } } }, "overrides": [] }
+    },
+    {
+      "id": 3,
+      "type": "table",
+      "title": "Top blocked flows (without broadcast / multicast)",
+      "description": "Excludes 255.255.255.255 and 224.0.0.0/4: discovery chatter from neighbours on the ISP network, blocked on WAN.",
+      "gridPos": { "h": 9, "w": 12, "x": 0, "y": 8 },
+      "datasource": { "type": "victoriametrics-logs-datasource", "uid": "victorialogs" },
+      "targets": [
+        {
+          "refId": "A",
+          "queryType": "stats",
+          "editorMode": "code",
+          "expr": "app_name:filterlog | extract \"<rule>,<_>,<_>,<rid>,<iface>,<reason>,<action>,<dir>,<ipver>,<_>,<_>,<_>,<_>,<_>,<_>,<_>,<proto>,<_>,<src>,<dst>,<srcport>,<dstport>,\" from _msg | filter ipver:=4 iface:in($iface) action:=block -dst:~\"\\\\.255$\" -dst:ipv4_range(224.0.0.0/4) $search | stats by (iface, proto, src, dst, dstport) count() n | sort by (n desc) | limit 25",
+          "legendFormat": "{{iface}}  {{proto}}  {{src}} → {{dst}}:{{dstport}}"
+        }
+      ],
+      "transformations": [
+        { "id": "reduce", "options": { "mode": "seriesToRows", "reducers": ["lastNotNull"] } },
+        { "id": "organize", "options": { "renameByName": { "Field": "Interface  proto  source → destination:port", "Last *": "Blocked", "Last": "Blocked" } } },
+        { "id": "sortBy", "options": { "sort": [{ "field": "Blocked", "desc": true }] } }
+      ]
+    },
+    {
+      "id": 4,
+      "type": "table",
+      "title": "DMZ traffic (edge VM)",
+      "gridPos": { "h": 9, "w": 12, "x": 12, "y": 8 },
+      "datasource": { "type": "victoriametrics-logs-datasource", "uid": "victorialogs" },
+      "targets": [
+        {
+          "refId": "A",
+          "queryType": "stats",
+          "editorMode": "code",
+          "expr": "app_name:filterlog | extract \"<rule>,<_>,<_>,<rid>,<iface>,<reason>,<action>,<dir>,<ipver>,<_>,<_>,<_>,<_>,<_>,<_>,<_>,<proto>,<_>,<src>,<dst>,<srcport>,<dstport>,\" from _msg | filter ipver:=4 iface:=vtnet5 action:in($action) $search | stats by (action, proto, src, dst, dstport) count() n | sort by (n desc) | limit 25",
+          "legendFormat": "{{action}}  {{proto}}  {{src}} → {{dst}}:{{dstport}}"
+        }
+      ],
+      "transformations": [
+        { "id": "reduce", "options": { "mode": "seriesToRows", "reducers": ["lastNotNull"] } },
+        { "id": "organize", "options": { "renameByName": { "Field": "Action  proto  source → destination:port", "Last *": "Events", "Last": "Events" } } },
+        { "id": "sortBy", "options": { "sort": [{ "field": "Events", "desc": true }] } }
+      ]
+    },
+    {
+      "id": 5,
+      "type": "logs",
+      "title": "Firewall log",
+      "description": "Expand a line for the parsed fields: iface, action, dir, proto, src, dst, srcport, dstport, rid (rule ID).",
+      "gridPos": { "h": 12, "w": 24, "x": 0, "y": 17 },
+      "datasource": { "type": "victoriametrics-logs-datasource", "uid": "victorialogs" },
+      "targets": [
+        {
+          "refId": "A",
+          "queryType": "instant",
+          "editorMode": "code",
+          "expr": "app_name:filterlog | extract \"<rule>,<_>,<_>,<rid>,<iface>,<reason>,<action>,<dir>,<ipver>,<_>,<_>,<_>,<_>,<_>,<_>,<_>,<proto>,<_>,<src>,<dst>,<srcport>,<dstport>,\" from _msg | filter ipver:=4 iface:in($iface) action:in($action) $search",
+          "maxLines": 1000
+        }
+      ],
+      "options": { "showTime": true, "wrapLogMessage": false, "sortOrder": "Descending", "enableLogDetails": true }
+    },
+    {
+      "id": 6,
+      "type": "timeseries",
+      "title": "System log volume by service",
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 29 },
+      "datasource": { "type": "victoriametrics-logs-datasource", "uid": "victorialogs" },
+      "targets": [
+        {
+          "refId": "A",
+          "queryType": "statsRange",
+          "editorMode": "code",
+          "expr": "app_name:* -app_name:=filterlog | stats by (app_name) count() logs",
+          "legendFormat": "{{app_name}}"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "short", "custom": { "drawStyle": "bars", "fillOpacity": 60, "stacking": { "mode": "normal" } } }, "overrides": [] }
+    },
+    {
+      "id": 7,
+      "type": "logs",
+      "title": "System logs (everything except the firewall log)",
+      "gridPos": { "h": 12, "w": 24, "x": 0, "y": 37 },
+      "datasource": { "type": "victoriametrics-logs-datasource", "uid": "victorialogs" },
+      "targets": [
+        {
+          "refId": "A",
+          "queryType": "instant",
+          "editorMode": "code",
+          "expr": "app_name:* -app_name:=filterlog",
+          "maxLines": 1000
+        }
+      ],
+      "options": { "showTime": true, "wrapLogMessage": true, "sortOrder": "Descending", "enableLogDetails": true }
+    }
+  ]
+}
