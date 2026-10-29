@@ -1,0 +1,82 @@
+server:
+  address: tcp://0.0.0.0:9091
+
+log:
+  level: info
+
+totp:
+  issuer: '{{ mustEnv "DOMAIN" }}'
+  period: 30
+  skew: 1
+
+authentication_backend:
+  file:
+    path: /config/users.yaml
+    watch: true
+    password:
+      algorithm: argon2id
+      iterations: 3
+      memory: 65536
+      parallelism: 4
+
+access_control:
+  default_policy: deny
+  networks:
+    - name: internal
+      networks:
+        - 10.0.0.0/8
+        - 172.16.0.0/12
+        - 192.168.0.0/16
+    - name: mgmt
+      networks:
+{{- range splitList "," (mustEnv "MGMT_SOURCES") }}
+        - {{ trim . }}
+{{- end }}
+  rules:
+    - domain: 'auth.{{ mustEnv "DOMAIN" }}'
+      policy: bypass
+    - domain: 'grafana.{{ mustEnv "DOMAIN" }}'
+      resources:
+        - '^/d-solo/.*$'
+      networks:
+        - internal
+      policy: bypass
+    - domain: 'calibre-web.{{ mustEnv "DOMAIN" }}'
+      resources:
+        - '^/opds.*$'
+      networks:
+        - internal
+      policy: bypass
+    - domain: '*.{{ mustEnv "DOMAIN" }}'
+      networks:
+        - internal
+      policy: two_factor
+
+session:
+  expiration: 12h
+  inactivity: 2h
+  remember_me: 30d
+  cookies:
+    - name: authelia_session
+      domain: '{{ mustEnv "DOMAIN" }}'
+      authelia_url: 'https://auth.{{ mustEnv "DOMAIN" }}'
+      default_redirection_url: 'https://homarr.{{ mustEnv "DOMAIN" }}'
+
+storage:
+  local:
+    path: /var/lib/authelia/db.sqlite3
+
+regulation:
+  max_retries: 3
+  find_time: 2m
+  ban_time: 10m
+
+notifier:
+  disable_startup_check: false
+  smtp:
+    address: smtp://smtp.gmail.com:587
+    timeout: 5s
+    username: '{{ mustEnv "SMTP_USERNAME" }}'
+    sender: 'Authelia <{{ mustEnv "SMTP_USERNAME" }}>'
+    tls:
+      skip_verify: false
