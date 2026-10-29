@@ -49,6 +49,41 @@ http:
       service: ha
       tls: {}
 
+    grafana:
+      rule: 'Host(`grafana.{{ env "DOMAIN" }}`)'
+      entryPoints: [websecure]
+      middlewares: [crowdsec, local-only]
+      service: grafana
+      tls: {}
+
+    metrics:
+      rule: 'Host(`metrics.{{ env "DOMAIN" }}`)'
+      entryPoints: [websecure]
+      middlewares: [crowdsec, mgmt-only]
+      service: metrics
+      tls: {}
+
+    logs:
+      rule: 'Host(`logs.{{ env "DOMAIN" }}`)'
+      entryPoints: [websecure]
+      middlewares: [crowdsec, mgmt-only]
+      service: logs
+      tls: {}
+
+    alerts:
+      rule: 'Host(`alerts.{{ env "DOMAIN" }}`)'
+      entryPoints: [websecure]
+      middlewares: [crowdsec, mgmt-only]
+      service: alerts
+      tls: {}
+
+    vmalert:
+      rule: 'Host(`vmalert.{{ env "DOMAIN" }}`)'
+      entryPoints: [websecure]
+      middlewares: [crowdsec, mgmt-only]
+      service: vmalert
+      tls: {}
+
   services:
     pve:
       loadBalancer:
@@ -89,6 +124,31 @@ http:
         passHostHeader: false
         servers:
           - url: 'http://{{ env "HA_IP" }}:8123'
+
+    grafana:
+      loadBalancer:
+        servers:
+          - url: 'http://{{ env "OBSERVABILITY_IP" }}:3000'
+
+    metrics:
+      loadBalancer:
+        servers:
+          - url: 'http://{{ env "OBSERVABILITY_IP" }}:8428'
+
+    logs:
+      loadBalancer:
+        servers:
+          - url: 'http://{{ env "OBSERVABILITY_IP" }}:9428'
+
+    alerts:
+      loadBalancer:
+        servers:
+          - url: 'http://{{ env "OBSERVABILITY_IP" }}:9093'
+
+    vmalert:
+      loadBalancer:
+        servers:
+          - url: 'http://{{ env "OBSERVABILITY_IP" }}:8880'
 
   serversTransports:
     self-signed:

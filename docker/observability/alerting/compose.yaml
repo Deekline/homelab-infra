@@ -14,7 +14,7 @@ services:
     command:
       - --config.file=/etc/alertmanager/alertmanager.yml
       - --storage.path=/alertmanager
-      - --web.external-url=http://${OBSERVABILITY_IP:?}:9093
+      - --web.external-url=https://alerts.${DOMAIN:?}
     configs:
       - source: telegram-template
         target: /etc/alertmanager/templates/telegram.tmpl
@@ -38,7 +38,7 @@ services:
       - -notifier.url=http://alertmanager:9093
       - -evaluationInterval=60s
       - -configCheckInterval=1m
-      - -external.url=http://${OBSERVABILITY_IP:?}:8880
+      - -external.url=https://vmalert.${DOMAIN:?}
     volumes:
       - ./rules:/etc/vmalert/rules:ro
     ports:
