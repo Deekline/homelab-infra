@@ -28,6 +28,7 @@ services:
       PIHOLE_IP: ${PIHOLE_IP:?}
       HA_IP: ${HA_IP:?}
       MGMT_SOURCES: ${MGMT_SOURCES:?}
+      OBSERVABILITY_IP: ${OBSERVABILITY_IP:?}
     configs:
       - source: static
         target: /etc/traefik/traefik.yml
