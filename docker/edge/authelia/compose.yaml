@@ -1,0 +1,45 @@
+services:
+  authelia-init:
+    image: busybox:1.37.0
+    command: ["chown", "-R", "8000:8000", "/data"]
+    volumes:
+      - /srv/authelia:/data
+
+  authelia:
+    image: ghcr.io/authelia/authelia:4.39.28
+    restart: unless-stopped
+    depends_on:
+      authelia-init:
+        condition: service_completed_successfully
+    user: "8000:8000"
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    env_file:
+      - authelia.sops.env
+    environment:
+      X_AUTHELIA_CONFIG_FILTERS: template
+      DOMAIN: ${DOMAIN:?}
+      MGMT_SOURCES: ${MGMT_SOURCES:?}
+    configs:
+      - source: configuration
+        target: /config/configuration.yml
+      - source: users
+        target: /config/users.yaml
+    volumes:
+      - /srv/authelia:/var/lib/authelia
+    tmpfs:
+      - /tmp
+    ports:
+      - "9091:9091"
+
+configs:
+  configuration:
+    file: ./configuration.yml
+  users:
+    file: ./users.sops.yaml
+
+networks:
+  default:
+    name: edge
+    external: true
