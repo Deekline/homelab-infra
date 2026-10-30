@@ -37,7 +37,6 @@ resources:
   - speedtest-tracker.yaml
   - paperless.yaml
   - immich.yaml
-  - authelia.yaml
   - sops-operator.yaml
   - traefik.yaml
   - cilium.yaml
