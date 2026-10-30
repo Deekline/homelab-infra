@@ -32,6 +32,16 @@ http:
           defaultDecisionSeconds: 60
           httpTimeoutSeconds: 10
 
+    authelia:
+      forwardAuth:
+        address: http://authelia:9091/api/authz/forward-auth
+        trustForwardHeader: false
+        authResponseHeaders:
+          - Remote-User
+          - Remote-Groups
+          - Remote-Name
+          - Remote-Email
+
     local-only:
       ipAllowList:
         sourceRange:

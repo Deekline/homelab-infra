@@ -59,28 +59,28 @@ http:
     metrics:
       rule: 'Host(`metrics.{{ env "DOMAIN" }}`)'
       entryPoints: [websecure]
-      middlewares: [crowdsec, mgmt-only]
+      middlewares: [crowdsec, mgmt-only, authelia]
       service: metrics
       tls: {}
 
     logs:
       rule: 'Host(`logs.{{ env "DOMAIN" }}`)'
       entryPoints: [websecure]
-      middlewares: [crowdsec, mgmt-only]
+      middlewares: [crowdsec, mgmt-only, authelia]
       service: logs
       tls: {}
 
     alerts:
       rule: 'Host(`alerts.{{ env "DOMAIN" }}`)'
       entryPoints: [websecure]
-      middlewares: [crowdsec, mgmt-only]
+      middlewares: [crowdsec, mgmt-only, authelia]
       service: alerts
       tls: {}
 
     vmalert:
       rule: 'Host(`vmalert.{{ env "DOMAIN" }}`)'
       entryPoints: [websecure]
-      middlewares: [crowdsec, mgmt-only]
+      middlewares: [crowdsec, mgmt-only, authelia]
       service: vmalert
       tls: {}
 
