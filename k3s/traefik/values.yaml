@@ -12,12 +12,6 @@ podSecurityContext:
   runAsUser: 65532
   runAsGroup: 65532
 
-experimental:
-  plugins:
-    crowdsec:
-      moduleName: "github.com/maxlerebourg/crowdsec-bouncer-traefik-plugin"
-      version: "v1.4.5"
-
 ports:
   web:
     port: 8000
@@ -86,9 +80,6 @@ accessLog:
       defaultMode: keep
 
 volumes:
-  - name: crowdsec-bouncer-key
-    mountPath: /etc/crowdsec
-    type: secret
   - name: traefik-dynamic-config
     mountPath: /config/dynamic
     type: configMap
