@@ -48,6 +48,19 @@ access_control:
       networks:
         - internal
       policy: bypass
+    - domain: &admin_domains
+        - 'metrics.{{ mustEnv "DOMAIN" }}'
+        - 'logs.{{ mustEnv "DOMAIN" }}'
+        - 'alerts.{{ mustEnv "DOMAIN" }}'
+        - 'vmalert.{{ mustEnv "DOMAIN" }}'
+        - 'traefik.{{ mustEnv "DOMAIN" }}'
+        - 'hubble.{{ mustEnv "DOMAIN" }}'
+      subject: 'group:admins'
+      networks:
+        - internal
+      policy: two_factor
+    - domain: *admin_domains
+      policy: deny
     - domain: '*.{{ mustEnv "DOMAIN" }}'
       networks:
         - internal
