@@ -16,7 +16,7 @@ http:
       rule: 'Host(`auth.{{ env "DOMAIN" }}`)'
       entryPoints: [websecure]
       middlewares: [crowdsec]
-      service: cluster
+      service: authelia
       tls: {}
 
   middlewares:
@@ -46,6 +46,11 @@ http:
         serversTransport: cluster
         servers:
           - url: 'https://{{ env "K3S_INGRESS_IP" }}'
+
+    authelia:
+      loadBalancer:
+        servers:
+          - url: http://authelia:9091
 
   serversTransports:
     cluster:
