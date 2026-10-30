@@ -18,14 +18,6 @@ spec:
               protocol: TCP
     - fromEndpoints:
         - matchLabels:
-            io.kubernetes.pod.namespace: authelia
-            app: authelia
-      toPorts:
-        - ports:
-            - port: "6379"
-              protocol: TCP
-    - fromEndpoints:
-        - matchLabels:
             io.kubernetes.pod.namespace: immich
             app: immich-server
       toPorts:
