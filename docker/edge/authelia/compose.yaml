@@ -32,6 +32,7 @@ services:
       - /tmp
     ports:
       - "9091:9091"
+      - "9959:9959"
 
 configs:
   configuration:
