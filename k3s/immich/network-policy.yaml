@@ -10,14 +10,6 @@ spec:
   ingress:
     - fromEndpoints:
         - matchLabels:
-            io.kubernetes.pod.namespace: traefik
-            app.kubernetes.io/name: traefik
-      toPorts:
-        - ports:
-            - port: "2283"
-              protocol: TCP
-    - fromEndpoints:
-        - matchLabels:
             io.kubernetes.pod.namespace: immich
             app: immich-power-tools
       toPorts:
@@ -28,6 +20,12 @@ spec:
         - matchLabels:
             io.kubernetes.pod.namespace: homarr
             app.kubernetes.io/name: homarr
+      toPorts:
+        - ports:
+            - port: "2283"
+              protocol: TCP
+    - fromEntities:
+        - ingress
       toPorts:
         - ports:
             - port: "2283"

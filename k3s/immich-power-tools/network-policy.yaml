@@ -8,10 +8,8 @@ spec:
     matchLabels:
       app: immich-power-tools
   ingress:
-    - fromEndpoints:
-        - matchLabels:
-            io.kubernetes.pod.namespace: traefik
-            app.kubernetes.io/name: traefik
+    - fromEntities:
+        - ingress
       toPorts:
         - ports:
             - port: "3000"
