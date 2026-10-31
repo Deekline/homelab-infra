@@ -1,0 +1,15 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: speedtest-tracker
+  namespace: speedtest-tracker
+spec:
+  parentRefs:
+    - name: cilium-gateway
+      namespace: gateway
+  hostnames:
+    - "speedtest.d-kline.org"
+  rules:
+    - backendRefs:
+        - name: speedtest-tracker
+          port: 80

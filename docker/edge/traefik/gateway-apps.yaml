@@ -55,3 +55,59 @@ http:
       middlewares: [crowdsec, authelia, security-headers]
       service: gateway
       tls: {}
+
+    actual-budget:
+      rule: 'Host(`budget.{{ env "DOMAIN" }}`)'
+      entryPoints: [websecure]
+      middlewares: [crowdsec, authelia, security-headers]
+      service: gateway
+      tls: {}
+
+    apprise:
+      rule: 'Host(`apprise.{{ env "DOMAIN" }}`)'
+      entryPoints: [websecure]
+      middlewares: [crowdsec, authelia, security-headers]
+      service: gateway
+      tls: {}
+
+    audiobookshelf:
+      rule: 'Host(`audiobookshelf.{{ env "DOMAIN" }}`)'
+      entryPoints: [websecure]
+      middlewares: [crowdsec, authelia, security-headers]
+      service: gateway
+      tls: {}
+
+    calibre-web:
+      rule: 'Host(`calibre-web.{{ env "DOMAIN" }}`)'
+      entryPoints: [websecure]
+      middlewares: [crowdsec, authelia, security-headers]
+      service: gateway
+      tls: {}
+
+    homarr:
+      rule: 'Host(`homarr.{{ env "DOMAIN" }}`)'
+      entryPoints: [websecure]
+      middlewares: [crowdsec, authelia, security-headers]
+      service: gateway
+      tls: {}
+
+    speedtest-tracker:
+      rule: 'Host(`speedtest.{{ env "DOMAIN" }}`)'
+      entryPoints: [websecure]
+      middlewares: [crowdsec, authelia, security-headers]
+      service: gateway
+      tls: {}
+
+    n8n:
+      rule: 'Host(`n8n.{{ env "DOMAIN" }}`)'
+      entryPoints: [websecure]
+      middlewares: [crowdsec, authelia, security-headers]
+      service: gateway
+      tls: {}
+
+    hubble:
+      rule: 'Host(`hubble.{{ env "DOMAIN" }}`)'
+      entryPoints: [websecure]
+      middlewares: [crowdsec, authelia, security-headers]
+      service: gateway
+      tls: {}
