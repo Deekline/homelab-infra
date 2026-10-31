@@ -69,6 +69,13 @@ http:
         servers:
           - url: 'https://{{ env "K3S_INGRESS_IP" }}'
 
+    gateway:
+      loadBalancer:
+        passHostHeader: true
+        serversTransport: gateway
+        servers:
+          - url: 'https://{{ env "GATEWAY_IP" }}'
+
     authelia:
       loadBalancer:
         servers:
@@ -76,4 +83,7 @@ http:
 
   serversTransports:
     cluster:
+      serverName: 'edge.{{ env "DOMAIN" }}'
+
+    gateway:
       serverName: 'edge.{{ env "DOMAIN" }}'
