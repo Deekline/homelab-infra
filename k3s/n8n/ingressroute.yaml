@@ -12,9 +12,4 @@ spec:
       services:
         - name: n8n
           port: 80
-      middlewares:
-        - name: local-only
-          namespace: traefik
-        - name: security-headers
-          namespace: traefik
   tls: {}

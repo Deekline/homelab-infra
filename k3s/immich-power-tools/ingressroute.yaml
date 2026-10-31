@@ -12,9 +12,4 @@ spec:
       services:
         - name: immich-power-tools
           port: 3000
-      middlewares:
-        - name: local-only
-          namespace: traefik
-        - name: security-headers
-          namespace: traefik
   tls: {}

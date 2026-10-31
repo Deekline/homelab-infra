@@ -4,7 +4,7 @@ http:
       rule: PathPrefix(`/`)
       priority: 1
       entryPoints: [websecure]
-      middlewares: [crowdsec, local-only]
+      middlewares: [crowdsec, authelia, security-headers]
       service: cluster
       tls:
         certResolver: cloudflare
@@ -48,6 +48,18 @@ http:
           - 10.0.0.0/8
           - 172.16.0.0/12
           - 192.168.0.0/16
+
+    security-headers:
+      headers:
+        frameDeny: true
+        browserXssFilter: true
+        contentTypeNosniff: true
+        forceSTSHeader: true
+        stsIncludeSubdomains: true
+        stsPreload: true
+        stsSeconds: 31536000
+        customRequestHeaders:
+          X-Forwarded-Proto: "https"
 
   services:
     cluster:
