@@ -66,6 +66,22 @@ access_control:
       policy: two_factor
     - domain: *admin_domains
       policy: deny
+    - domain:
+        - 'affine.{{ mustEnv "DOMAIN" }}'
+        - 'immich.{{ mustEnv "DOMAIN" }}'
+        - 'immich-tools.{{ mustEnv "DOMAIN" }}'
+        - 'jellyfin.{{ mustEnv "DOMAIN" }}'
+        - 'n8n.{{ mustEnv "DOMAIN" }}'
+        - 'paperless.{{ mustEnv "DOMAIN" }}'
+      networks:
+        - internal
+      policy: bypass
+    - domain: 'apprise.{{ mustEnv "DOMAIN" }}'
+      resources:
+        - '^/notify.*$'
+      networks:
+        - internal
+      policy: bypass
     - domain: '*.{{ mustEnv "DOMAIN" }}'
       networks:
         - internal

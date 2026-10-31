@@ -9,13 +9,6 @@ spec:
   routes:
     - match: Host(`sonarr.d-kline.org`)
       kind: Rule
-      middlewares:
-        - name: local-only
-          namespace: traefik
-        - name: authelia
-          namespace: traefik
-        - name: security-headers
-          namespace: traefik
       services:
         - name: sonarr
           port: 8989

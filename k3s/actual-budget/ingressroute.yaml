@@ -9,13 +9,6 @@ spec:
   routes:
     - match: Host(`budget.d-kline.org`)
       kind: Rule
-      middlewares:
-        - name: local-only
-          namespace: traefik
-        - name: authelia
-          namespace: traefik
-        - name: security-headers
-          namespace: traefik
       services:
         - name: actual-budget
           port: 5006

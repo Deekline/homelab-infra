@@ -12,9 +12,4 @@ spec:
       services:
         - name: affine
           port: 3010
-      middlewares:
-        - name: local-only
-          namespace: traefik
-        - name: security-headers
-          namespace: traefik
   tls: {}

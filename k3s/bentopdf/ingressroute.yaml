@@ -10,12 +10,6 @@ spec:
     - match: Host(`bentopdf.d-kline.org`)
       kind: Rule
       middlewares:
-        - name: local-only
-          namespace: traefik
-        - name: authelia
-          namespace: traefik
-        - name: security-headers
-          namespace: traefik
         - name: wasm-headers
           namespace: traefik
       services:
