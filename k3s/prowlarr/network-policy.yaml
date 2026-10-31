@@ -7,12 +7,6 @@ spec:
   endpointSelector:
     matchLabels:
       app: prowlarr
-  # Corrected 2026-08-10 via live audit-mode traffic: Prowlarr isn't just a
-  # one-way push of indexer config to Sonarr/Radarr — it also proxies
-  # indexer searches, so Sonarr/Radarr call back into Prowlarr's API on
-  # every search (confirmed live: sonarr/radarr -> prowlarr:9696, would
-  # have been silently blocked by the original ingress-from-Traefik-only
-  # rule). Traefik (WebUI), Sonarr, and Radarr are all legitimate callers.
   ingress:
     - fromEndpoints:
         - matchLabels:
@@ -39,6 +33,9 @@ spec:
         - ports:
             - port: "9696"
               protocol: TCP
-  # No egress restriction this pass — Prowlarr needs to reach Sonarr/Radarr
-  # plus arbitrary indexer sites on the internet. Deferred to the
-  # FQDN-egress phase.
+    - fromEntities:
+        - ingress
+      toPorts:
+        - ports:
+            - port: "9696"
+              protocol: TCP

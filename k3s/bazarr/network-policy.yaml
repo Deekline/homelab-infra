@@ -7,9 +7,6 @@ spec:
   endpointSelector:
     matchLabels:
       app: bazarr
-  # Bazarr pulls from Sonarr/Radarr; nothing calls back into Bazarr's own
-  # port for normal operation, so only Traefik (WebUI) is a legitimate
-  # caller.
   ingress:
     - fromEndpoints:
         - matchLabels:
@@ -19,6 +16,9 @@ spec:
         - ports:
             - port: "6767"
               protocol: TCP
-  # No egress restriction this pass — Bazarr needs to reach Sonarr/Radarr
-  # plus subtitle-provider sites on the internet. Deferred to the
-  # FQDN-egress phase.
+    - fromEntities:
+        - ingress
+      toPorts:
+        - ports:
+            - port: "6767"
+              protocol: TCP

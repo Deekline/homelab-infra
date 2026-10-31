@@ -7,9 +7,6 @@ spec:
   endpointSelector:
     matchLabels:
       app: sonarr
-  # Traefik (WebUI), Prowlarr (pushes indexer config), Bazarr (pulls
-  # episode metadata for subtitle matching), and Seerr (submits requests)
-  # are the only legitimate callers.
   ingress:
     - fromEndpoints:
         - matchLabels:
@@ -38,9 +35,9 @@ spec:
         - ports:
             - port: "8989"
               protocol: TCP
-  # No egress restriction this pass — Sonarr needs qBittorrent (already
-  # covered by qBittorrent's own ingress rule + connection tracking for the
-  # replies) plus indeterminate internet access for metadata providers
-  # (TheTVDB etc.). Scoping that precisely is deferred to the FQDN-egress
-  # phase in cilium-network-policies.md. Leaving `egress:` unset here keeps
-  # egress in Cilium's default-allow state for this endpoint.
+    - fromEntities:
+        - ingress
+      toPorts:
+        - ports:
+            - port: "8989"
+              protocol: TCP

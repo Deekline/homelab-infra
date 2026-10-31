@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
   - deployment.yaml
   - ingressroute.yaml
+  - httproute.yaml
   - pvc.yaml
   - secrets.yaml
   - network-policy.yaml
