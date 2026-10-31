@@ -8,14 +8,6 @@ spec:
     matchLabels:
       app: bazarr
   ingress:
-    - fromEndpoints:
-        - matchLabels:
-            io.kubernetes.pod.namespace: traefik
-            app.kubernetes.io/name: traefik
-      toPorts:
-        - ports:
-            - port: "6767"
-              protocol: TCP
     - fromEntities:
         - ingress
       toPorts:
