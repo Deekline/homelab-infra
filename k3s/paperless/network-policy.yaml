@@ -10,16 +10,14 @@ spec:
   ingress:
     - fromEndpoints:
         - matchLabels:
-            io.kubernetes.pod.namespace: traefik
-            app.kubernetes.io/name: traefik
+            io.kubernetes.pod.namespace: homarr
+            app.kubernetes.io/name: homarr
       toPorts:
         - ports:
             - port: "8000"
               protocol: TCP
-    - fromEndpoints:
-        - matchLabels:
-            io.kubernetes.pod.namespace: homarr
-            app.kubernetes.io/name: homarr
+    - fromEntities:
+        - ingress
       toPorts:
         - ports:
             - port: "8000"

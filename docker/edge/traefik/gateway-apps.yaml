@@ -111,3 +111,38 @@ http:
       middlewares: [crowdsec, authelia, security-headers]
       service: gateway
       tls: {}
+
+    affine:
+      rule: 'Host(`affine.{{ env "DOMAIN" }}`)'
+      entryPoints: [websecure]
+      middlewares: [crowdsec, authelia, security-headers]
+      service: gateway
+      tls: {}
+
+    jellyfin:
+      rule: 'Host(`jellyfin.{{ env "DOMAIN" }}`)'
+      entryPoints: [websecure]
+      middlewares: [crowdsec, authelia, security-headers]
+      service: gateway
+      tls: {}
+
+    immich:
+      rule: 'Host(`immich.{{ env "DOMAIN" }}`)'
+      entryPoints: [websecure]
+      middlewares: [crowdsec, authelia, security-headers]
+      service: gateway
+      tls: {}
+
+    immich-power-tools:
+      rule: 'Host(`immich-tools.{{ env "DOMAIN" }}`)'
+      entryPoints: [websecure]
+      middlewares: [crowdsec, authelia, security-headers]
+      service: gateway
+      tls: {}
+
+    paperless:
+      rule: 'Host(`paperless.{{ env "DOMAIN" }}`)'
+      entryPoints: [websecure]
+      middlewares: [crowdsec, authelia, security-headers]
+      service: gateway
+      tls: {}
