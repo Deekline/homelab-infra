@@ -13,7 +13,7 @@ spec:
     - filters:
         - type: ResponseHeaderModifier
           responseHeaderModifier:
-            add:
+            set:
               - name: Cross-Origin-Opener-Policy
                 value: same-origin
               - name: Cross-Origin-Embedder-Policy
