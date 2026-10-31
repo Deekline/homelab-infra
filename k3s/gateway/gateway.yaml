@@ -1,0 +1,28 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: cilium-gateway
+  namespace: gateway
+spec:
+  gatewayClassName: cilium
+  # Temporary LB IP for the per-app move (phase 4, stage C/D). Traefik and
+  # this Gateway both need 443 during the migration — kube-vip only shares
+  # an IP across *different* ports (API 6443 + Traefik 80/443 today), so
+  # this can't be 10.0.10.9 yet. Moves there once Traefik is removed
+  # (phase 4, stage E) — update this annotation and vars.sops.env together.
+  infrastructure:
+    annotations:
+      kube-vip.io/loadbalancerIPs: "10.0.10.8"
+  listeners:
+    - name: https
+      protocol: HTTPS
+      port: 443
+      hostname: "*.d-kline.org"
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - kind: Secret
+            name: d-kline-org-tls
+      allowedRoutes:
+        namespaces:
+          from: All
