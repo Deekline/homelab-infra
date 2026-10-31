@@ -39,6 +39,7 @@ resources:
   - sops-operator.yaml
   - traefik.yaml
   - cilium.yaml
+  - gateway.yaml
   - affine.yaml
   - calibre-web.yaml
   - actual-budget.yaml
