@@ -24,7 +24,6 @@ resources:
   - gitea-runner.yaml
   - flux-notifications.yaml
   - reloader.yaml
-  - crowdsec.yaml
   - dragonfly.yaml
   - cert-manager.yaml
   - crds.yaml

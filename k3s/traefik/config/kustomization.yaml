@@ -5,5 +5,4 @@ resources:
   - api-service.yaml
   - dashboard.yaml
   - certificate.yaml
-  - crowdsec-bouncer-secrets.yaml
   - external-services.yaml
