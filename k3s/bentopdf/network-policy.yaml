@@ -18,6 +18,12 @@ spec:
         - ports:
             - port: "8080"
               protocol: TCP
+    - fromEntities:
+        - ingress
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
   # No outbound calls of its own beyond DNS — same reasoning as drawio.
   egress:
     - toEndpoints:

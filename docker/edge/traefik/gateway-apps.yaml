@@ -1,0 +1,15 @@
+http:
+  routers:
+    drawio:
+      rule: 'Host(`drawio.{{ env "DOMAIN" }}`)'
+      entryPoints: [websecure]
+      middlewares: [crowdsec, authelia, security-headers]
+      service: gateway
+      tls: {}
+
+    bentopdf:
+      rule: 'Host(`bentopdf.{{ env "DOMAIN" }}`)'
+      entryPoints: [websecure]
+      middlewares: [crowdsec, authelia, security-headers]
+      service: gateway
+      tls: {}
