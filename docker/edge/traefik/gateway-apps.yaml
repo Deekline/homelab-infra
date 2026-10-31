@@ -13,3 +13,45 @@ http:
       middlewares: [crowdsec, authelia, security-headers]
       service: gateway
       tls: {}
+
+    bazarr:
+      rule: 'Host(`bazarr.{{ env "DOMAIN" }}`)'
+      entryPoints: [websecure]
+      middlewares: [crowdsec, authelia, security-headers]
+      service: gateway
+      tls: {}
+
+    prowlarr:
+      rule: 'Host(`prowlarr.{{ env "DOMAIN" }}`)'
+      entryPoints: [websecure]
+      middlewares: [crowdsec, authelia, security-headers]
+      service: gateway
+      tls: {}
+
+    radarr:
+      rule: 'Host(`radarr.{{ env "DOMAIN" }}`)'
+      entryPoints: [websecure]
+      middlewares: [crowdsec, authelia, security-headers]
+      service: gateway
+      tls: {}
+
+    sonarr:
+      rule: 'Host(`sonarr.{{ env "DOMAIN" }}`)'
+      entryPoints: [websecure]
+      middlewares: [crowdsec, authelia, security-headers]
+      service: gateway
+      tls: {}
+
+    qbittorrent:
+      rule: 'Host(`qbittorrent.{{ env "DOMAIN" }}`)'
+      entryPoints: [websecure]
+      middlewares: [crowdsec, authelia, security-headers]
+      service: gateway
+      tls: {}
+
+    seerr:
+      rule: 'Host(`seerr.{{ env "DOMAIN" }}`)'
+      entryPoints: [websecure]
+      middlewares: [crowdsec, authelia, security-headers]
+      service: gateway
+      tls: {}
