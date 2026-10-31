@@ -7,6 +7,6 @@ resources:
   - backup-objectstore.yaml
   - postgres-cluster.yaml
   - scheduled-backup.yaml
-  - ingressroute.yaml
+  - httproute.yaml
   - network-policy.yaml
   - db-network-policy.yaml
