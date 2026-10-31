@@ -7,26 +7,13 @@ spec:
   endpointSelector:
     matchLabels:
       app: drawio
-  # Only Traefik may reach drawio, and only on its actual container port.
   ingress:
-    - fromEndpoints:
-        - matchLabels:
-            io.kubernetes.pod.namespace: traefik
-            app.kubernetes.io/name: traefik
-      toPorts:
-        - ports:
-            - port: "8080"
-              protocol: TCP
     - fromEntities:
         - ingress
       toPorts:
         - ports:
             - port: "8080"
               protocol: TCP
-  # drawio itself makes no outbound calls beyond DNS (it's a static SPA
-  # server; Drive/Dropbox-style integrations run in the user's browser, not
-  # this pod). Listing an egress rule at all is what puts egress into
-  # default-deny for this endpoint too, not just ingress.
   egress:
     - toEndpoints:
         - matchLabels:
