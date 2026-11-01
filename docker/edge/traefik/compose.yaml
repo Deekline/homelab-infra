@@ -20,7 +20,6 @@ services:
       - ../crowdsec/bouncer.sops.env
     environment:
       DOMAIN: ${DOMAIN:?}
-      K3S_INGRESS_IP: ${K3S_INGRESS_IP:?}
       GATEWAY_IP: ${GATEWAY_IP:?}
       PVE_IP: ${PVE_IP:?}
       PX1_IP: ${PX1_IP:?}
@@ -37,8 +36,6 @@ services:
         target: /etc/traefik/dynamic/dynamic.yaml
       - source: external-services
         target: /etc/traefik/dynamic/external-services.yaml
-      - source: gateway-apps
-        target: /etc/traefik/dynamic/gateway-apps.yaml
     volumes:
       - /srv/traefik:/data
       - /srv/traefik/logs:/var/log/traefik
@@ -55,8 +52,6 @@ configs:
     file: ./dynamic.yaml
   external-services:
     file: ./external-services.yaml
-  gateway-apps:
-    file: ./gateway-apps.yaml
 
 networks:
   default:

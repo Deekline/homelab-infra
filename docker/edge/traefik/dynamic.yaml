@@ -5,7 +5,7 @@ http:
       priority: 1
       entryPoints: [websecure]
       middlewares: [crowdsec, authelia, security-headers]
-      service: cluster
+      service: gateway
       tls:
         certResolver: cloudflare
         domains:
@@ -62,13 +62,6 @@ http:
           X-Forwarded-Proto: "https"
 
   services:
-    cluster:
-      loadBalancer:
-        passHostHeader: true
-        serversTransport: cluster
-        servers:
-          - url: 'https://{{ env "K3S_INGRESS_IP" }}'
-
     gateway:
       loadBalancer:
         passHostHeader: true
@@ -82,8 +75,5 @@ http:
           - url: http://authelia:9091
 
   serversTransports:
-    cluster:
-      serverName: 'edge.{{ env "DOMAIN" }}'
-
     gateway:
       serverName: 'edge.{{ env "DOMAIN" }}'

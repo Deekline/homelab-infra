@@ -37,7 +37,6 @@ resources:
   - paperless.yaml
   - immich.yaml
   - sops-operator.yaml
-  - traefik.yaml
   - cilium.yaml
   - gateway.yaml
   - affine.yaml
