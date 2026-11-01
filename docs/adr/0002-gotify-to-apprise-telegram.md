@@ -4,6 +4,11 @@
 
 Accepted (reflects `k3s/apprise`, `apps/apprise.yaml`, the `telegram` receiver in `k3s/victoria-metrics-stack/values.yaml`, and the `notify-failure` job in `.gitea/workflows/validate.yaml`). Gotify and its `alertmanager-gotify-bridge` translator, and the `igotify` companion app, have been removed entirely.
 
+**Update 2026-11-01:** CrowdSec moved from k3s to the edge VM during the
+edge/Gateway migration and was rewired off Apprise — see the note under
+Consequences below. The rest of this ADR (Alertmanager/Gitea native
+Telegram, Apprise for the CI `notify-failure` script) is still accurate.
+
 ## Context
 
 Gotify was the previous self-hosted push notification target for this cluster: a dedicated push server with its own Android/iOS/web client, fed by two producers —
@@ -44,11 +49,11 @@ Rejected for CrowdSec and future producers: every new integration would mean wri
 
 ## Consequences
 
-- **Apprise is a dependency for CrowdSec and CI notifications specifically** — not for Alertmanager or Gitea's own event notifications, which bypass it entirely and keep working even if Apprise is down.
+- **Apprise is a dependency for CI notifications specifically** (CrowdSec no longer uses it as of 2026-11-01, see the superseded note below) — not for Alertmanager or Gitea's own event notifications, which bypass it entirely and keep working even if Apprise is down.
 - **Apprise's `/notify` endpoint has no authentication**, unlike Gotify's per-app `X-Gotify-Key` token. It currently relies on the `local-only` Traefik IP allowlist as its only access control. Tracked as a follow-up in `docs/optimizations.md` (nginx basic auth, since Authelia's SSO redirect flow doesn't work for non-interactive callers like CI or Alertmanager).
 - **The Telegram destination is registered by hand, not in git.** Apprise's stateful config lives only on its own PVC; if that volume is ever lost, the bot token/chat ID must be re-entered manually through the Configuration Manager UI. This was a deliberate tradeoff to avoid storing a live bot token in a way any producer's config would need to reference directly.
 - **No independent fallback channel.** Gotify's delivery path was entirely separate from any third-party service; now, if Telegram itself has an outage, there is currently no secondary channel configured. Accepted at homelab scale given Telegram's reliability and reach.
-- **CrowdSec is repointed at Apprise** (`k3s/crowdsec/values.yaml`'s `http_default` notification plugin, `profiles.yaml` wired to fire it on every IP ban) — closed after this ADR was first written; it no longer has a notification gap.
+- **CrowdSec is repointed at Apprise** (`k3s/crowdsec/values.yaml`'s `http_default` notification plugin, `profiles.yaml` wired to fire it on every IP ban) — closed after this ADR was first written; it no longer has a notification gap. **Superseded 2026-11-01:** `k3s/crowdsec` no longer exists — CrowdSec moved to `docker/edge/crowdsec` as part of the edge/Gateway migration. Its notification plugin (`docker/edge/crowdsec/notification-alertmanager.yaml`) now POSTs a hand-formatted alert directly to Alertmanager's `/api/v2/alerts`, not to Apprise. Apprise is no longer in CrowdSec's notification path at all; it's left serving only the CI `notify-failure` step.
 
 ## Revisit if
 
