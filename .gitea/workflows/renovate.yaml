@@ -21,11 +21,18 @@ jobs:
           echo "RENOVATE_TOKEN length: ${#RENOVATE_TOKEN}"
         env:
           RENOVATE_TOKEN: ${{ secrets.RENOVATE_TOKEN }}
-      - name: Test raw git HTTP auth
+      - name: Test raw git HTTP auth (no trailing slash)
         run: |
           git ls-remote --heads "http://${RENOVATE_TOKEN}@10.0.10.150:30008/deekline/homelab-infra.git" >/dev/null \
-            && echo "GIT AUTH OK" \
-            || echo "GIT AUTH FAILED (exit $?)"
+            && echo "NO-SLASH: GIT AUTH OK" \
+            || echo "NO-SLASH: GIT AUTH FAILED (exit $?)"
+        env:
+          RENOVATE_TOKEN: ${{ secrets.RENOVATE_TOKEN }}
+      - name: Test raw git HTTP auth (with trailing slash)
+        run: |
+          git ls-remote --heads "http://${RENOVATE_TOKEN}@10.0.10.150:30008/deekline/homelab-infra.git/" >/dev/null \
+            && echo "WITH-SLASH: GIT AUTH OK" \
+            || echo "WITH-SLASH: GIT AUTH FAILED (exit $?)"
         env:
           RENOVATE_TOKEN: ${{ secrets.RENOVATE_TOKEN }}
       - name: Run Renovate
