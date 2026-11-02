@@ -33,6 +33,16 @@ jobs:
             "http://10.0.10.150:30008/api/v1/repos/deekline/homelab-infra"
         env:
           RENOVATE_TOKEN: ${{ secrets.RENOVATE_TOKEN }}
+      - name: Compare git ls-remote with vs without explicit empty password
+        run: |
+          echo "--- no colon (username only) ---"
+          git ls-remote --heads "http://${RENOVATE_TOKEN}@10.0.10.150:30008/deekline/homelab-infra.git" >/dev/null \
+            && echo "NO-COLON: OK" || echo "NO-COLON: FAILED (exit $?)"
+          echo "--- with colon (explicit empty password) ---"
+          git ls-remote --heads "http://${RENOVATE_TOKEN}:@10.0.10.150:30008/deekline/homelab-infra.git" >/dev/null \
+            && echo "WITH-COLON: OK" || echo "WITH-COLON: FAILED (exit $?)"
+        env:
+          RENOVATE_TOKEN: ${{ secrets.RENOVATE_TOKEN }}
       - name: Run Renovate
         run: renovate
         env:
