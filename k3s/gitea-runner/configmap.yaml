@@ -26,3 +26,7 @@ data:
       # auto-detects for act_runner's own use, just stops mounting it into
       # job/service containers.
       docker_host: "-"
+  daemon.json: |
+    {
+      "insecure-registries": ["10.0.10.150:30008"]
+    }
