@@ -1,0 +1,32 @@
+groups:
+- name: homelab.authelia
+  rules:
+  - alert: AutheliaFailedLoginsBurst
+    annotations:
+      description: '{{ $value | humanize }} unsuccessful Authelia 1FA login attempts in the last 5 minutes.'
+      summary: Burst of failed Authelia logins
+    expr: |
+      sum(increase(authelia_authn{job="authelia-edge",success="false"}[5m])) > 5
+    for: 0m
+    labels:
+      severity: warning
+  - alert: AutheliaSecondFactorFailuresBurst
+    annotations:
+      description: '{{ $value | humanize }} unsuccessful Authelia 2FA attempts in the last 5 minutes.'
+      summary: Burst of failed Authelia 2FA attempts
+    expr: |
+      sum(increase(authelia_authn_second_factor{job="authelia-edge",success="false"}[5m])) > 5
+    for: 0m
+    labels:
+      severity: warning
+  - alert: AutheliaRegulationBanTriggered
+    annotations:
+      description: Authelia's brute-force regulation (max_retries/find_time in configuration.yml) banned a client. Check the "Authelia" Grafana dashboard logs panel for the source IP/username.
+      summary: Authelia regulation ban triggered
+    expr: |
+      sum(increase(authelia_authn{job="authelia-edge",banned="true"}[5m])) > 0
+        or
+      sum(increase(authelia_authn_second_factor{job="authelia-edge",banned="true"}[5m])) > 0
+    for: 0m
+    labels:
+      severity: critical
