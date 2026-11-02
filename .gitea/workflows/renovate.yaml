@@ -10,39 +10,8 @@ jobs:
     name: Run Renovate
     runs-on: ubuntu-latest
     container:
-      image: renovate/renovate:44.164.0
+      image: renovate/renovate:44.198.3
     steps:
-      - name: Check secret is present
-        run: |
-          if [ -z "$RENOVATE_TOKEN" ]; then
-            echo "RENOVATE_TOKEN is EMPTY inside the job"
-            exit 1
-          fi
-          echo "RENOVATE_TOKEN length: ${#RENOVATE_TOKEN}"
-        env:
-          RENOVATE_TOKEN: ${{ secrets.RENOVATE_TOKEN }}
-      - name: Inspect raw HTTP response (no token echoed)
-        run: |
-          echo "--- GET /info/refs (smart-http discovery), with Basic auth ---"
-          curl -s -o /dev/null -D - -w "HTTP_CODE:%{http_code}\n" \
-            -u "${RENOVATE_TOKEN}:" \
-            "http://10.0.10.150:30008/deekline/homelab-infra.git/info/refs?service=git-upload-pack"
-          echo "--- GET repo API endpoint, with token header, for comparison ---"
-          curl -s -o /dev/null -D - -w "HTTP_CODE:%{http_code}\n" \
-            -H "Authorization: token ${RENOVATE_TOKEN}" \
-            "http://10.0.10.150:30008/api/v1/repos/deekline/homelab-infra"
-        env:
-          RENOVATE_TOKEN: ${{ secrets.RENOVATE_TOKEN }}
-      - name: Compare git ls-remote with vs without explicit empty password
-        run: |
-          echo "--- no colon (username only) ---"
-          git ls-remote --heads "http://${RENOVATE_TOKEN}@10.0.10.150:30008/deekline/homelab-infra.git" >/dev/null \
-            && echo "NO-COLON: OK" || echo "NO-COLON: FAILED (exit $?)"
-          echo "--- with colon (explicit empty password) ---"
-          git ls-remote --heads "http://${RENOVATE_TOKEN}:@10.0.10.150:30008/deekline/homelab-infra.git" >/dev/null \
-            && echo "WITH-COLON: OK" || echo "WITH-COLON: FAILED (exit $?)"
-        env:
-          RENOVATE_TOKEN: ${{ secrets.RENOVATE_TOKEN }}
       - name: Run Renovate
         run: renovate
         env:
