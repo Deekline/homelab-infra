@@ -144,6 +144,9 @@ spec:
           volumeMounts:
             - name: docker-storage-pvc
               mountPath: /var/lib/docker
+            - name: config
+              mountPath: /etc/docker/daemon.json
+              subPath: daemon.json
 
       volumes:
         - name: config
