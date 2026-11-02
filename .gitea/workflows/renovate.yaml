@@ -21,18 +21,16 @@ jobs:
           echo "RENOVATE_TOKEN length: ${#RENOVATE_TOKEN}"
         env:
           RENOVATE_TOKEN: ${{ secrets.RENOVATE_TOKEN }}
-      - name: Test raw git HTTP auth (no trailing slash)
+      - name: Inspect raw HTTP response (no token echoed)
         run: |
-          git ls-remote --heads "http://${RENOVATE_TOKEN}@10.0.10.150:30008/deekline/homelab-infra.git" >/dev/null \
-            && echo "NO-SLASH: GIT AUTH OK" \
-            || echo "NO-SLASH: GIT AUTH FAILED (exit $?)"
-        env:
-          RENOVATE_TOKEN: ${{ secrets.RENOVATE_TOKEN }}
-      - name: Test raw git HTTP auth (with trailing slash)
-        run: |
-          git ls-remote --heads "http://${RENOVATE_TOKEN}@10.0.10.150:30008/deekline/homelab-infra.git/" >/dev/null \
-            && echo "WITH-SLASH: GIT AUTH OK" \
-            || echo "WITH-SLASH: GIT AUTH FAILED (exit $?)"
+          echo "--- GET /info/refs (smart-http discovery), with Basic auth ---"
+          curl -s -o /dev/null -D - -w "HTTP_CODE:%{http_code}\n" \
+            -u "${RENOVATE_TOKEN}:" \
+            "http://10.0.10.150:30008/deekline/homelab-infra.git/info/refs?service=git-upload-pack"
+          echo "--- GET repo API endpoint, with token header, for comparison ---"
+          curl -s -o /dev/null -D - -w "HTTP_CODE:%{http_code}\n" \
+            -H "Authorization: token ${RENOVATE_TOKEN}" \
+            "http://10.0.10.150:30008/api/v1/repos/deekline/homelab-infra"
         env:
           RENOVATE_TOKEN: ${{ secrets.RENOVATE_TOKEN }}
       - name: Run Renovate
