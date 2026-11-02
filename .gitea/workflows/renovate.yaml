@@ -12,6 +12,15 @@ jobs:
     container:
       image: renovate/renovate:44.164.0
     steps:
+      - name: Check secret is present
+        run: |
+          if [ -z "$RENOVATE_TOKEN" ]; then
+            echo "RENOVATE_TOKEN is EMPTY inside the job"
+            exit 1
+          fi
+          echo "RENOVATE_TOKEN length: ${#RENOVATE_TOKEN}"
+        env:
+          RENOVATE_TOKEN: ${{ secrets.RENOVATE_TOKEN }}
       - name: Run Renovate
         run: renovate
         env:
