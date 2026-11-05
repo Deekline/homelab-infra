@@ -1,0 +1,56 @@
+services:
+  mcp-server-init:
+    image: busybox:1.37.0
+    command: ["chown", "-R", "1000:1000", "/repos", "/home/sync"]
+    volumes:
+      - /srv/data/mcp-server/repos:/repos
+      - /srv/data/mcp-server/sync-home:/home/sync
+
+  repo-sync:
+    image: alpine/git:2.47.3
+    restart: unless-stopped
+    depends_on:
+      mcp-server-init:
+        condition: service_completed_successfully
+    user: "1000:1000"
+    environment:
+      HOME: /home/sync
+      DEPLOY_KEY_B64: ${DEPLOY_KEY_B64:?}
+      GITEA_HOST: ${GITEA_HOST:?}
+      GITEA_SSH_PORT: ${GITEA_SSH_PORT:?}
+      GITEA_USER: ${GITEA_USER:?}
+      REFRESH_INTERVAL_SECONDS: ${MCP_REPO_REFRESH_INTERVAL_SECONDS:-180}
+    entrypoint: ["/bin/sh", "/scripts/sync.sh"]
+    configs:
+      - source: sync-script
+        target: /scripts/sync.sh
+        mode: 0555
+    volumes:
+      - /srv/data/mcp-server/repos:/repos
+      - /srv/data/mcp-server/sync-home:/home/sync
+
+  mcp-server:
+    image: ${GITEA_HOST:?}:${GITEA_REGISTRY_PORT:?}/${GITEA_USER:?}/homelab-ai-copilot:latest
+    restart: unless-stopped
+    depends_on:
+      repo-sync:
+        condition: service_started
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    environment:
+      MCP_BEARER_TOKEN: ${MCP_BEARER_TOKEN:?}
+      REPO_BASE_DIR: /repos
+    volumes:
+      - /srv/data/mcp-server/repos:/repos:ro
+    ports:
+      - "8000:8000"
+
+configs:
+  sync-script:
+    file: ./sync.sh
+
+networks:
+  default:
+    name: observability
+    external: true
