@@ -7,7 +7,7 @@ services:
       - /srv/data/mcp-server/sync-home:/home/sync
 
   repo-sync:
-    image: alpine/git:2.47.3
+    image: alpine/git:2.47.2
     restart: unless-stopped
     depends_on:
       mcp-server-init:
