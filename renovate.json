@@ -3,7 +3,6 @@
   "extends": ["config:recommended"],
   "ignorePaths": ["**/secrets.yaml", "**/*.sops.*"],
   "labels": ["renovate", "dependencies"],
-  "schedule": ["* 12 * * 1,4"],
   "enabledManagers": ["flux", "kubernetes", "helm-values", "github-actions", "docker-compose"],
   "flux": {
     "managerFilePatterns": ["/^apps\\/.+\\.yaml$/"]
