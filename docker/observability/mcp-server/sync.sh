@@ -6,9 +6,12 @@ REPOS="homelab-infra homelab-provisioning homelab-docs homelab-ai-copilot"
 : "${GITEA_SSH_PORT:?}"
 : "${GITEA_USER:?}"
 
+mkdir -p "${HOME}/.ssh"
 echo "${DEPLOY_KEY_B64}" | base64 -d > "${HOME}/.ssh/id_ed25519"
 chmod 600 "${HOME}/.ssh/id_ed25519"
 ssh-keyscan -p "${GITEA_SSH_PORT}" "${GITEA_HOST}" > "${HOME}/.ssh/known_hosts" 2>/dev/null
+
+export GIT_SSH_COMMAND="ssh -i ${HOME}/.ssh/id_ed25519 -o UserKnownHostsFile=${HOME}/.ssh/known_hosts"
 
 sync_once() {
   for repo in ${REPOS}; do

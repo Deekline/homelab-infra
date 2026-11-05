@@ -12,7 +12,6 @@ services:
     depends_on:
       mcp-server-init:
         condition: service_completed_successfully
-    user: "1000:1000"
     env_file:
       - .sops.env
     environment:
