@@ -40,9 +40,12 @@ services:
     security_opt: ["no-new-privileges:true"]
     environment:
       MCP_BEARER_TOKEN: ${MCP_BEARER_TOKEN:?}
+      MCP_KUBECONFIG_B64: ${MCP_KUBECONFIG_B64:?}
       REPO_BASE_DIR: /repos
     volumes:
       - /srv/data/mcp-server/repos:/repos:ro
+    tmpfs:
+      - /tmp
     ports:
       - "8000:8000"
 
