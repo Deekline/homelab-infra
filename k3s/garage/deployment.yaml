@@ -50,7 +50,7 @@ spec:
                       - k3s-worker-2
       containers:
         - name: garage
-          image: dxflrs/garage:v2.4.1
+          image: dxflrs/garage:v2.5.0
           ports:
             - name: s3-api
               containerPort: 3900
