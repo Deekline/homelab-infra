@@ -42,3 +42,4 @@ resources:
   - affine.yaml
   - calibre-web.yaml
   - actual-budget.yaml
+  - mcp-server-rbac.yaml
