@@ -13,9 +13,10 @@ services:
       mcp-server-init:
         condition: service_completed_successfully
     user: "1000:1000"
+    env_file:
+      - .sops.env
     environment:
       HOME: /home/sync
-      DEPLOY_KEY_B64: ${DEPLOY_KEY_B64:?}
       GITEA_HOST: ${GITEA_HOST:?}
       GITEA_SSH_PORT: ${GITEA_SSH_PORT:?}
       GITEA_USER: ${GITEA_USER:?}
@@ -38,9 +39,9 @@ services:
     read_only: true
     cap_drop: [ALL]
     security_opt: ["no-new-privileges:true"]
+    env_file:
+      - .sops.env
     environment:
-      MCP_BEARER_TOKEN: ${MCP_BEARER_TOKEN:?}
-      MCP_KUBECONFIG_B64: ${MCP_KUBECONFIG_B64:?}
       REPO_BASE_DIR: /repos
     volumes:
       - /srv/data/mcp-server/repos:/repos:ro
