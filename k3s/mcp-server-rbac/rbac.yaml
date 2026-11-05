@@ -1,0 +1,67 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    name: mcp-server
+  name: mcp-server
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: mcp-server
+  namespace: mcp-server
+---
+# Read-only, get/list/watch only — enforced by RBAC, not just the absence of
+# a kubectl-exec/apply/delete tool in the server code. secrets is
+# deliberately excluded. See homelab-docs/ai-copilot/mcp-server-plan.md.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: mcp-server-read-only
+rules:
+  - apiGroups: [""]
+    resources: ["pods", "services", "events", "nodes", "configmaps", "namespaces"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["apps"]
+    resources: ["deployments", "replicasets", "daemonsets", "statefulsets"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["kustomize.toolkit.fluxcd.io"]
+    resources: ["kustomizations"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["helm.toolkit.fluxcd.io"]
+    resources: ["helmreleases"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["source.toolkit.fluxcd.io"]
+    resources: ["gitrepositories", "helmrepositories", "helmcharts", "buckets", "ocirepositories"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["notification.toolkit.fluxcd.io"]
+    resources: ["alerts", "providers", "receivers"]
+    verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: mcp-server-read-only
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: mcp-server-read-only
+subjects:
+  - kind: ServiceAccount
+    name: mcp-server
+    namespace: mcp-server
+---
+# Long-lived token for this ServiceAccount, for use outside the cluster
+# (the MCP server runs on the observability Docker VM, not as an in-cluster
+# pod). k3s v1.33 no longer auto-creates these — this Secret's `.data.token`
+# is populated by the cluster's token controller once applied; nothing
+# secret is committed here.
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mcp-server-token
+  namespace: mcp-server
+  annotations:
+    kubernetes.io/service-account.name: mcp-server
+type: kubernetes.io/service-account-token
