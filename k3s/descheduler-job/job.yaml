@@ -1,0 +1,141 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    name: descheduler-job
+  name: descheduler-job
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: descheduler-job
+  namespace: descheduler-job
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: descheduler-job
+rules:
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["create", "update"]
+  - apiGroups: [""]
+    resources: ["nodes"]
+    verbs: ["get", "watch", "list"]
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "watch", "list", "delete"]
+  - apiGroups: [""]
+    resources: ["pods/eviction"]
+    verbs: ["create"]
+  - apiGroups: [""]
+    resources: ["namespaces"]
+    verbs: ["get", "watch", "list"]
+  - apiGroups: ["scheduling.k8s.io"]
+    resources: ["priorityclasses"]
+    verbs: ["get", "watch", "list"]
+  - apiGroups: ["policy"]
+    resources: ["poddisruptionbudgets"]
+    verbs: ["get", "watch", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: descheduler-job
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: descheduler-job
+subjects:
+  - kind: ServiceAccount
+    name: descheduler-job
+    namespace: descheduler-job
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: descheduler-job-policy
+  namespace: descheduler-job
+data:
+  policy.yaml: |
+    apiVersion: "descheduler/v1alpha2"
+    kind: "DeschedulerPolicy"
+    nodeSelector: "!node-role.kubernetes.io/control-plane"
+    profiles:
+      - name: LowNodeUtilization
+        pluginConfig:
+          - name: LowNodeUtilization
+            args:
+              thresholds:
+                cpu: 20
+                memory: 35
+                pods: 20
+              targetThresholds:
+                cpu: 50
+                memory: 55
+                pods: 50
+          - name: DefaultEvictor
+            args:
+              nodeFit: true
+              evictLocalStoragePods: false
+              evictDaemonSetPods: false
+              evictSystemCriticalPods: false
+              ignorePvcPods: true
+              namespaces:
+                exclude:
+                  - immich
+                  - paperless
+                  - dragonfly
+                  - garage
+                  - gitea-runner
+                  - kube-system
+                  - flux-system
+                  - cert-manager
+                  - cnpg-system
+                  - monitoring
+                  - sops-secrets-operator
+                  - reloader
+                  - descheduler-job
+        plugins:
+          balance:
+            enabled:
+              - "LowNodeUtilization"
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: descheduler-once
+  namespace: descheduler-job
+spec:
+  backoffLimit: 0
+  activeDeadlineSeconds: 1800
+  ttlSecondsAfterFinished: 86400
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: descheduler-job
+    spec:
+      serviceAccountName: descheduler-job
+      restartPolicy: Never
+      containers:
+        - name: descheduler
+          image: registry.k8s.io/descheduler/descheduler:v0.33.0
+          command:
+            - /bin/sh
+            - -c
+            - "sleep 900 && /bin/descheduler --policy-config-file=/policy/policy.yaml --v=2"
+          volumeMounts:
+            - name: policy
+              mountPath: /policy
+          securityContext:
+            allowPrivilegeEscalation: false
+          resources:
+            requests:
+              cpu: 10m
+              memory: 64Mi
+            limits:
+              memory: 256Mi
+      volumes:
+        - name: policy
+          configMap:
+            name: descheduler-job-policy
