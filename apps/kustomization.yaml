@@ -43,3 +43,4 @@ resources:
   - calibre-web.yaml
   - actual-budget.yaml
   - mcp-server-rbac.yaml
+  - descheduler-job.yaml
