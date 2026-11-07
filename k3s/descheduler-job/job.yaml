@@ -81,21 +81,6 @@ data:
               evictDaemonSetPods: false
               evictSystemCriticalPods: false
               ignorePvcPods: true
-              namespaces:
-                exclude:
-                  - immich
-                  - paperless
-                  - dragonfly
-                  - garage
-                  - gitea-runner
-                  - kube-system
-                  - flux-system
-                  - cert-manager
-                  - cnpg-system
-                  - monitoring
-                  - sops-secrets-operator
-                  - reloader
-                  - descheduler-job
         plugins:
           balance:
             enabled:
