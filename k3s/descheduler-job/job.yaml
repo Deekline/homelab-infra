@@ -117,13 +117,25 @@ spec:
     spec:
       serviceAccountName: descheduler-job
       restartPolicy: Never
+      initContainers:
+        - name: delay
+          image: docker.io/library/busybox:1.38
+          command: ["sleep", "900"]
+          securityContext:
+            allowPrivilegeEscalation: false
+          resources:
+            requests:
+              cpu: 5m
+              memory: 16Mi
+            limits:
+              memory: 32Mi
       containers:
         - name: descheduler
           image: registry.k8s.io/descheduler/descheduler:v0.33.0
-          command:
-            - /bin/sh
-            - -c
-            - "sleep 900 && /bin/descheduler --policy-config-file=/policy/policy.yaml --v=2"
+          command: ["/bin/descheduler"]
+          args:
+            - "--policy-config-file=/policy/policy.yaml"
+            - "--v=2"
           volumeMounts:
             - name: policy
               mountPath: /policy
