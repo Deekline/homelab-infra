@@ -35,9 +35,7 @@ spec:
       labels:
         app: garage
     spec:
-      # soft preference only (ADR 0001: pods aren't node-pinned by design) —
-      # worker-2 has the most free memory headroom of the 3 nodes as of the
-      # 2026-08-14 backups review
+      # soft preference only (ADR 0001: pods aren't node-pinned by design)
       affinity:
         nodeAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:

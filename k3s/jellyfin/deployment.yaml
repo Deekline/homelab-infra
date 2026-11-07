@@ -15,8 +15,6 @@ spec:
       labels:
         app: jellyfin
     spec:
-      nodeSelector:
-        kubernetes.io/hostname: k3s-worker-2
       securityContext:
         fsGroup: 3006
       containers:
