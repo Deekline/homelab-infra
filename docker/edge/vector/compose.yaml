@@ -1,6 +1,6 @@
 services:
   vector:
-    image: timberio/vector:0.59.0-debian
+    image: timberio/vector:0.61.0-debian
     restart: unless-stopped
     hostname: edge
     read_only: true

@@ -1,12 +1,12 @@
 services:
   alertmanager-init:
-    image: busybox:1.37.0
+    image: busybox:1.38.0
     command: ["chown", "-R", "65534:65534", "/alertmanager"]
     volumes:
       - /srv/data/alertmanager:/alertmanager
 
   alertmanager:
-    image: prom/alertmanager:v0.34.1
+    image: prom/alertmanager:v0.34.2
     restart: unless-stopped
     depends_on:
       alertmanager-init:
@@ -25,7 +25,7 @@ services:
       - "9093:9093"
 
   vmalert:
-    image: victoriametrics/vmalert:v1.154.0
+    image: victoriametrics/vmalert:v1.156.0
     restart: unless-stopped
     depends_on:
       alertmanager:

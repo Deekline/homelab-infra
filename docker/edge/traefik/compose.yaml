@@ -1,12 +1,12 @@
 services:
   traefik-init:
-    image: busybox:1.37.0
+    image: busybox:1.38.0
     command: ["sh", "-c", "mkdir -p /data/logs /data/plugins-storage && chown -R 65532:65532 /data"]
     volumes:
       - /srv/traefik:/data
 
   traefik:
-    image: traefik:v3.6.25
+    image: traefik:v3.7.17
     restart: unless-stopped
     depends_on:
       traefik-init:
