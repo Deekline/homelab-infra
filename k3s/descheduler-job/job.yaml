@@ -81,6 +81,11 @@ data:
               evictDaemonSetPods: false
               evictSystemCriticalPods: false
               ignorePvcPods: true
+              namespaces:
+                exclude:
+                  - kube-system
+                  - flux-system
+                  - cert-manager
         plugins:
           balance:
             enabled:
