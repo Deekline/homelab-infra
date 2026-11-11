@@ -19,7 +19,7 @@ spec:
         fsGroup: 3006
       containers:
         - name: paperless
-          image: ghcr.io/paperless-ngx/paperless-ngx:3.3.1
+          image: ghcr.io/paperless-ngx/paperless-ngx:3.4.2
           ports:
             - containerPort: 8000
           env:
@@ -141,7 +141,7 @@ spec:
     spec:
       containers:
         - name: gotenberg
-          image: docker.io/gotenberg/gotenberg:8.37
+          image: docker.io/gotenberg/gotenberg:8.40
           args:
             - gotenberg
             - --chromium-disable-javascript=true
@@ -199,7 +199,7 @@ spec:
     spec:
       containers:
         - name: tika
-          image: docker.io/apache/tika:3.3.1.0
+          image: docker.io/apache/tika:3.3.3.0
           ports:
             - containerPort: 9998
           readinessProbe:
