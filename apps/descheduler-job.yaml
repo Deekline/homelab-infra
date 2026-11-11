@@ -11,3 +11,4 @@ spec:
   path: ./k3s/descheduler-job
   prune: true
   timeout: 3m
+  force: true
