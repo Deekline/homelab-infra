@@ -74,6 +74,11 @@ data:
                 cpu: 50
                 memory: 55
                 pods: 50
+              evictableNamespaces:
+                exclude:
+                  - kube-system
+                  - flux-system
+                  - cert-manager
           - name: DefaultEvictor
             args:
               nodeFit: true
@@ -81,11 +86,6 @@ data:
               evictDaemonSetPods: false
               evictSystemCriticalPods: false
               ignorePvcPods: true
-              namespaces:
-                exclude:
-                  - kube-system
-                  - flux-system
-                  - cert-manager
         plugins:
           balance:
             enabled:
