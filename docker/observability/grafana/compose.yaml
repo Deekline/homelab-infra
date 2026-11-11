@@ -1,12 +1,12 @@
 services:
   grafana-init:
-    image: busybox:1.37.0
+    image: busybox:1.38.0
     command: ["chown", "-R", "472:472", "/var/lib/grafana"]
     volumes:
       - /srv/data/grafana:/var/lib/grafana
 
   grafana:
-    image: grafana/grafana:13.2.4
+    image: grafana/grafana:13.3.0
     restart: unless-stopped
     depends_on:
       grafana-init:
