@@ -1,13 +1,13 @@
 services:
   mcp-server-init:
-    image: busybox:1.37.0
+    image: busybox:1.38.0
     command: ["chown", "-R", "1000:1000", "/repos", "/home/sync"]
     volumes:
       - /srv/data/mcp-server/repos:/repos
       - /srv/data/mcp-server/sync-home:/home/sync
 
   repo-sync:
-    image: alpine/git:2.47.2
+    image: alpine/git:v2.54.0
     restart: unless-stopped
     depends_on:
       mcp-server-init:

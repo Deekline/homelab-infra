@@ -1,6 +1,6 @@
 services:
   authelia-init:
-    image: busybox:1.37.0
+    image: busybox:1.38.0
     command: ["chown", "-R", "8000:8000", "/data"]
     volumes:
       - /srv/authelia:/data
