@@ -6,7 +6,7 @@ services:
       - /srv/data/alertmanager:/alertmanager
 
   alertmanager:
-    image: prom/alertmanager:v0.34.2
+    image: prom/alertmanager:v0.35.0
     restart: unless-stopped
     depends_on:
       alertmanager-init:

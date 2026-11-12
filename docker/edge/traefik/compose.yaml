@@ -6,7 +6,7 @@ services:
       - /srv/traefik:/data
 
   traefik:
-    image: traefik:v3.7.17
+    image: traefik:v3.7.18
     restart: unless-stopped
     depends_on:
       traefik-init:
