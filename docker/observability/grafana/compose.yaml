@@ -6,7 +6,7 @@ services:
       - /srv/data/grafana:/var/lib/grafana
 
   grafana:
-    image: grafana/grafana:13.3.0
+    image: grafana/grafana:13.3.1
     restart: unless-stopped
     depends_on:
       grafana-init:
