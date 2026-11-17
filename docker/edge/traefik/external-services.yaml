@@ -84,6 +84,13 @@ http:
       service: vmalert
       tls: {}
 
+    openbao:
+      rule: 'Host(`openbao.{{ env "DOMAIN" }}`)'
+      entryPoints: [websecure]
+      middlewares: [crowdsec, mgmt-only, authelia]
+      service: openbao
+      tls: {}
+
   services:
     pve:
       loadBalancer:
@@ -149,6 +156,12 @@ http:
       loadBalancer:
         servers:
           - url: 'http://{{ env "OBSERVABILITY_IP" }}:8880'
+
+    openbao:
+      loadBalancer:
+        serversTransport: self-signed
+        servers:
+          - url: 'https://{{ env "OPENBAO_IP" }}:8200'
 
   serversTransports:
     self-signed:
