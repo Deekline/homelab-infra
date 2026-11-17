@@ -29,6 +29,7 @@ services:
       HA_IP: ${HA_IP:?}
       MGMT_SOURCES: ${MGMT_SOURCES:?}
       OBSERVABILITY_IP: ${OBSERVABILITY_IP:?}
+      OPENBAO_IP: ${OPENBAO_IP:?}
     configs:
       - source: static
         target: /etc/traefik/traefik.yml
