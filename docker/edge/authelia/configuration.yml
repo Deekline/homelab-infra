@@ -60,6 +60,7 @@ access_control:
         - 'vmalert.{{ mustEnv "DOMAIN" }}'
         - 'traefik.{{ mustEnv "DOMAIN" }}'
         - 'hubble.{{ mustEnv "DOMAIN" }}'
+        - 'openbao.{{ mustEnv "DOMAIN" }}'
       subject: 'group:admins'
       networks:
         - internal
