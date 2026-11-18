@@ -44,3 +44,4 @@ resources:
   - actual-budget.yaml
   - mcp-server-rbac.yaml
   - descheduler-job.yaml
+  - external-secrets.yaml
