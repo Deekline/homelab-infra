@@ -1,0 +1,18 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/scripts/homelab-verify.sh",
+            "if": "Bash(git add *)",
+            "timeout": 60,
+            "statusMessage": "Running homelab-verify checks..."
+          }
+        ]
+      }
+    ]
+  }
+}
