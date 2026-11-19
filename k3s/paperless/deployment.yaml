@@ -10,6 +10,8 @@ spec:
   selector:
     matchLabels:
       app: paperless
+  strategy:
+    type: Recreate
   template:
     metadata:
       labels:
@@ -51,6 +53,8 @@ spec:
                   key: secret-key
             - name: PAPERLESS_URL
               value: https://paperless.d-kline.org
+            - name: PAPERLESS_ALLOWED_HOSTS
+              value: "*"
             - name: PAPERLESS_TIKA_ENABLED
               value: "1"
             - name: PAPERLESS_TIKA_GOTENBERG_ENDPOINT
