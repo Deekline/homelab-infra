@@ -71,6 +71,10 @@ spec:
               value: https://paperless.d-kline.org
             - name: PAPERLESS_TIME_ZONE
               value: Europe/Warsaw
+            - name: PAPERLESS_TASK_WORKERS
+              value: "2"
+            - name: PAPERLESS_THREADS_PER_WORKER
+              value: "1"
           volumeMounts:
             - name: data
               mountPath: /usr/src/paperless/data
@@ -101,10 +105,10 @@ spec:
             periodSeconds: 30
           resources:
             requests:
-              cpu: 100m
+              cpu: 200m
               memory: 1056Mi
             limits:
-              cpu: "1"
+              cpu: "2"
               memory: 2Gi
           securityContext:
             allowPrivilegeEscalation: false
