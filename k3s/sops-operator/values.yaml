@@ -1,4 +1,0 @@
-secretsAsEnvVars:
-  - name: SOPS_AGE_KEY
-    secretName: sops-age-key
-    secretKey: keys.txt
