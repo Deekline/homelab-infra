@@ -5,5 +5,5 @@ resources:
   - pvc.yaml
   - httproute.yaml
   - network-policy.yaml
-  - http-api-secrets.yaml
+  - external-secret.yaml
   - http-api-deployment.yaml

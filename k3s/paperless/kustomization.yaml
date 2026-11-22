@@ -3,7 +3,7 @@ kind: Kustomization
 resources:
   - deployment.yaml
   - external-secret.yaml
-  - backup-credentials-secrets.yaml
+  - backup-credentials-external-secret.yaml
   - backup-objectstore.yaml
   - postgres-cluster.yaml
   - scheduled-backup.yaml
