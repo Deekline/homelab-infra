@@ -4,5 +4,5 @@ resources:
   - deployment.yaml
   - httproute.yaml
   - pvc.yaml
-  - secrets.yaml
+  - external-secret.yaml
   - network-policy.yaml

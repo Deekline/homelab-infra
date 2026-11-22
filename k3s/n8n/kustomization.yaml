@@ -2,7 +2,7 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - deployment.yaml
-  - secrets.yaml
+  - external-secret.yaml
   - backup-credentials-secrets.yaml
   - backup-objectstore.yaml
   - postgres-cluster.yaml
