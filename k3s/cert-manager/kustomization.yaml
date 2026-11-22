@@ -3,4 +3,4 @@ kind: Kustomization
 resources:
   - cert-manager.yaml
   - metrics-scrape.yaml
-  - secrets.yaml
+  - external-secret.yaml
