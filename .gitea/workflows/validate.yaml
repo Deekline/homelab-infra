@@ -64,9 +64,23 @@ jobs:
           curl -sSL https://github.com/yannh/kubeconform/releases/latest/download/kubeconform-linux-amd64.tar.gz \
             | tar -xz -C /usr/local/bin kubeconform
 
+      - name: Render Flux postBuild placeholders for validation
+        run: |
+          which envsubst >/dev/null || (apt-get update && apt-get install -y gettext-base)
+          cp -r k3s k3s-rendered
+          export DOMAIN=example.com
+          export NFS_SERVER=0.0.0.0
+          export K3S_API_VIP=0.0.0.0
+          export VM_METRICS_HOST=0.0.0.0
+          export OPENBAO_IP=0.0.0.0
+          for f in $(find k3s-rendered -name '*.yaml'); do
+            envsubst '$DOMAIN $NFS_SERVER $K3S_API_VIP $VM_METRICS_HOST $OPENBAO_IP' < "$f" > "$f.tmp"
+            mv "$f.tmp" "$f"
+          done
+
       - name: Validate k8s manifests
         run: |
-          grep -rl '^kind:' k3s/ | grep '\.yaml$' | grep -v 'values' | xargs kubeconform \
+          grep -rl '^kind:' k3s-rendered/ | grep '\.yaml$' | grep -v 'values' | xargs kubeconform \
             -strict \
             -ignore-missing-schemas \
             -schema-location default \

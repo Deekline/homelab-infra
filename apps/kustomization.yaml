@@ -44,3 +44,4 @@ resources:
   - mcp-server-rbac.yaml
   - descheduler-job.yaml
   - external-secrets.yaml
+  - cluster-vars.yaml
