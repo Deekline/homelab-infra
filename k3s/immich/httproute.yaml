@@ -8,7 +8,7 @@ spec:
     - name: cilium-gateway
       namespace: gateway
   hostnames:
-    - "immich.d-kline.org"
+    - "immich.${DOMAIN}"
   rules:
     - timeouts:
         request: 0s
